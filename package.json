@@ -5,11 +5,14 @@
   "main": "src/app.js",
   "scripts": {
     "prod": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon --legacy-watch src/app.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.26.0",
+    "body-parser": "^1.19.2",
+    "cors": "^2.8.5",
     "express": "^4.17.3",
     "nodemon": "^2.0.15"
   }

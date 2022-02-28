@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  expressmongodb:
+  leagueabuserbackend:
     container_name: "LeagueAbuserBackend"
-    image: sandrospengler/LeagueAbuserBackend
+    image: sandrospengler/leagueabuserbackend
     build:
       context: .
     environment:
