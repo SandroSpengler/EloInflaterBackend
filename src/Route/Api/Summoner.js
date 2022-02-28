@@ -6,7 +6,7 @@ const { getSummonerByName } = require("../../Services/Http");
 router.get("/:name", async (req, res) => {
   if (req.params.name) {
     try {
-      const summoner = await getSummonerByName();
+      const summoner = await getSummonerByName(req.params.name);
 
       res.status(200).json({
         success: true,
