@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import axios from "axios";
+const axios = require("axios");
 
 // only change by Region
 let protocol = "https://";
@@ -9,13 +9,15 @@ let genericUrl = "/lol/";
 // changes for each endpoint
 let enpointUrl = "";
 
-const getPlayerByName = async (name) => {
+const getSummonerByName = async (name) => {
   try {
     const request = axios.get(`${buildBaseUrl(regionUrl, "summoner/v4/summoners/by-name/")}${name}`, buildConfig());
 
+    console.log(await request);
+
     const response = await request;
 
-    console.log(await response);
+    return await response;
   } catch (error) {
     console.log(error);
   }
@@ -28,13 +30,15 @@ const buildBaseUrl = (regionUrl, endpointUrl) => {
 };
 
 const buildConfig = () => {
+  console.log(process.env.API_KEY);
+
   let config = {
     headers: {
-      "X-Riot-Token": localStorage.getItem("API_KEY"),
+      "X-Riot-Token": process.env.API_KEY,
     },
   };
 
   return config;
 };
 
-export { getPlayerByName };
+module.exports = { getSummonerByName };
