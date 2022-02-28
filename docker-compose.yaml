@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  expressmongodb:
+    container_name: "LeagueAbuserBackend"
+    image: sandrospengler/LeagueAbuserBackend
+    build:
+      context: .
+    environment:
+      - PORT=5000
+    networks:
+      - LeagueAbuserNetwork
+
+networks:
+  LeagueAbuserNetwork:

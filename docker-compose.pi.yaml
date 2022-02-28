@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  leagueabuserbackend:
+    container_name: "LeagueAbuserBackend"
+    image: sandrospengler/leagueabuserbackend
+    build:
+      context: ${LeagueAbuserBackend}
+      args:
+        NODE_ENV: production
+    ports:
+      - "5000"
+    environment:
+      - NODE_ENV=production
+    command: npm run dev
