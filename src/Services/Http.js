@@ -13,8 +13,6 @@ const getSummonerByName = async (name) => {
   try {
     const request = axios.get(`${buildBaseUrl(regionUrl, "summoner/v4/summoners/by-name/")}${name}`, buildConfig());
 
-    console.log(await request);
-
     const response = await request;
 
     return await response;
@@ -30,8 +28,6 @@ const buildBaseUrl = (regionUrl, endpointUrl) => {
 };
 
 const buildConfig = () => {
-  console.log(process.env.API_KEY);
-
   let config = {
     headers: {
       "X-Riot-Token": process.env.API_KEY,
