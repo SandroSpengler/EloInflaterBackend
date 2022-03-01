@@ -12,4 +12,6 @@ services:
       - "5000"
     environment:
       - NODE_ENV=production
+      - VIRTUAL_HOST=leagueabuser.axfert.com
+      - LETSENCRYPT_HOST=leagueabuser.axfert.com
     command: npm run dev
