@@ -10,7 +10,8 @@ const jsonParser = bodyParser.json();
 
 const APP = express();
 
-const summoner = require("./Route/Api/Summoner");
+const summonerController = require("./Route/Api/Summoner");
+const leaugeController = require("./Route/Api/League");
 
 APP.use(cors());
 
@@ -18,7 +19,8 @@ APP.get("/", (req, res) => {
   res.send("<h1>Main Page</h1>");
 });
 
-APP.use("/api/summoner", jsonParser, summoner);
+APP.use("/api/summoner", jsonParser, summonerController);
+APP.use("/api/league", jsonParser, leaugeController);
 
 APP.listen(PORT, () => {
   console.log("Server is running");

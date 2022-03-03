@@ -21,6 +21,25 @@ const getSummonerByName = async (name) => {
   }
 };
 
+const getSummonersByLeague = async (queueLeague, queueModeDescription) => {
+  try {
+    const request = axios.get(
+      `${buildBaseUrl(regionUrl, `league/v4/${queueLeague}/by-queue/`)}${queueModeDescription}`,
+      buildConfig()
+    );
+
+    const response = await request;
+
+    const summonersSortedByLp = await response.data.entries.sort((summoner1, summoner2) =>
+      summoner1.leaguePoints > summoner2.leaguePoints ? -1 : 1
+    );
+
+    return await summonersSortedByLp;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const buildBaseUrl = (regionUrl, endpointUrl) => {
   let completeUrl = `${protocol}${regionUrl}${genericUrl}${endpointUrl}`;
 
@@ -37,4 +56,4 @@ const buildConfig = () => {
   return config;
 };
 
-module.exports = { getSummonerByName };
+module.exports = { getSummonerByName, getSummonersByLeague };

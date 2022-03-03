@@ -13,8 +13,6 @@ router.get("/:name", async (req, res) => {
         result: summoner.data,
       });
     } catch (error) {
-      console.log(" " + error.message);
-
       res.status(500);
       res.send("Error");
     }
