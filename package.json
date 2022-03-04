@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
-    "prod": "tsc src/app.ts && ts-node src/app.js ",
+    "prod": "tsc --project ./ && node build/app.js ",
+    "build": "",
     "dev": "nodemon"
   },
   "author": "",
