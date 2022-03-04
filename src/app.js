@@ -1,27 +1,20 @@
-const express = require("express");
-
+"use strict";
+exports.__esModule = true;
+var express = require("express");
 require("dotenv").config();
-
-const cors = require("cors");
-const { PORT } = require("./Config/config");
-
-const bodyParser = require("body-parser");
-const jsonParser = bodyParser.json();
-
-const APP = express();
-
-const summonerController = require("./Route/Api/Summoner");
-const leaugeController = require("./Route/Api/League");
-
+var cors = require("cors");
+var PORT = require("./Config/config").PORT;
+var bodyParser = require("body-parser");
+var jsonParser = bodyParser.json();
+var APP = express();
+var summonerController = require("./Route/Api/Summoner");
+var leaugeController = require("./Route/Api/League");
 APP.use(cors());
-
-APP.get("/", (req, res) => {
-  res.send("<h1>Main Page</h1>");
+APP.get("/", function (req, res) {
+    res.send("<h1>Main Page!</h1>");
 });
-
 APP.use("/api/summoner", jsonParser, summonerController);
 APP.use("/api/league", jsonParser, leaugeController);
-
-APP.listen(PORT, () => {
-  console.log("Server is running");
+APP.listen(PORT, function () {
+    console.log("Server is running");
 });

@@ -1,5 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-const axios = require("axios");
+// const axios = require("axios");
+
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { Entry, League } from "../Models/League";
+import { Summoner } from "../Models/Summoner";
 
 // only change by Region
 let protocol = "https://";
@@ -9,21 +13,25 @@ let genericUrl = "/lol/";
 // changes for each endpoint
 let enpointUrl = "";
 
-const getSummonerByName = async (name) => {
+export const getSummonerByName = async (name): Promise<AxiosResponse<Summoner>> => {
   try {
-    const request = axios.get(`${buildBaseUrl(regionUrl, "summoner/v4/summoners/by-name/")}${name}`, buildConfig());
+    const request = axios.get<Summoner>(
+      `${buildBaseUrl(regionUrl, "summoner/v4/summoners/by-name/")}${name}`,
+      buildConfig()
+    );
 
     const response = await request;
 
     return await response;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
-const getSummonersByLeague = async (queueLeague, queueModeDescription) => {
+export const getSummonersByLeague = async (queueLeague, queueModeDescription): Promise<Entry[]> => {
   try {
-    const request = axios.get(
+    const request = axios.get<League>(
       `${buildBaseUrl(regionUrl, `league/v4/${queueLeague}/by-queue/`)}${queueModeDescription}`,
       buildConfig()
     );
@@ -37,6 +45,7 @@ const getSummonersByLeague = async (queueLeague, queueModeDescription) => {
     return await summonersSortedByLp;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
@@ -46,7 +55,7 @@ const buildBaseUrl = (regionUrl, endpointUrl) => {
   return completeUrl;
 };
 
-const buildConfig = () => {
+const buildConfig = (): any => {
   let config = {
     headers: {
       "X-Riot-Token": process.env.API_KEY,
@@ -56,4 +65,4 @@ const buildConfig = () => {
   return config;
 };
 
-module.exports = { getSummonerByName, getSummonersByLeague };
+// module.exports = { getSummonerByName, getSummonersByLeague };

@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { getSummonersByLeague } = require("../../Services/Http");
+import { getSummonersByLeague } from "../../Services/Http";
 
 router.get("/:queueType/:queueMode", async (req, res) => {
   // challenger,gm, master
@@ -23,19 +23,22 @@ router.get("/:queueType/:queueMode", async (req, res) => {
   try {
     const summoners = await getSummonersByLeague(queueLeague, queueModeDescription);
 
-    if (summoners === undefined) {
-      return res.status(400).json({
+    if (summoners.length === 0) {
+      return res.status(404).json({
         success: true,
-        result: "Please Check the queueString",
+        result: "No Summoners Found",
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        result: summoners,
       });
     }
-    res.status(200).json({
-      success: true,
-      result: summoners,
-    });
   } catch (error) {
-    res.status(500);
-    res.send("Error:");
+    res.status(500).json({
+      success: false,
+      result: "Check provided Query Parameter",
+    });
   }
 });
 
