@@ -15,4 +15,4 @@ services:
       - API_KEY=${API_KEY}
       - VIRTUAL_HOST=leagueabuser.axfert.com
       - LETSENCRYPT_HOST=leagueabuser.axfert.com
-    command: npm run dev
+    command: npm run prod
