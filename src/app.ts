@@ -18,7 +18,7 @@ const leaugeController = require("./Route/Api/League");
 APP.use(cors());
 
 APP.get("/", (req: Request, res: Response) => {
-  res.send("<h1>Main Page!</h1>");
+  res.send("<h1>Main Page!!</h1>");
 });
 
 APP.use("/api/summoner", jsonParser, summonerController);
