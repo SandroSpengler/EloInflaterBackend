@@ -2,8 +2,8 @@
 // const axios = require("axios");
 
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { Entry, League } from "../Models/SummonerByLeague";
-import { Summoner } from "../Models/Summoner";
+import { Entry, League } from "../Models/Interfaces/SummonerByLeague";
+import { Summoner } from "../Models/Interfaces/Summoner";
 
 // only change by Region
 let protocol = "https://";
