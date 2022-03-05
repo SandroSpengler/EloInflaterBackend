@@ -2,10 +2,13 @@
 import { Application, Request, Response, NextFunction } from "express";
 import * as express from "express";
 
-require("dotenv").config();
+import { ConnectionOptions } from "tls";
 
+const mongoose = require("mongoose");
 const cors = require("cors");
-const { PORT } = require("./Config/config");
+const { PORT, DB_CONNECTION } = require("./Config/config");
+
+require("dotenv").config();
 
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
@@ -23,6 +26,17 @@ APP.get("/", (req: Request, res: Response) => {
 
 APP.use("/api/summoner", jsonParser, summonerController);
 APP.use("/api/league", jsonParser, leaugeController);
+
+const connectToMongoDB = () => {
+  mongoose
+    .connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
+    .then((data) => console.log("connected to mongodb"))
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
+
+connectToMongoDB();
 
 APP.listen(PORT, () => {
   console.log("Server is running");

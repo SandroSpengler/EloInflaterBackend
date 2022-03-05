@@ -16,3 +16,14 @@ services:
       - VIRTUAL_HOST=leagueabuser.axfert.com
       - LETSENCRYPT_HOST=leagueabuser.axfert.com
     command: npm run prod
+
+  leaguemongo:
+    container_name: "LeagueMongoPi"
+    image: mongo:bionic
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ~/mongo/data:/data/db
+    networks:
+      - LeagueMongoDBNetwork
