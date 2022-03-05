@@ -2,7 +2,7 @@
 // const axios = require("axios");
 
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { Entry, League } from "../Models/League";
+import { Entry, League } from "../Models/SummonerByLeague";
 import { Summoner } from "../Models/Summoner";
 
 // only change by Region

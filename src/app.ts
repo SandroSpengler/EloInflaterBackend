@@ -16,7 +16,7 @@ const jsonParser = bodyParser.json();
 const APP: Application = express();
 
 const summonerController = require("./Route/Api/Data/Summoner");
-const leaugeController = require("./Route/Api/Data/League");
+const leaugeController = require("./Route/Api/Data/SummonerByLeague");
 
 APP.use(cors());
 
