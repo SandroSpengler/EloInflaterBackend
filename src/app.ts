@@ -15,8 +15,8 @@ const jsonParser = bodyParser.json();
 
 const APP: Application = express();
 
-const summonerController = require("./Route/Api/Summoner");
-const leaugeController = require("./Route/Api/League");
+const summonerController = require("./Route/Api/Data/Summoner");
+const leaugeController = require("./Route/Api/Data/League");
 
 APP.use(cors());
 
@@ -24,8 +24,8 @@ APP.get("/", (req: Request, res: Response) => {
   res.send("<h1>Main Page!!</h1>");
 });
 
-APP.use("/api/summoner", jsonParser, summonerController);
-APP.use("/api/league", jsonParser, leaugeController);
+APP.use("/api/data/summoner", jsonParser, summonerController);
+APP.use("/api/data/league", jsonParser, leaugeController);
 
 const connectToMongoDB = () => {
   mongoose

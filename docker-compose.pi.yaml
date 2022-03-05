@@ -13,6 +13,7 @@ services:
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
+      - DB_CONNECTION=DB_CONNECTION_LEAGUE
       - VIRTUAL_HOST=leagueabuser.axfert.com
       - LETSENCRYPT_HOST=leagueabuser.axfert.com
     command: npm run prod

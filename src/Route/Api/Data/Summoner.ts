@@ -3,7 +3,7 @@ const router = express.Router();
 
 // const { getSummonerByName } = require("../../Services/Http");
 
-import { getSummonerByName } from "../../Services/Http";
+import { getSummonerByName } from "../../../Services/Http";
 
 router.get("/:name", async (req, res) => {
   if (req.params.name) {

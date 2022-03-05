@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-import { getSummonersByLeague } from "../../Services/Http";
+import { getSummonersByLeague } from "../../../Services/Http";
 
 router.get("/:queueType/:queueMode", async (req, res) => {
   // challenger,gm, master
