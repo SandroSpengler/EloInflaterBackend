@@ -3,7 +3,7 @@
 
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Entry, League } from "../Models/Interfaces/SummonerByLeague";
-import { Summoner } from "../Models/Interfaces/Summoner";
+import Summoner from "../Models/Interfaces/Summoner";
 
 // only change by Region
 let protocol = "https://";

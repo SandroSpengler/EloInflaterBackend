@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export interface Summoner extends Document {
+export default interface Summoner extends Document {
   id: string;
   accountId: string;
   puuid: string;

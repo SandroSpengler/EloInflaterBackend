@@ -1,17 +1,17 @@
 const express = require("express");
 const router = express.Router();
 
-import { Summoner } from "../../../Models/Interfaces/Summoner";
+import Summoner from "../../../Models/Interfaces/Summoner";
 import { saveSummoner } from "../../../Repository/SummonerRepository";
 import { getSummonerByName } from "../../../Services/Http";
 
 router.get("/:name", async (req, res) => {
   if (req.params.name) {
     try {
-      // Check if sommoner already exsists
+      // Check if sommoner already exsists inside Mongodb
+      const Reponse = await getSummonerByName(req.params.name);
 
       // Get SummonerData
-      const Reponse = await getSummonerByName(req.params.name);
 
       // Save Summoner to DB
       const savedSummoner: Summoner = await saveSummoner(Reponse.data);
@@ -28,3 +28,5 @@ router.get("/:name", async (req, res) => {
     }
   }
 });
+
+module.exports = router;

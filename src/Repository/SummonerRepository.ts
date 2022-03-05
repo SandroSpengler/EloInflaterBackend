@@ -1,15 +1,15 @@
-import SummonerSchema from "../Models/Interfaces/Schemas/SummonerSchema";
-import { Summoner } from "../Models/Interfaces/Summoner";
+import Summoner from "../Models/Interfaces/Summoner";
+import SummonerSchema from "../Models/Schemas/SummonerSchema";
 
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner> => {
-  let tmpSummoner = new SummonerSchema();
-
-  tmpSummoner.save();
-
   try {
-    // let foundSummoner: Summoner = await tmpSummoner.fin
+    let tmp;
 
-    return tmpSummoner;
+    let foundSummoner = await SummonerSchema.findOne({ puuid: puuid }).exec();
+
+    console.log(foundSummoner);
+
+    return tmp;
   } catch (error) {
     throw error;
   }
