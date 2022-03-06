@@ -35,3 +35,11 @@ export const saveSummoner = async (summoner: Summoner): Promise<Summoner> => {
     throw error;
   }
 };
+
+export const updateSummoner = (puuid: string) => {
+  try {
+    let currentUnixDate = new Date().getTime();
+
+    SummonerSchema.updateOne({ puuid: puuid }, { updatedAt: currentUnixDate }).exec();
+  } catch (error) {}
+};
