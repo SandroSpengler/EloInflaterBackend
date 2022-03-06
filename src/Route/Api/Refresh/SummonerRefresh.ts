@@ -1,23 +1,34 @@
 const express = require("express");
 const router = express.Router();
 
+import { resolveTxt } from "dns";
 import Summoner from "../../../Models/Interfaces/Summoner";
-import { saveSummoner } from "../../../Repository/SummonerRepository";
+import { findSummonerByPUUID, saveSummoner } from "../../../Repository/SummonerRepository";
 import { getSummonerByName } from "../../../Services/Http";
 
 router.get("/:name", async (req, res) => {
   if (req.params.name) {
     try {
-      // Check if sommoner already exsists inside Mongodb
+      // Get Summoner Data
       const Reponse = await getSummonerByName(req.params.name);
 
-      // Get SummonerData
+      // Check if sommoner already exsists inside Mongodb
+      let SummonerInDB = await findSummonerByPUUID(Reponse.data.puuid);
 
-      // Save Summoner to DB
-      // const savedSummoner = await saveSummoner(Reponse.data);
+      if (SummonerInDB == null) {
+        // If it does save Summoner to DB
+        SummonerInDB = await saveSummoner(Reponse.data);
+      }
 
-      // console.log(savedSummoner.createdAt);
-      // console.log(savedSummoner.updatedAt);
+      console.log(await SummonerInDB.createdAt);
+      console.log(await SummonerInDB.updatedAt);
+
+      // Check if Summoner was updated within the last 60 Minutes?
+      // if(SummonerInDB.updatedAt > XXX) {
+
+      // Refresh Summoner Data
+
+      // }
 
       // Save Last Refresh time of that SummonerData
 
