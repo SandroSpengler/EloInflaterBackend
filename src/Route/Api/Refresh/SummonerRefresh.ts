@@ -14,7 +14,10 @@ router.get("/:name", async (req, res) => {
       // Get SummonerData
 
       // Save Summoner to DB
-      const savedSummoner: Summoner = await saveSummoner(Reponse.data);
+      // const savedSummoner = await saveSummoner(Reponse.data);
+
+      // console.log(savedSummoner.createdAt);
+      // console.log(savedSummoner.updatedAt);
 
       // Save Last Refresh time of that SummonerData
 

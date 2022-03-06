@@ -5,25 +5,31 @@ import Summoner from "../Interfaces/Summoner";
 const SummonerSchema: Schema = new Schema(
   {
     id: {
-      type: "String",
+      type: String,
     },
     accountId: {
-      type: "String",
+      type: String,
     },
     puuid: {
-      type: "String",
+      type: String,
     },
     name: {
-      type: "String",
+      type: String,
     },
     profileIconId: {
-      type: "Number",
+      type: Number,
     },
     revisionDate: {
-      type: "Number",
+      type: Number,
     },
     summonerLevel: {
-      type: "Number",
+      type: Number,
+    },
+    createdAt: {
+      type: Number,
+    },
+    updatedAt: {
+      type: Number,
     },
   },
   {

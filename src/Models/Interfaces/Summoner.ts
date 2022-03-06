@@ -8,4 +8,6 @@ export default interface Summoner extends Document {
   profileIconId: number;
   revisionDate: number;
   summonerLevel: number;
+  createdAt: number;
+  updatedAt: number;
 }
