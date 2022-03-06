@@ -4,6 +4,7 @@ const router = express.Router();
 import { resolveTxt } from "dns";
 import Summoner from "../../../Models/Interfaces/Summoner";
 import { findSummonerByPUUID, saveSummoner } from "../../../Repository/SummonerRepository";
+import { formatSummonerForSending } from "../../../Services/FormatDocument";
 import { getSummonerByName } from "../../../Services/Http";
 
 router.get("/:name", async (req, res) => {
@@ -32,9 +33,13 @@ router.get("/:name", async (req, res) => {
 
       // Save Last Refresh time of that SummonerData
 
+      // take MongodbProperties away
+
+      let summonerToSend = formatSummonerForSending(SummonerInDB);
+
       res.status(200).json({
         success: true,
-        result: Reponse.data,
+        result: summonerToSend,
       });
     } catch (error) {
       res.status(500);

@@ -1,6 +1,6 @@
 import { Document } from "mongoose";
 
-export default interface Summoner extends Document {
+export default interface Summoner extends Partial<Document> {
   id: string;
   accountId: string;
   puuid: string;
@@ -8,6 +8,6 @@ export default interface Summoner extends Document {
   profileIconId: number;
   revisionDate: number;
   summonerLevel: number;
-  createdAt: number;
-  updatedAt: number;
+  createdAt?: number;
+  updatedAt?: number;
 }
