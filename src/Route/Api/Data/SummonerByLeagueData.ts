@@ -9,19 +9,8 @@ router.get("/:queueType/:queueMode", async (req, res) => {
   // 5v5 solo, flex, flex TT
   let queueMode = req.params.queueMode;
 
-  let queueLeague = "";
-  let queueModeDescription = "";
-
-  if (queueType === "challenger") queueLeague = "challengerleagues";
-  if (queueType === "grandmaster") queueLeague = "grandmasterleagues";
-  if (queueType === "master") queueLeague = "masterleagues";
-
-  if (queueMode === "rankedsolo") queueModeDescription = "RANKED_SOLO_5x5";
-  if (queueMode === "flexsolo") queueModeDescription = "RANKED_FLEX_SR";
-  if (queueMode === "flextt") queueModeDescription = "RANKED_FLEX_TT";
-
   try {
-    const summoners = await getSummonersByLeague(queueLeague, queueModeDescription);
+    const summoners = await getSummonersByLeague(queueType, queueMode);
 
     if (summoners.length === 0) {
       return res.status(404).json({

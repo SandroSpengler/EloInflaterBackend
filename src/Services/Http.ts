@@ -29,7 +29,18 @@ export const getSummonerByName = async (name): Promise<AxiosResponse<Summoner>> 
   }
 };
 
-export const getSummonersByLeague = async (queueLeague, queueModeDescription): Promise<Entry[]> => {
+export const getSummonersByLeague = async (queueType, queueMode): Promise<Entry[]> => {
+  let queueLeague = "";
+  let queueModeDescription = "";
+
+  if (queueType === "challenger") queueLeague = "challengerleagues";
+  if (queueType === "grandmaster") queueLeague = "grandmasterleagues";
+  if (queueType === "master") queueLeague = "masterleagues";
+
+  if (queueMode === "rankedsolo") queueModeDescription = "RANKED_SOLO_5x5";
+  if (queueMode === "flexsolo") queueModeDescription = "RANKED_FLEX_SR";
+  if (queueMode === "flextt") queueModeDescription = "RANKED_FLEX_TT";
+
   try {
     const request = axios.get<League>(
       `${buildBaseUrl(regionUrl, `league/v4/${queueLeague}/by-queue/`)}${queueModeDescription}`,

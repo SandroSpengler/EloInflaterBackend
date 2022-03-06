@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-import { resolveTxt } from "dns";
-import Summoner from "../../../Models/Interfaces/Summoner";
+import { Request, Response } from "express";
 import { findSummonerByPUUID, saveSummoner, updateSummoner } from "../../../Repository/SummonerRepository";
 import { formatSummonerForSending } from "../../../Services/FormatDocument";
-import { getSummonerByName } from "../../../Services/Http";
+import { getSummonerByName, getSummonersByLeague } from "../../../Services/Http";
 
-router.get("/byName/:name", async (req, res) => {
+router.get("/byName/:name", async (req: Request, res: Response) => {
   if (req.params.name) {
     try {
       // Get Summoner Data
@@ -21,14 +20,11 @@ router.get("/byName/:name", async (req, res) => {
         summonerInDB = await saveSummoner(Reponse.data);
       }
 
-      console.log(summonerInDB.updatedAt);
-
       // Check if Summoner was updated within the last 60 Minutes?
       // console.log(new Date().getTime() - 3600 * 1000);
       if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
         // Refresh Summoner Data
         updateSummoner(summonerInDB.puuid);
-        console.log("update!");
       }
 
       // take MongodbProperties away
@@ -43,6 +39,20 @@ router.get("/byName/:name", async (req, res) => {
       res.send("Error");
     }
   }
+});
+
+router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response) => {
+  let queueType = req.params.queueType;
+  let queueMode = req.params.queueMode;
+
+  try {
+    const Response = await getSummonersByLeague(queueType, queueMode);
+
+    res.status(200).json({
+      success: true,
+      result: Response,
+    });
+  } catch (error) {}
 });
 
 module.exports = router;
