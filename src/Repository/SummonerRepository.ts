@@ -26,6 +26,7 @@ export const saveSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.profileIconId = summoner.profileIconId;
     tmpSummoner.revisionDate = summoner.revisionDate;
     tmpSummoner.summonerLevel = summoner.summonerLevel;
+    tmpSummoner.updatedAt = new Date().getTime();
 
     summoner = await tmpSummoner.save();
 
