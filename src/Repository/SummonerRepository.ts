@@ -5,7 +5,7 @@ import SummonerByLeagueSchema from "../Models/Schemas/LeagueSchema";
 
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
   try {
-    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ puuid: puuid });
+    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ puuid: puuid }).lean(); // .lean() returns only the json and not the mongoose.document
 
     if (foundSummoner != null) return foundSummoner;
 
@@ -28,6 +28,7 @@ export const saveSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.profileIconId = summoner.profileIconId;
     tmpSummoner.revisionDate = summoner.revisionDate;
     tmpSummoner.summonerLevel = summoner.summonerLevel;
+    tmpSummoner.matchList = summoner.matchList;
     tmpSummoner.updatedAt = new Date().getTime();
 
     summoner = await tmpSummoner.save();
@@ -38,7 +39,7 @@ export const saveSummoner = async (summoner: Summoner): Promise<Summoner> => {
   }
 };
 
-export const updateSummoner = (puuid: string) => {
+export const setUpdateSummonerDate = (puuid: string) => {
   try {
     let currentUnixDate = new Date().getTime();
 
@@ -46,11 +47,19 @@ export const updateSummoner = (puuid: string) => {
   } catch (error) {}
 };
 
+export const updateSummoner = (summoner: Summoner) => {
+  try {
+    let currentUnixDate = new Date().getTime();
+
+    SummonerSchema.updateOne({ puuid: summoner.puuid }, summoner).exec();
+  } catch (error) {}
+};
+
 export const findSummonerByLeague = async (leagueName: String): Promise<SummonerByLeague | null> => {
   try {
     let foundSummonersByLeague: SummonerByLeague | null = await SummonerByLeagueSchema.findOne({
       tier: leagueName.toUpperCase(),
-    });
+    }).lean();
 
     if (foundSummonersByLeague != null) return foundSummonersByLeague;
 

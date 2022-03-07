@@ -81,8 +81,6 @@ export const getMatchesBySummonerPUUID = async (puuid: String): Promise<AxiosRes
 
 export const getMatchByMatchId = async (matchId: String): Promise<AxiosResponse<MatchData>> => {
   try {
-    console.log(`${buildBaseUrl(regionUrl, "match/v5/matches/")}${matchId}`);
-
     const request = axios.get<MatchData>(
       `${buildBaseUrl(matchRegionUrl, "match/v5/matches/")}${matchId}`,
       buildConfig()

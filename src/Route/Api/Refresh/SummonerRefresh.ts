@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 import { Request, response, Response } from "express";
+import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
 import {
   findSummonerByLeague,
   findSummonerByPUUID,
   saveSummoner,
   saveSummonerByLeague,
+  setUpdateSummonerDate,
   updateSummoner,
   updateSummonerByLeague,
 } from "../../../Repository/SummonerRepository";
@@ -27,12 +29,8 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
       // Check if sommoner already exsists inside Mongodb
       let summonerInDB = await findSummonerByPUUID(Response.data.puuid);
 
-      const match = await getMatchByMatchId("EUW1_5765699139");
-      const matchList = await getMatchesBySummonerPUUID(Response.data.puuid);
-
       if (summonerInDB == null) {
         // Get matchIds for this summoner
-
         // If it does save Summoner to DB
         summonerInDB = await saveSummoner(Response.data);
       }
@@ -41,10 +39,26 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
       // console.log(new Date().getTime() - 3600 * 1000);
       if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
         // Refresh Summoner Data
-        updateSummoner(summonerInDB.puuid);
+        setUpdateSummonerDate(summonerInDB.puuid);
       }
 
       // Check if there are new matches for this summoner
+      const match = await getMatchByMatchId("EUW1_5765699139");
+      const matchList = await getMatchesBySummonerPUUID(Response.data.puuid);
+
+      let summonerMatchExample: IMatchSchema = {
+        matchId: "123",
+        exhaustAbused: false,
+        tabisAbused: false,
+      };
+
+      let summonerMatchExampleList: IMatchSchema[] = [];
+
+      summonerMatchExampleList.push(summonerMatchExample);
+
+      // summonerInDB.matchList.push(...summonerMatchExampleList);
+
+      await updateSummoner(summonerInDB);
 
       // take MongodbProperties away
       let summonerToSend = formatSummonerForSending(summonerInDB);

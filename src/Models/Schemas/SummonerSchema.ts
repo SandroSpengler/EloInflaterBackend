@@ -2,6 +2,23 @@ import * as mongoose from "mongoose";
 import { Schema, Document, model } from "mongoose";
 import Summoner from "../Interfaces/Summoner";
 
+const MatchSchema: Schema = new Schema(
+  {
+    matchId: {
+      type: String,
+    },
+    exhaustAbused: {
+      type: Boolean,
+    },
+    tabisAbused: {
+      type: Boolean,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const SummonerSchema: Schema = new Schema(
   {
     id: {
@@ -24,6 +41,9 @@ const SummonerSchema: Schema = new Schema(
     },
     summonerLevel: {
       type: Number,
+    },
+    matchList: {
+      type: [MatchSchema],
     },
     createdAt: {
       type: Number,
