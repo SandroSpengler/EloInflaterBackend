@@ -1,4 +1,5 @@
 import Summoner from "../Models/Interfaces/Summoner";
+import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 
 export const formatSummonerForSending = (summoner: Summoner): Summoner => {
   try {
@@ -10,6 +11,23 @@ export const formatSummonerForSending = (summoner: Summoner): Summoner => {
       profileIconId: summoner.profileIconId,
       revisionDate: summoner.revisionDate,
       summonerLevel: summoner.summonerLevel,
+      updatedAt: summoner.updatedAt,
+    };
+
+    return summonerToSend;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const formatSummonerByLeagueForSending = (summoner: SummonerByLeague): SummonerByLeague => {
+  try {
+    let summonerToSend: SummonerByLeague = {
+      tier: summoner.tier,
+      leagueId: summoner.leagueId,
+      queue: summoner.queue,
+      name: summoner.name,
+      entries: summoner.entries,
       updatedAt: summoner.updatedAt,
     };
 

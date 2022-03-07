@@ -2,7 +2,7 @@
 // const axios = require("axios");
 
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { Entry, League } from "../Models/Interfaces/SummonerByLeague";
+import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
 import Summoner from "../Models/Interfaces/Summoner";
 
 // only change by Region
@@ -29,7 +29,7 @@ export const getSummonerByName = async (name): Promise<AxiosResponse<Summoner>> 
   }
 };
 
-export const getSummonersByLeague = async (queueType, queueMode): Promise<Entry[]> => {
+export const getSummonersByLeague = async (queueType, queueMode): Promise<AxiosResponse<SummonerByLeague>> => {
   let queueLeague = "";
   let queueModeDescription = "";
 
@@ -42,18 +42,18 @@ export const getSummonersByLeague = async (queueType, queueMode): Promise<Entry[
   if (queueMode === "flextt") queueModeDescription = "RANKED_FLEX_TT";
 
   try {
-    const request = axios.get<League>(
+    const request = axios.get<SummonerByLeague>(
       `${buildBaseUrl(regionUrl, `league/v4/${queueLeague}/by-queue/`)}${queueModeDescription}`,
       buildConfig()
     );
 
     const response = await request;
 
-    const summonersSortedByLp = await response.data.entries.sort((summoner1, summoner2) =>
-      summoner1.leaguePoints > summoner2.leaguePoints ? -1 : 1
-    );
+    // const summonersSortedByLp = await response.data.entries.sort((summoner1, summoner2) =>
+    //   summoner1.leaguePoints > summoner2.leaguePoints ? -1 : 1
+    // );
 
-    return await summonersSortedByLp;
+    return await response;
   } catch (error) {
     console.log(error);
     throw error;

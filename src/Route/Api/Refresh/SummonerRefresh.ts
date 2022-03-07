@@ -1,9 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-import { Request, Response } from "express";
-import { findSummonerByPUUID, saveSummoner, updateSummoner } from "../../../Repository/SummonerRepository";
-import { formatSummonerForSending } from "../../../Services/FormatDocument";
+import { Request, response, Response } from "express";
+import {
+  findSummonerByLeague,
+  findSummonerByPUUID,
+  saveSummoner,
+  saveSummonerByLeague,
+  updateSummoner,
+  updateSummonerByLeague,
+} from "../../../Repository/SummonerRepository";
+import { formatSummonerByLeagueForSending, formatSummonerForSending } from "../../../Services/FormatDocument";
 import { getSummonerByName, getSummonersByLeague } from "../../../Services/Http";
 
 router.get("/byName/:name", async (req: Request, res: Response) => {
@@ -48,9 +55,23 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
   try {
     const Response = await getSummonersByLeague(queueType, queueMode);
 
+    let summonerByLeagueInDB = await findSummonerByLeague(queueType);
+
+    if (summonerByLeagueInDB == null) {
+      // If it does save Summoner to DB
+      summonerByLeagueInDB = await saveSummonerByLeague(Response.data);
+    }
+
+    if (summonerByLeagueInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
+      // Refresh Summoner Data
+      updateSummonerByLeague(queueType, Response.data.entries);
+    }
+
+    let summonerByLeagueToSend = formatSummonerByLeagueForSending(summonerByLeagueInDB);
+
     res.status(200).json({
       success: true,
-      result: Response,
+      result: summonerByLeagueToSend,
     });
   } catch (error) {}
 });

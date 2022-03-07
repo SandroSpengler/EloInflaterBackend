@@ -12,7 +12,7 @@ router.get("/:queueType/:queueMode", async (req, res) => {
   try {
     const summoners = await getSummonersByLeague(queueType, queueMode);
 
-    if (summoners.length === 0) {
+    if (summoners.data.entries.length === 0) {
       return res.status(404).json({
         success: true,
         result: "No Summoners Found",
@@ -20,7 +20,7 @@ router.get("/:queueType/:queueMode", async (req, res) => {
     } else {
       res.status(200).json({
         success: true,
-        result: summoners,
+        result: summoners.data.entries,
       });
     }
   } catch (error) {
