@@ -11,20 +11,30 @@ import {
   updateSummonerByLeague,
 } from "../../../Repository/SummonerRepository";
 import { formatSummonerByLeagueForSending, formatSummonerForSending } from "../../../Services/FormatDocument";
-import { getSummonerByName, getSummonersByLeague } from "../../../Services/Http";
+import {
+  getMatchByMatchId,
+  getMatchesBySummonerPUUID,
+  getSummonerByName,
+  getSummonersByLeague,
+} from "../../../Services/Http";
 
 router.get("/byName/:name", async (req: Request, res: Response) => {
   if (req.params.name) {
     try {
       // Get Summoner Data
-      const Reponse = await getSummonerByName(req.params.name);
+      const Response = await getSummonerByName(req.params.name);
 
       // Check if sommoner already exsists inside Mongodb
-      let summonerInDB = await findSummonerByPUUID(Reponse.data.puuid);
+      let summonerInDB = await findSummonerByPUUID(Response.data.puuid);
+
+      const match = await getMatchByMatchId("EUW1_5765699139");
+      const matchList = await getMatchesBySummonerPUUID(Response.data.puuid);
 
       if (summonerInDB == null) {
+        // Get matchIds for this summoner
+
         // If it does save Summoner to DB
-        summonerInDB = await saveSummoner(Reponse.data);
+        summonerInDB = await saveSummoner(Response.data);
       }
 
       // Check if Summoner was updated within the last 60 Minutes?
@@ -33,6 +43,8 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
         // Refresh Summoner Data
         updateSummoner(summonerInDB.puuid);
       }
+
+      // Check if there are new matches for this summoner
 
       // take MongodbProperties away
       let summonerToSend = formatSummonerForSending(summonerInDB);

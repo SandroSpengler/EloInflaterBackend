@@ -4,10 +4,13 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
 import Summoner from "../Models/Interfaces/Summoner";
+import { MatchData } from "../Models/Interfaces/MatchData";
+import { MatchList } from "../Models/Interfaces/MatchList";
 
 // only change by Region
 let protocol = "https://";
 let regionUrl = "euw1.api.riotgames.com";
+let matchRegionUrl = "europe.api.riotgames.com";
 let genericUrl = "/lol/";
 
 // changes for each endpoint
@@ -52,6 +55,40 @@ export const getSummonersByLeague = async (queueType, queueMode): Promise<AxiosR
     // const summonersSortedByLp = await response.data.entries.sort((summoner1, summoner2) =>
     //   summoner1.leaguePoints > summoner2.leaguePoints ? -1 : 1
     // );
+
+    return await response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getMatchesBySummonerPUUID = async (puuid: String): Promise<AxiosResponse<MatchList>> => {
+  try {
+    const request = axios.get<MatchList>(
+      `${buildBaseUrl(matchRegionUrl, "match/v5/matches/by-puuid/")}${puuid}/ids?start=0&count=100`,
+      buildConfig()
+    );
+
+    const response = await request;
+
+    return await response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const getMatchByMatchId = async (matchId: String): Promise<AxiosResponse<MatchData>> => {
+  try {
+    console.log(`${buildBaseUrl(regionUrl, "match/v5/matches/")}${matchId}`);
+
+    const request = axios.get<MatchData>(
+      `${buildBaseUrl(matchRegionUrl, "match/v5/matches/")}${matchId}`,
+      buildConfig()
+    );
+
+    const response = await request;
 
     return await response;
   } catch (error) {
