@@ -14,6 +14,7 @@ router.get("/:name", async (req, res) => {
       // let summonerInDB = await findSummonerByName(Response.data.name);
       let summonerInDB = await findSummonerByPUUID(Response.data.puuid);
 
+      // if getSummonerByName/PUUID returns an entry add the summoner
       if (summonerInDB != null) {
         return res.status(200).json({
           success: true,

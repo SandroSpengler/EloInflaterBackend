@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+import axios, { Axios, AxiosError } from "axios";
 import { Request, response, Response } from "express";
 import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
 import {
@@ -39,6 +40,8 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
       // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
       if (summonerInDB.updatedAt! < new Date().getTime()) {
+        if (summonerInDB.matchList === undefined) summonerInDB.matchList = [];
+
         // Refresh Summoner Data
 
         // Check if there are new matches for this summoner
@@ -52,7 +55,7 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
             !summonerInDB?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
         );
 
-        for (let i = 0; i < newMatchesList.length; i++) {
+        for (let i = 0; i < 20; i++) {
           const match = await getMatchByMatchId(newMatchesList[i]);
 
           // check if exhaust/tabis was abused
@@ -76,7 +79,7 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
         return res.status(200).json({
           success: true,
-          result: summonerToSend,
+          result: "Summoner Updated",
         });
       }
 
@@ -84,9 +87,16 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
         success: false,
         result: "Summoner already been updated within the last hour",
       });
-    } catch (error) {
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 429) {
+        }
+
+        res.status(500).json({ success: false, RequestError: error.message });
+      }
+
       res.status(500);
-      res.send("Error");
+      res.send({ error: error });
     }
   }
 });
