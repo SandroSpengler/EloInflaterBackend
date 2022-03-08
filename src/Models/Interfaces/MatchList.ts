@@ -1,8 +1,6 @@
 import { Document } from "mongoose";
 
-export interface MatchList {
-  matchList: string[];
-}
+export interface MatchList {}
 
 export interface IMatchSchema extends Partial<Document> {
   matchId: string;

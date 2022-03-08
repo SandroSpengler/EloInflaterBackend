@@ -44,19 +44,27 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
       // Check if there are new matches for this summoner
       const match = await getMatchByMatchId("EUW1_5765699139");
-      const matchList = await getMatchesBySummonerPUUID(Response.data.puuid);
+      const latestMachList = await getMatchesBySummonerPUUID(Response.data.puuid);
+
+      // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
+      const results = latestMachList.data.filter(
+        (latestMatchId) =>
+          // ! = means the match is not in the array
+          !summonerInDB?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
+      );
+
+      console.log(results);
+
+      // check if exhaust/tabis was abused
+      // Add match to summoner
 
       let summonerMatchExample: IMatchSchema = {
-        matchId: "123",
+        matchId: "EUW1_5765587695",
         exhaustAbused: false,
         tabisAbused: false,
       };
 
-      let summonerMatchExampleList: IMatchSchema[] = [];
-
-      summonerMatchExampleList.push(summonerMatchExample);
-
-      // summonerInDB.matchList.push(...summonerMatchExampleList);
+      // summonerInDB.matchList.push(...[summonerMatchExample]);
 
       await updateSummoner(summonerInDB);
 
