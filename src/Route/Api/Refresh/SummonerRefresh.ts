@@ -36,44 +36,55 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
       }
 
       // Check if Summoner was updated within the last 60 Minutes?
-      // console.log(new Date().getTime() - 3600 * 1000);
-      if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
+
+      // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
+      if (summonerInDB.updatedAt! < new Date().getTime()) {
         // Refresh Summoner Data
-        setUpdateSummonerDate(summonerInDB.puuid);
+
+        // Check if there are new matches for this summoner
+
+        const latestMachList = await getMatchesBySummonerPUUID(Response.data.puuid);
+
+        // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
+        const newMatchesList: String[] = latestMachList.data.filter(
+          (latestMatchId) =>
+            // ! = means the match is not in the array
+            !summonerInDB?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
+        );
+
+        for (let i = 0; i < newMatchesList.length; i++) {
+          const match = await getMatchByMatchId(newMatchesList[i]);
+
+          console.log(await match.status);
+
+          // check if exhaust/tabis was abused
+
+          // Maybe add more Properties to the Match
+          let summonerMatch: IMatchSchema = {
+            matchId: newMatchesList[i],
+            exhaustAbused: false,
+            tabisAbused: false,
+          };
+
+          // Add match to summoner
+          summonerInDB.matchList.push(summonerMatch);
+        }
+
+        await updateSummoner(summonerInDB);
+        await setUpdateSummonerDate(summonerInDB.puuid);
+
+        // take MongodbProperties away
+        let summonerToSend = formatSummonerForSending(summonerInDB);
+
+        return res.status(200).json({
+          success: true,
+          result: summonerToSend,
+        });
       }
 
-      // Check if there are new matches for this summoner
-      const match = await getMatchByMatchId("EUW1_5765699139");
-      const latestMachList = await getMatchesBySummonerPUUID(Response.data.puuid);
-
-      // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
-      const results = latestMachList.data.filter(
-        (latestMatchId) =>
-          // ! = means the match is not in the array
-          !summonerInDB?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
-      );
-
-      console.log(results);
-
-      // check if exhaust/tabis was abused
-      // Add match to summoner
-
-      let summonerMatchExample: IMatchSchema = {
-        matchId: "EUW1_5765587695",
-        exhaustAbused: false,
-        tabisAbused: false,
-      };
-
-      // summonerInDB.matchList.push(...[summonerMatchExample]);
-
-      await updateSummoner(summonerInDB);
-
-      // take MongodbProperties away
-      let summonerToSend = formatSummonerForSending(summonerInDB);
-
-      res.status(200).json({
-        success: true,
-        result: summonerToSend,
+      res.status(409).json({
+        success: false,
+        result: "Summoner already been updated within the last hour",
       });
     } catch (error) {
       res.status(500);
