@@ -55,8 +55,6 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
         for (let i = 0; i < newMatchesList.length; i++) {
           const match = await getMatchByMatchId(newMatchesList[i]);
 
-          console.log(await match.status);
-
           // check if exhaust/tabis was abused
 
           // Maybe add more Properties to the Match
