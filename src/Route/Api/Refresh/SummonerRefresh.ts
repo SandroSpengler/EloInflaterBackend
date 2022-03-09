@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 
-import axios, { Axios, AxiosError } from "axios";
+import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { Request, response, Response } from "express";
 import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
+import Summoner from "../../../Models/Interfaces/Summoner";
 import {
+  checkIfSummonerCanBeUpdated,
+  createSummoner,
   findSummonerByLeague,
   findSummonerByPUUID,
-  saveSummoner,
   saveSummonerByLeague,
   setUpdateSummonerDate,
   updateSummoner,
@@ -22,83 +24,55 @@ import {
 } from "../../../Services/Http";
 
 router.get("/byName/:name", async (req: Request, res: Response) => {
-  if (req.params.name) {
-    try {
-      // Get Summoner Data
-      const Response = await getSummonerByName(req.params.name);
+  let summonerByNameApiReponse;
 
-      // Check if sommoner already exsists inside Mongodb
-      let summonerInDB = await findSummonerByPUUID(Response.data.puuid);
+  if (!req.params.name) return res.status(409).json({ success: false, result: "Check Summoner Name" });
 
-      if (summonerInDB == null) {
-        // Get matchIds for this summoner
-        // If it does save Summoner to DB
-        summonerInDB = await saveSummoner(Response.data);
-      }
-
-      // Check if Summoner was updated within the last 60 Minutes?
-
-      // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
-      if (summonerInDB.updatedAt! < new Date().getTime()) {
-        if (summonerInDB.matchList === undefined) summonerInDB.matchList = [];
-
-        // Refresh Summoner Data
-
-        // Check if there are new matches for this summoner
-
-        const latestMachList = await getMatchesBySummonerPUUID(Response.data.puuid);
-
-        // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
-        const newMatchesList: String[] = latestMachList.data.filter(
-          (latestMatchId) =>
-            // ! = means the match is not in the array
-            !summonerInDB?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
-        );
-
-        for (let i = 0; i < 20; i++) {
-          const match = await getMatchByMatchId(newMatchesList[i]);
-
-          // check if exhaust/tabis was abused
-
-          // Maybe add more Properties to the Match
-          let summonerMatch: IMatchSchema = {
-            matchId: newMatchesList[i],
-            exhaustAbused: false,
-            tabisAbused: false,
-          };
-
-          // Add match to summoner
-          summonerInDB.matchList.push(summonerMatch);
-        }
-
-        await updateSummoner(summonerInDB);
-        await setUpdateSummonerDate(summonerInDB.puuid);
-
-        // take MongodbProperties away
-        let summonerToSend = formatSummonerForSending(summonerInDB);
-
-        return res.status(200).json({
-          success: true,
-          result: "Summoner Updated",
-        });
-      }
-
-      res.status(409).json({
-        success: false,
-        result: "Summoner already been updated within the last hour",
-      });
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 429) {
-        }
-
-        res.status(500).json({ success: false, RequestError: error.message });
-      }
-
-      res.status(500);
-      res.send({ error: error });
-    }
+  try {
+    // Get Summoner Data
+    summonerByNameApiReponse = await getSummonerByName(req.params.name);
+  } catch (error: any) {
+    return res.status(500).json({
+      succes: false,
+      result: error.message,
+    });
   }
+
+  // Get matchIds for this summoner
+
+  let summonerInDB: Summoner = await createSummoner(summonerByNameApiReponse.data);
+
+  // Check if Summoner was updated within the last 60 Minutes Or just created?
+
+  // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
+  if (!checkIfSummonerCanBeUpdated(summonerInDB)) {
+    res.status(409).json({
+      success: false,
+      result: "Summoner already been updated within the last hour",
+    });
+  }
+
+  // Refresh Summoner Data
+
+  // Check if there are new matches for this summoner
+
+  // update Summoner Matches --
+
+  // --
+
+  // take MongodbProperties away
+  let summonerToSend = formatSummonerForSending(summonerInDB);
+
+  return res.status(200).json({
+    success: true,
+    result: "Summoner Updated",
+  });
+
+  // if (axios.isAxiosError(error)) {
+  //   if (error.response?.status === 429) {
+  //   }
+  // }
+  res.status(500).json({ success: false, RequestError: "not working" });
 });
 
 router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response) => {
