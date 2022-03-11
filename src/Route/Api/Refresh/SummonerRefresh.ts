@@ -14,11 +14,12 @@ import {
   setUpdateSummonerDate,
   updateSummoner,
   updateSummonerByLeague,
+  updatSummonerMatches,
 } from "../../../Repository/SummonerRepository";
 import { formatSummonerByLeagueForSending, formatSummonerForSending } from "../../../Services/FormatDocument";
 import {
   getMatchByMatchId,
-  getMatchesBySummonerPUUID,
+  getMatchesBySummonerpuuid,
   getSummonerByName,
   getSummonersByLeague,
 } from "../../../Services/Http";
@@ -38,11 +39,7 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
     });
   }
 
-  // Get matchIds for this summoner
-
   let summonerInDB: Summoner = await createSummoner(summonerByNameApiReponse.data);
-
-  // Check if Summoner was updated within the last 60 Minutes Or just created?
 
   // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
   if (!checkIfSummonerCanBeUpdated(summonerInDB)) {
@@ -52,27 +49,22 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
     });
   }
 
-  // Refresh Summoner Data
+  // update Summoner Matches
+  let updatedMatchCounter;
 
-  // Check if there are new matches for this summoner
-
-  // update Summoner Matches --
-
-  // --
-
-  // take MongodbProperties away
-  let summonerToSend = formatSummonerForSending(summonerInDB);
+  try {
+    updatedMatchCounter = await updatSummonerMatches(summonerInDB);
+  } catch (error: any) {
+    return res.status(409).json({
+      success: true,
+      result: `Summoner was not updated ${error.message}`,
+    });
+  }
 
   return res.status(200).json({
     success: true,
-    result: "Summoner Updated",
+    result: `${updatedMatchCounter} Matches Added`,
   });
-
-  // if (axios.isAxiosError(error)) {
-  //   if (error.response?.status === 429) {
-  //   }
-  // }
-  res.status(500).json({ success: false, RequestError: "not working" });
 });
 
 router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response) => {

@@ -2,13 +2,27 @@ import Summoner from "../Models/Interfaces/Summoner";
 import SummonerSchema from "../Models/Schemas/SummonerSchema";
 import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
 import SummonerByLeagueSchema from "../Models/Schemas/LeagueSchema";
-import { getMatchByMatchId, getMatchesBySummonerPUUID } from "../Services/Http";
+import { getMatchByMatchId, getMatchesBySummonerpuuid } from "../Services/Http";
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
+import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 
 //#region Summoner MongoDB
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
   try {
     let foundSummoner: Summoner | null = await SummonerSchema.findOne({ puuid: puuid }).lean(); // .lean() returns only the json and not the mongoose.document
+
+    if (foundSummoner != null) return foundSummoner;
+
+    return null;
+
+    // if (foundSummoner == null) return null;
+  } catch (error) {
+    throw error;
+  }
+};
+export const findSummonerByName = async (name: String): Promise<Summoner | null> => {
+  try {
+    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ name: name.toLowerCase() }).lean(); // .lean() returns only the json and not the mongoose.document
 
     if (foundSummoner != null) return foundSummoner;
 
@@ -37,7 +51,7 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.id = summoner.id;
     tmpSummoner.accountId = summoner.accountId;
     tmpSummoner.puuid = summoner.puuid;
-    tmpSummoner.name = summoner.name;
+    tmpSummoner.name = summoner.name.toLowerCase();
     tmpSummoner.profileIconId = summoner.profileIconId;
     tmpSummoner.revisionDate = summoner.revisionDate;
     tmpSummoner.summonerLevel = summoner.summonerLevel;
@@ -127,36 +141,60 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   return false;
 };
 
-export const updatSummonerMatches = async (summoner: Summoner) => {
-  const latestMachList = await getMatchesBySummonerPUUID(summoner.puuid);
+export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> => {
+  let summonerMatchCount: number = 0;
+  let latestMachList: any = [];
 
-  if (summoner.matchList === undefined) summoner.matchList = [];
-
-  // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
-  const newMatchesList: String[] = latestMachList.data.filter(
-    (latestMatchId) =>
-      // ! = means the match is not in the array
-      !summoner?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
-  );
-
-  for (let i = 0; i < 20; i++) {
-    const match = await getMatchByMatchId(newMatchesList[i]);
-
-    // check if exhaust/tabis was abused
-
-    // Maybe add more Properties to the Match
-    let summonerMatch: IMatchSchema = {
-      matchId: newMatchesList[i],
-      exhaustAbused: false,
-      tabisAbused: false,
-    };
-
-    // Add match to summoner
-    summoner.matchList.push(summonerMatch);
+  try {
+    latestMachList = await getMatchesBySummonerpuuid(summoner.puuid);
+  } catch (error) {
+    throw error;
   }
 
-  await updateSummoner(summoner);
-  await setUpdateSummonerDate(summoner.puuid);
+  try {
+    if (summoner.matchList === undefined) summoner.matchList = [];
+
+    summonerMatchCount = summoner.matchList.length;
+
+    // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
+    const newMatchesList: String[] = latestMachList.data.filter(
+      (latestMatchId) =>
+        // ! = means the match is not in the array
+        !summoner?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
+    );
+
+    for (let i = 0; i < newMatchesList.length; i++) {
+      const match = await getMatchByMatchId(newMatchesList[i]);
+
+      // check if exhaust/tabis was abused
+
+      // Maybe add more Properties to the Match
+      let summonerMatch: IMatchSchema = {
+        matchId: newMatchesList[i],
+        exhaustAbused: false,
+        tabisAbused: false,
+      };
+
+      // Add match to summoner
+      summoner.matchList.push(summonerMatch);
+    }
+
+    await updateSummoner(summoner);
+    await setUpdateSummonerDate(summoner.puuid);
+  } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      let axiosError: AxiosError = error;
+
+      if (axiosError.response?.status === 429) {
+        await updateSummoner(summoner);
+        await setUpdateSummonerDate(summoner.puuid);
+      }
+    }
+
+    throw error;
+  } finally {
+    return summoner.matchList.length - summonerMatchCount;
+  }
 };
 
 //#endregion
