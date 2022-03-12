@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-import { findSummonerByName, findSummonerByPUUID } from "../../../Repository/SummonerRepository";
+import { createSummoner, findSummonerByName, findSummonerByPUUID } from "../../../Repository/SummonerRepository";
 import { formatSummonerForSending } from "../../../Services/FormatDocument";
 import { getSummonerByName } from "../../../Services/Http";
 
@@ -18,6 +18,17 @@ router.get("/:name", async (req, res) => {
           success: true,
           result: formatSummonerForSending(summonerInDB),
         });
+      } else {
+        let getsummonerBynameResponse = await getSummonerByName(req.params.name);
+
+        if (getsummonerBynameResponse.status === 200) {
+          await createSummoner(getsummonerBynameResponse.data);
+
+          return res.status(280).json({
+            success: true,
+            result: formatSummonerForSending(getsummonerBynameResponse.data),
+          });
+        }
       }
 
       return res.status(404).json({

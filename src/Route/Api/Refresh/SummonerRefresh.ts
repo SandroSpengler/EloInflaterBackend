@@ -60,6 +60,11 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
       if (axiosError.response?.status === 429) {
         // Add Summoner to list of summoners that need updating
+
+        return res.status(429).json({
+          success: true,
+          result: `Summoner was not updated ${error.message}`,
+        });
       }
     }
 
