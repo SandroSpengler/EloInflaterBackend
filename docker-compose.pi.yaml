@@ -25,6 +25,6 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
-      - ~/mongo/data:/data/db
+      - ~/Databases/MongoDBLeague/data:/data/db
     networks:
       - LeagueMongoDBNetwork
