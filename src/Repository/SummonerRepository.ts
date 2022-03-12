@@ -5,6 +5,7 @@ import SummonerByLeagueSchema from "../Models/Schemas/LeagueSchema";
 import { getMatchByMatchId, getMatchesBySummonerpuuid } from "../Services/Http";
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
+import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 
 //#region Summoner MongoDB
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
@@ -164,19 +165,13 @@ export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> 
     );
 
     for (let i = 0; i < newMatchesList.length; i++) {
-      const match = await getMatchByMatchId(newMatchesList[i]);
+      const matchResponse = await getMatchByMatchId(newMatchesList[i]);
 
-      // check if exhaust/tabis was abused
+      if (matchResponse) {
+        // check if exhaust/tabis was abused
 
-      // Maybe add more Properties to the Match
-      let summonerMatch: IMatchSchema = {
-        matchId: newMatchesList[i],
-        exhaustAbused: false,
-        tabisAbused: false,
-      };
-
-      // Add match to summoner
-      summoner.matchList.push(summonerMatch);
+        summoner.matchList.push(checkIfSummonerAbusedMatch(summoner, matchResponse.data));
+      }
     }
 
     await updateSummoner(summoner);
@@ -194,6 +189,62 @@ export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> 
     throw error;
   } finally {
     return summoner.matchList.length - summonerMatchCount;
+  }
+};
+
+export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData): IMatchSchema => {
+  let summonerMatchDetails: IMatchSchema = {
+    matchId: match.info.gameId.toString(),
+    exhaustAbused: false,
+    tabisAbused: false,
+  };
+
+  try {
+    let summonerParticipantDetails: Participant | undefined = match.info.participants.find(
+      (participant) => participant.puuid === summoner.puuid
+    );
+
+    // SummonerIds === Exhaust (Id:3)
+    summonerParticipantDetails?.summoner1Id === 3
+      ? (summonerMatchDetails.exhaustAbused = true)
+      : (summonerMatchDetails.exhaustAbused = false);
+
+    summonerParticipantDetails?.summoner2Id === 3
+      ? (summonerMatchDetails.exhaustAbused = true)
+      : (summonerMatchDetails.exhaustAbused = false);
+
+    // Items === Tabis (Id: 3047)
+    summonerParticipantDetails?.item0 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    summonerParticipantDetails?.item1 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    summonerParticipantDetails?.item2 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    summonerParticipantDetails?.item3 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    summonerParticipantDetails?.item4 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    summonerParticipantDetails?.item5 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    summonerParticipantDetails?.item6 === 3047
+      ? (summonerMatchDetails.tabisAbused = true)
+      : (summonerMatchDetails.tabisAbused = false);
+
+    return summonerMatchDetails;
+  } catch (error) {
+    throw error;
   }
 };
 

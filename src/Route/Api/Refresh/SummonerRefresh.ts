@@ -55,6 +55,14 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
   try {
     updatedMatchCounter = await updatSummonerMatches(summonerInDB);
   } catch (error: any) {
+    if (axios.isAxiosError(error)) {
+      let axiosError: AxiosError = error;
+
+      if (axiosError.response?.status === 429) {
+        // Add Summoner to list of summoners that need updating
+      }
+    }
+
     return res.status(409).json({
       success: true,
       result: `Summoner was not updated ${error.message}`,
