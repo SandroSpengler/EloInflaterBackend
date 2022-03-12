@@ -6,6 +6,7 @@ import { getMatchByMatchId, getMatchesBySummonerpuuid } from "../Services/Http";
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
+import { match } from "assert";
 
 //#region Summoner MongoDB
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
@@ -205,42 +206,45 @@ export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData)
     );
 
     // SummonerIds === Exhaust (Id:3)
-    summonerParticipantDetails?.summoner1Id === 3
-      ? (summonerMatchDetails.exhaustAbused = true)
-      : (summonerMatchDetails.exhaustAbused = false);
 
-    summonerParticipantDetails?.summoner2Id === 3
-      ? (summonerMatchDetails.exhaustAbused = true)
-      : (summonerMatchDetails.exhaustAbused = false);
+    if (summonerParticipantDetails?.summoner1Id === 3) {
+      summonerMatchDetails.exhaustAbused = true;
+    }
+
+    if (summonerParticipantDetails?.summoner2Id === 3) {
+      summonerMatchDetails.exhaustAbused = true;
+    }
 
     // Items === Tabis (Id: 3047)
-    summonerParticipantDetails?.item0 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
 
-    summonerParticipantDetails?.item1 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
-
-    summonerParticipantDetails?.item2 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
-
-    summonerParticipantDetails?.item3 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
-
-    summonerParticipantDetails?.item4 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
-
-    summonerParticipantDetails?.item5 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
-
-    summonerParticipantDetails?.item6 === 3047
-      ? (summonerMatchDetails.tabisAbused = true)
-      : (summonerMatchDetails.tabisAbused = false);
+    if (summonerParticipantDetails?.item0 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
+    if (summonerParticipantDetails?.item1 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
+    if (summonerParticipantDetails?.item2 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
+    if (summonerParticipantDetails?.item3 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
+    if (summonerParticipantDetails?.item4 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
+    if (summonerParticipantDetails?.item5 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
+    if (summonerParticipantDetails?.item6 === 3047) {
+      summonerMatchDetails.tabisAbused = true;
+      return summonerMatchDetails;
+    }
 
     return summonerMatchDetails;
   } catch (error) {
