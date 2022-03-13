@@ -41,7 +41,7 @@ router.get("/:name", async (req, res) => {
         let axiosError: AxiosError = error;
 
         if (axiosError.response?.status === 404) {
-          res.status(404).json({ success: false, message: "Summoner not found" });
+          return res.status(404).json({ success: false, message: "Summoner not found" });
         }
       }
 
