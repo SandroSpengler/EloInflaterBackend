@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
+import axios, { AxiosError } from "axios";
 import { createSummoner, findSummonerByName, findSummonerByPUUID } from "../../../Repository/SummonerRepository";
 import { formatSummonerForSending } from "../../../Services/FormatDocument";
 import { getSummonerByName } from "../../../Services/Http";
@@ -36,6 +37,14 @@ router.get("/:name", async (req, res) => {
         result: "Summoner not Found",
       });
     } catch (error) {
+      if (axios.isAxiosError(error)) {
+        let axiosError: AxiosError = error;
+
+        if (axiosError.response?.status === 404) {
+          res.status(404).json({ success: false, message: "Summoner not found" });
+        }
+      }
+
       res.status(500);
       res.send("Error");
     }
