@@ -11,6 +11,7 @@ services:
     networks:
       - LeagueAbuserNetwork
       - LeagueMongoDBNetwork
+    restart: always
 
   leaguemongo:
     container_name: "LeagueMongoMain"
@@ -22,6 +23,7 @@ services:
       - ~/mongo/data:/data/db
     networks:
       - LeagueMongoDBNetwork
+    restart: always
 
 volumes:
   LeagueMongoDBData:
