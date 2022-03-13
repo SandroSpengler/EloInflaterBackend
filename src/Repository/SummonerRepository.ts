@@ -195,7 +195,7 @@ export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> 
 
 export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData): IMatchSchema => {
   let summonerMatchDetails: IMatchSchema = {
-    matchId: match.info.gameId.toString(),
+    matchId: match.metadata.matchId,
     exhaustAbused: false,
     tabisAbused: false,
   };
