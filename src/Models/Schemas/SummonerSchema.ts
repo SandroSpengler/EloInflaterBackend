@@ -21,6 +21,7 @@ const MatchSchema: Schema = new Schema(
 
 const SummonerSchema: Schema = new Schema(
   {
+    _id: { type: String },
     id: {
       type: String,
     },

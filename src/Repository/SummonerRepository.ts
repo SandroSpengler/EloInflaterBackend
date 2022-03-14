@@ -25,7 +25,7 @@ export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | nul
 
 export const findSummonerByID = async (summonerId: String): Promise<Summoner | null> => {
   try {
-    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ id: summonerId }).lean(); // .lean() returns only the json and not the mongoose.document
+    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ _id: summonerId }).lean(); // .lean() returns only the json and not the mongoose.document
 
     if (foundSummoner != null) return foundSummoner;
 
@@ -52,19 +52,22 @@ export const findSummonerByName = async (name: String): Promise<Summoner | null>
 };
 
 export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
-  try {
-    let summonerInDB = await findSummonerByPUUID(summoner.puuid);
+  if (summoner.puuid != "") {
+    try {
+      let summonerInDB = await findSummonerByPUUID(summoner.puuid);
 
-    if (summonerInDB != null) {
-      return summonerInDB;
+      if (summonerInDB != null) {
+        return summonerInDB;
+      }
+    } catch (error) {
+      throw error;
     }
-  } catch (error) {
-    throw error;
   }
 
   let tmpSummoner = new SummonerSchema();
 
   try {
+    tmpSummoner._id = summoner.id;
     tmpSummoner.summonerId = summoner.summonerId;
     tmpSummoner.accountId = summoner.accountId;
     tmpSummoner.puuid = summoner.puuid;
@@ -111,7 +114,7 @@ export const updateSummonerBySummonerID = (summoner: Summoner) => {
   try {
     let currentUnixDate = new Date().getTime();
 
-    SummonerSchema.updateOne({ id: summoner.id }, summoner).exec();
+    SummonerSchema.updateOne({ _id: summoner._id }, summoner).exec();
   } catch (error) {}
 };
 
