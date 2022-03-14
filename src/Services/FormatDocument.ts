@@ -10,8 +10,16 @@ export const formatSummonerForSending = (summoner: Summoner): Summoner => {
       name: summoner.name,
       profileIconId: summoner.profileIconId,
       revisionDate: summoner.revisionDate,
-      matchList: summoner.matchList,
       summonerLevel: summoner.summonerLevel,
+      leaguePoints: summoner.leaguePoints,
+      rank: summoner.rank,
+      wins: summoner.wins,
+      losses: summoner.losses,
+      veteran: summoner.veteran,
+      inactive: summoner.inactive,
+      freshBlood: summoner.freshBlood,
+      hotStreak: summoner.hotStreak,
+      matchList: summoner.matchList,
       updatedAt: summoner.updatedAt,
     };
 

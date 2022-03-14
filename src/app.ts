@@ -6,6 +6,8 @@ import { ConnectionOptions } from "tls";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cron = require("node-cron");
+
 const { PORT, DB_CONNECTION } = require("./Config/config");
 
 require("dotenv").config();
@@ -42,4 +44,8 @@ connectToMongoDB();
 
 APP.listen(PORT, () => {
   console.log("Server is running");
+});
+
+cron.schedule("*/2 * * * *", () => {
+  console.log("running every 2 minutes");
 });

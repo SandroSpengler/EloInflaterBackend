@@ -42,6 +42,31 @@ const SummonerSchema: Schema = new Schema(
     summonerLevel: {
       type: Number,
     },
+    leaguePoints: {
+      type: Number,
+    },
+    rank: {
+      type: String,
+    },
+    wins: {
+      type: Number,
+    },
+    losses: {
+      type: Number,
+    },
+    veteran: {
+      type: Boolean,
+    },
+    inactive: {
+      type: Boolean,
+    },
+    freshBlood: {
+      type: Boolean,
+    },
+    hotStreak: {
+      type: Boolean,
+    },
+
     matchList: {
       type: [MatchSchema],
     },

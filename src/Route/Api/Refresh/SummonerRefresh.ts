@@ -5,14 +5,16 @@ import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { Request, response, Response } from "express";
 import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
 import Summoner from "../../../Models/Interfaces/Summoner";
+import { EntriesByLeague } from "../../../Models/Interfaces/SummonerByLeague";
 import {
   checkIfSummonerCanBeUpdated,
   createSummoner,
+  findSummonerByID,
   findSummonerByLeague,
   findSummonerByPUUID,
   saveSummonerByLeague,
   setUpdateSummonerDate,
-  updateSummoner,
+  updateSummonerBySummonerID,
   updateSummonerByLeague,
   updatSummonerMatches,
 } from "../../../Repository/SummonerRepository";
@@ -98,6 +100,54 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
       // Refresh Summoner Data
       updateSummonerByLeague(queueType, Response.data.entries);
     }
+
+    // find every summoner in that list
+    // i<summonerByLeagueInDB.entires
+
+    for (let i = 0; i < 3; i++) {
+      console.log(summonerByLeagueInDB.entries[i].summonerName);
+
+      const summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
+
+      if (!summoner) {
+        let summonerToSave: Summoner = {
+          id: summonerByLeagueInDB.entries[i].summonerId,
+          accountId: "",
+          puuid: "",
+          name: summonerByLeagueInDB.entries[i].summonerName,
+          profileIconId: 0,
+          revisionDate: 0,
+          summonerLevel: 0,
+          leaguePoints: summonerByLeagueInDB.entries[i].leaguePoints,
+          rank: summonerByLeagueInDB.entries[i].rank,
+          wins: summonerByLeagueInDB.entries[i].wins,
+          losses: summonerByLeagueInDB.entries[i].losses,
+          veteran: summonerByLeagueInDB.entries[i].veteran,
+          inactive: summonerByLeagueInDB.entries[i].inactive,
+          freshBlood: summonerByLeagueInDB.entries[i].freshBlood,
+          hotStreak: summonerByLeagueInDB.entries[i].hotStreak,
+          matchList: [],
+          updatedAt: summonerByLeagueInDB.updatedAt,
+        };
+
+        createSummoner(summonerToSave);
+      }
+
+      if (summoner) {
+        summoner.leaguePoints = summonerByLeagueInDB.entries[i].leaguePoints;
+        summoner.rank = summonerByLeagueInDB.entries[i].rank;
+        summoner.wins = summonerByLeagueInDB.entries[i].wins;
+        summoner.losses = summonerByLeagueInDB.entries[i].losses;
+        summoner.veteran = summonerByLeagueInDB.entries[i].veteran;
+        summoner.inactive = summonerByLeagueInDB.entries[i].inactive;
+        summoner.freshBlood = summonerByLeagueInDB.entries[i].freshBlood;
+        summoner.hotStreak = summonerByLeagueInDB.entries[i].hotStreak;
+
+        updateSummonerBySummonerID(summoner);
+      }
+    }
+
+    // save rankedinformation to that summoner
 
     let summonerByLeagueToSend = formatSummonerByLeagueForSending(summonerByLeagueInDB);
 

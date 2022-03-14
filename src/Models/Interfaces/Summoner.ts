@@ -9,6 +9,14 @@ export default interface Summoner extends Partial<Document> {
   profileIconId: number;
   revisionDate: number;
   summonerLevel: number;
+  leaguePoints?: number;
+  rank?: string;
+  wins?: number;
+  losses?: number;
+  veteran?: boolean;
+  inactive?: boolean;
+  freshBlood?: boolean;
+  hotStreak?: boolean;
   matchList: IMatchSchema[];
   createdAt?: number;
   updatedAt?: number;

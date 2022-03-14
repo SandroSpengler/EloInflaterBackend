@@ -22,6 +22,21 @@ export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | nul
     throw error;
   }
 };
+
+export const findSummonerByID = async (id: String): Promise<Summoner | null> => {
+  try {
+    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ id: id }).lean(); // .lean() returns only the json and not the mongoose.document
+
+    if (foundSummoner != null) return foundSummoner;
+
+    return null;
+
+    // if (foundSummoner == null) return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const findSummonerByName = async (name: String): Promise<Summoner | null> => {
   try {
     let foundSummoner: Summoner | null = await SummonerSchema.findOne({ name: name.toLowerCase() }).lean(); // .lean() returns only the json and not the mongoose.document
@@ -57,6 +72,14 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.profileIconId = summoner.profileIconId;
     tmpSummoner.revisionDate = summoner.revisionDate;
     tmpSummoner.summonerLevel = summoner.summonerLevel;
+    tmpSummoner.leaguePoints = summoner.leaguePoints;
+    tmpSummoner.rank = summoner.rank;
+    tmpSummoner.wins = summoner.wins;
+    tmpSummoner.losses = summoner.losses;
+    tmpSummoner.veteran = summoner.veteran;
+    tmpSummoner.inactive = summoner.inactive;
+    tmpSummoner.freshBlood = summoner.freshBlood;
+    tmpSummoner.hotStreak = summoner.hotStreak;
     tmpSummoner.matchList = summoner.matchList;
     tmpSummoner.updatedAt = new Date().getTime();
 
@@ -76,11 +99,19 @@ export const setUpdateSummonerDate = (puuid: string) => {
   } catch (error) {}
 };
 
-export const updateSummoner = (summoner: Summoner) => {
+export const updateSummonerByPUUID = (summoner: Summoner) => {
   try {
     let currentUnixDate = new Date().getTime();
 
     SummonerSchema.updateOne({ puuid: summoner.puuid }, summoner).exec();
+  } catch (error) {}
+};
+
+export const updateSummonerBySummonerID = (summoner: Summoner) => {
+  try {
+    let currentUnixDate = new Date().getTime();
+
+    SummonerSchema.updateOne({ id: summoner.id }, summoner).exec();
   } catch (error) {}
 };
 
@@ -175,14 +206,14 @@ export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> 
       }
     }
 
-    await updateSummoner(summoner);
+    await updateSummonerByPUUID(summoner);
     await setUpdateSummonerDate(summoner.puuid);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       let axiosError: AxiosError = error;
 
       if (axiosError.response?.status === 429) {
-        await updateSummoner(summoner);
+        await updateSummonerByPUUID(summoner);
         await setUpdateSummonerDate(summoner.puuid);
       }
     }
