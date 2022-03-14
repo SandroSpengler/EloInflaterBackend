@@ -68,7 +68,7 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
 
   try {
     tmpSummoner._id = summoner.id;
-    tmpSummoner.summonerId = summoner.summonerId;
+    // tmpSummoner.summonerId = summoner.summonerId;
     tmpSummoner.accountId = summoner.accountId;
     tmpSummoner.puuid = summoner.puuid;
     tmpSummoner.name = summoner.name.toLowerCase();
