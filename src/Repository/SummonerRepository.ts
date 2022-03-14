@@ -23,9 +23,9 @@ export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | nul
   }
 };
 
-export const findSummonerByID = async (id: String): Promise<Summoner | null> => {
+export const findSummonerByID = async (summonerId: String): Promise<Summoner | null> => {
   try {
-    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ id: id }).lean(); // .lean() returns only the json and not the mongoose.document
+    let foundSummoner: Summoner | null = await SummonerSchema.findOne({ id: summonerId }).lean(); // .lean() returns only the json and not the mongoose.document
 
     if (foundSummoner != null) return foundSummoner;
 
@@ -65,7 +65,7 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
   let tmpSummoner = new SummonerSchema();
 
   try {
-    tmpSummoner.id = summoner.id;
+    tmpSummoner.summonerId = summoner.summonerId;
     tmpSummoner.accountId = summoner.accountId;
     tmpSummoner.puuid = summoner.puuid;
     tmpSummoner.name = summoner.name.toLowerCase();

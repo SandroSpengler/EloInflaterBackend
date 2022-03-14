@@ -17,6 +17,7 @@ import {
   updateSummonerBySummonerID,
   updateSummonerByLeague,
   updatSummonerMatches,
+  findSummonerByName,
 } from "../../../Repository/SummonerRepository";
 import { formatSummonerByLeagueForSending, formatSummonerForSending } from "../../../Services/FormatDocument";
 import {
@@ -101,13 +102,10 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
       updateSummonerByLeague(queueType, Response.data.entries);
     }
 
-    // find every summoner in that list
-    // i<summonerByLeagueInDB.entires
-
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < summonerByLeagueInDB.entries.length; i++) {
       console.log(summonerByLeagueInDB.entries[i].summonerName);
 
-      const summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
+      let summoner = await findSummonerByName(summonerByLeagueInDB.entries[i].summonerName);
 
       if (!summoner) {
         let summonerToSave: Summoner = {

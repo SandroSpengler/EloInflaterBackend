@@ -2,13 +2,21 @@ const express = require("express");
 const router = express.Router();
 
 import axios, { AxiosError } from "axios";
-import { createSummoner, findSummonerByName, findSummonerByPUUID } from "../../../Repository/SummonerRepository";
+import {
+  createSummoner,
+  findSummonerByID,
+  findSummonerByName,
+  findSummonerByPUUID,
+} from "../../../Repository/SummonerRepository";
 import { formatSummonerForSending } from "../../../Services/FormatDocument";
 import { getSummonerByName } from "../../../Services/Http";
 
 router.get("/:name", async (req, res) => {
   if (req.params.name) {
     try {
+      let queryName = encodeURI(req.params.name);
+      console.log(queryName);
+
       // Search by PUUID and by Name to get 1 less requeset
       // let summonerInDB = await findSummonerByName(Response.data.name);
       let summonerInDB = await findSummonerByName(req.params.name);
@@ -20,7 +28,7 @@ router.get("/:name", async (req, res) => {
           result: formatSummonerForSending(summonerInDB),
         });
       } else {
-        let getsummonerBynameResponse = await getSummonerByName(req.params.name);
+        let getsummonerBynameResponse = await getSummonerByName(queryName);
 
         if (getsummonerBynameResponse.status === 200) {
           await createSummoner(getsummonerBynameResponse.data);
