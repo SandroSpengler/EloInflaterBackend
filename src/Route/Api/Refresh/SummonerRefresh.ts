@@ -103,8 +103,6 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
     }
 
     for (let i = 0; i < summonerByLeagueInDB.entries.length; i++) {
-      console.log(summonerByLeagueInDB.entries[i].summonerName);
-
       let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
 
       if (!summoner) {

@@ -15,7 +15,6 @@ router.get("/:name", async (req, res) => {
   if (req.params.name) {
     try {
       let queryName = encodeURI(req.params.name);
-      console.log(queryName);
 
       // Search by PUUID and by Name to get 1 less requeset
       // let summonerInDB = await findSummonerByName(Response.data.name);
