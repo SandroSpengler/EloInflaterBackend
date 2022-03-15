@@ -8,6 +8,20 @@ import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 
 //#region Summoner MongoDB
+export const findAllSummoners = async (): Promise<Summoner[] | null> => {
+  try {
+    let foundSummoner: Summoner[] | null = await SummonerSchema.find().lean(); // .lean() returns only the json and not the mongoose.document
+
+    if (foundSummoner != null) return foundSummoner;
+
+    return null;
+
+    // if (foundSummoner == null) return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
   try {
     let foundSummoner: Summoner | null = await SummonerSchema.findOne({ puuid: puuid }).lean(); // .lean() returns only the json and not the mongoose.document

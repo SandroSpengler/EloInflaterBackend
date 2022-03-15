@@ -4,12 +4,22 @@ const router = express.Router();
 import axios, { AxiosError } from "axios";
 import {
   createSummoner,
+  findAllSummoners,
   findSummonerByID,
   findSummonerByName,
   findSummonerByPUUID,
 } from "../../../Repository/SummonerRepository";
 import { formatSummonerForSending } from "../../../Services/FormatDocument";
 import { getSummonerByName } from "../../../Services/Http";
+
+router.get("/", async (req, res) => {
+  if (process.env.NODE_ENV && process.env.NODE_ENV == "development") {
+    const allSummoners = await findAllSummoners();
+
+    return res.status(200).json({ allSummoners });
+  }
+  res.status(409).json({});
+});
 
 router.get("/:name", async (req, res) => {
   if (req.params.name) {
