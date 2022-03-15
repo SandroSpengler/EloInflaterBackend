@@ -6,7 +6,6 @@ import { getMatchByMatchId, getMatchesBySummonerpuuid } from "../Services/Http";
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
-import { match } from "assert";
 
 //#region Summoner MongoDB
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
@@ -283,6 +282,50 @@ export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData)
     return summonerMatchDetails;
   } catch (error) {
     throw error;
+  }
+};
+
+export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeague) => {
+  for (let i = 0; i < summonerByLeagueInDB.entries.length; i++) {
+    let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
+
+    if (!summoner) {
+      let summonerToSave: Summoner = {
+        _id: summonerByLeagueInDB.entries[i].summonerId,
+        id: summonerByLeagueInDB.entries[i].summonerId,
+        accountId: "",
+        puuid: "",
+        name: summonerByLeagueInDB.entries[i].summonerName,
+        profileIconId: 0,
+        revisionDate: 0,
+        summonerLevel: 0,
+        leaguePoints: summonerByLeagueInDB.entries[i].leaguePoints,
+        rank: summonerByLeagueInDB.entries[i].rank,
+        wins: summonerByLeagueInDB.entries[i].wins,
+        losses: summonerByLeagueInDB.entries[i].losses,
+        veteran: summonerByLeagueInDB.entries[i].veteran,
+        inactive: summonerByLeagueInDB.entries[i].inactive,
+        freshBlood: summonerByLeagueInDB.entries[i].freshBlood,
+        hotStreak: summonerByLeagueInDB.entries[i].hotStreak,
+        matchList: [],
+        updatedAt: summonerByLeagueInDB.updatedAt,
+      };
+
+      createSummoner(summonerToSave);
+    }
+
+    if (summoner) {
+      summoner.leaguePoints = summonerByLeagueInDB.entries[i].leaguePoints;
+      summoner.rank = summonerByLeagueInDB.entries[i].rank;
+      summoner.wins = summonerByLeagueInDB.entries[i].wins;
+      summoner.losses = summonerByLeagueInDB.entries[i].losses;
+      summoner.veteran = summonerByLeagueInDB.entries[i].veteran;
+      summoner.inactive = summonerByLeagueInDB.entries[i].inactive;
+      summoner.freshBlood = summonerByLeagueInDB.entries[i].freshBlood;
+      summoner.hotStreak = summonerByLeagueInDB.entries[i].hotStreak;
+
+      updateSummonerBySummonerID(summoner);
+    }
   }
 };
 
