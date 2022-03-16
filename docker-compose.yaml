@@ -25,9 +25,5 @@ services:
       - LeagueMongoDBNetwork
     restart: always
 
-volumes:
-  LeagueMongoDBData:
-    external: true
-
 networks:
   LeagueMongoDBNetwork:
