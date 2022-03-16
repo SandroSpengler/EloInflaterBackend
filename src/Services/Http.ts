@@ -32,6 +32,19 @@ export const getSummonerByName = async (name): Promise<AxiosResponse<Summoner>> 
   }
 };
 
+export const getSummonerBySummonerId = async (id: string): Promise<AxiosResponse<Summoner>> => {
+  try {
+    const request = axios.get<Summoner>(`${buildBaseUrl(regionUrl, "summoner/v4/summoners/")}${id}`, buildConfig());
+
+    const response = await request;
+
+    return await response;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
 export const getSummonersByLeague = async (queueType, queueMode): Promise<AxiosResponse<SummonerByLeague>> => {
   let queueLeague = "";
   let queueModeDescription = "";

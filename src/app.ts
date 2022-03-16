@@ -4,6 +4,8 @@ import * as express from "express";
 
 import { ConnectionOptions } from "tls";
 import { validateSummonerRanks } from "./Repository/SummonerRepository";
+import axios, { AxiosError } from "axios";
+import { resolve } from "path";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -47,24 +49,58 @@ APP.listen(PORT, () => {
   console.log("Server is running");
 });
 
-cron.schedule("*/15 * * * * *", async () => {
-  const updateList = ["CHALLENGER", "GRANDMASTER", "MASTER"];
+const schedule = async () => {
+  try {
+    await validateSummonerRanks("MASTER");
 
-  for (let i = 0; i < updateList.length; i++) {
-    await validateSummonerRanks(updateList[i]);
-  }
+    setTimeout(function () {
+      console.log("Going to restart");
+      schedule();
+    }, 1000 * 60 * 2);
+  } catch (error) {}
+};
 
-  // 1. Query current challengers gransmaster master from MongoDB
-  // 2. Query current SummonersByLeague
-  // 3. Check if SummonersByLeague are up to date (less than 24 hours old)
-  // 4. Check if summoner is in SummonersByLeague
-  // 5.1 -> Update summoner lp, wins, losses etc
-  // 5.1 || Remove update summoner division
-  // 6. Validate if Summoner has new Matches
-  // 6.1 check if summoner.updatedAt less than date.now - 3 hours
-  //     maybe summoner.matchlist lastestmatch less than date.now - 1 hour
-  // 7. Call update Summoner Matches
-  // Check if there are summoners that need to be updated
-  // ? create logic for that
-  // Get more than 100 matches
-});
+schedule();
+
+// (function schedule() {
+//   validateSummonerRanks("MASTER")
+//     .then(function () {
+//       console.log("Process finished, waiting 2 minutes");
+
+//       setTimeout(function () {
+//         console.log("Going to restart");
+//         schedule();
+//       }, 1000 * 60 * 2);
+//     })
+
+//     .catch((err) => console.error("error in scheduler", err));
+// })();
+
+// */15 * * * * * - every 15 seconds
+
+// let j = cron.schedule("* */2 * * * *", () => {
+//   const updateList: string[] = ["CHALLENGER", "GRANDMASTER", "MASTER"];
+//   console.log("updating");
+
+//   // try {
+//   //   // validateSummonerRanks(updateList[2]);
+//   // } catch (error) {
+//   //   return;
+//   // }
+
+//   // 1. Query current challengers gransmaster master from MongoDB
+//   // 2. Query current SummonersByLeague
+//   // 3. Check if SummonersByLeague are up to date (less than 24 hours old)
+//   // 4. Check if summoner is in SummonersByLeague
+//   // 5.1 -> Update summoner lp, wins, losses etc
+//   // 5.1 || Remove update summoner division
+//   // 6. Validate if Summoner has new Matches
+//   // 6.1 check if summoner.updatedAt less than date.now - 3 hours
+//   //     maybe summoner.matchlist lastestmatch less than date.now - 1 hour
+//   // 7. Call update Summoner Matches
+//   // Check if there are summoners that need to be updated
+//   // ? create logic for that
+//   // Get more than 100 matches
+
+//   return;
+// });

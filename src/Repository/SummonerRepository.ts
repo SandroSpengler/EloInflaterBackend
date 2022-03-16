@@ -2,7 +2,12 @@ import Summoner from "../Models/Interfaces/Summoner";
 import SummonerSchema from "../Models/Schemas/SummonerSchema";
 import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
 import SummonerByLeagueSchema from "../Models/Schemas/LeagueSchema";
-import { getMatchByMatchId, getMatchesBySummonerpuuid } from "../Services/Http";
+import {
+  getMatchByMatchId,
+  getMatchesBySummonerpuuid,
+  getSummonerByName,
+  getSummonerBySummonerId,
+} from "../Services/Http";
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
@@ -382,12 +387,49 @@ export const validateSummonerRanks = async (updateType: string) => {
 
   if (!summonerByLeague) return;
 
+  // Check if summonerByLeague are newer than 24 hours
+
   // summoner as saved in db
   let summonerList: Summoner[] | null = await findAllSummonersByRank(updateType);
 
+  if (!summonerList) return;
+
+  // const oldSummoners = summonerList?.find((summonerInDB) => {
+  //   summonerByLeague?.entries.some((currentSummoner) => currentSummoner.summonerName == summonerInDB.name);
+  // });
+
   // Check summonerDB entry is update to date with current league
-  console.log(summonerByLeague?.entries.length);
-  console.log(summonerList?.length);
+
+  // for (let i = 0; i < summonerList.length; i++) {
+
+  for (let [index, summoner] of summonerList.entries()) {
+    // Get Summoner PUUID
+
+    try {
+      if (summoner.puuid === undefined || summoner.puuid === "") {
+        let summonerInfo;
+        try {
+          summonerInfo = (await getSummonerByName(summoner.id)).data;
+        } catch (error) {
+          break;
+        }
+
+        let summonerToSave = summoner;
+
+        summonerToSave.accountId = summonerInfo.accountId;
+        summonerToSave.puuid = summonerInfo.puuid;
+        summonerToSave.profileIconId = summonerInfo.profileIconId;
+        summonerToSave.revisionDate = summonerInfo.revisionDate;
+        summonerToSave.summonerLevel = summonerInfo.summonerLevel;
+
+        await updateSummonerBySummonerID(summonerToSave);
+
+        console.log("validated " + index);
+      }
+    } catch (error) {
+      break;
+    }
+  }
 };
 
 //#endregion
