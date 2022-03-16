@@ -11,6 +11,9 @@ export default interface Summoner extends Partial<Document> {
   summonerLevel: number;
   leaguePoints?: number;
   rank?: string;
+  rankSolo?: string;
+  flexSolo?: string;
+  flextt?: string;
   wins?: number;
   losses?: number;
   veteran?: boolean;

@@ -97,7 +97,7 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
   try {
     const Response = await getSummonersByLeague(queueType, queueMode);
 
-    let summonerByLeagueInDB = await findSummonerByLeague(queueType);
+    let summonerByLeagueInDB = await findSummonerByLeague(queueType, queueMode);
 
     if (summonerByLeagueInDB == null) {
       // If it does save Summoner to DB
@@ -105,8 +105,9 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
     }
 
     if (summonerByLeagueInDB.updatedAt! < new Date().getTime()) {
-      // Refresh Summoner Data
+      // Updates the Summoners Entries
       updateSummonerByLeague(queueType, Response.data.entries);
+      // Saves the Summoner to DB
       updateSumonersByQueue(summonerByLeagueInDB);
     }
 
@@ -118,7 +119,9 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
       success: true,
       result: summonerByLeagueToSend,
     });
-  } catch (error) {}
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 module.exports = router;

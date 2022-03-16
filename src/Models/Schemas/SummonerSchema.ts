@@ -49,6 +49,15 @@ const SummonerSchema: Schema = new Schema(
     rank: {
       type: String,
     },
+    rankSolo: {
+      type: String,
+    },
+    flexSolo: {
+      type: String,
+    },
+    flextt: {
+      type: String,
+    },
     wins: {
       type: Number,
     },
