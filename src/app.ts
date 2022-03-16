@@ -51,12 +51,14 @@ APP.listen(PORT, () => {
 
 const schedule = async () => {
   try {
+    await validateSummonerRanks("CHALLENGER");
+    await validateSummonerRanks("GRANDMASTER");
     await validateSummonerRanks("MASTER");
 
     setTimeout(function () {
       console.log("Going to restart");
       schedule();
-    }, 1000 * 60 * 2);
+    }, 1000);
   } catch (error) {}
 };
 
