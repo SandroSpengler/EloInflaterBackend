@@ -30,20 +30,26 @@ import {
 
 router.get("/byName/:name", async (req: Request, res: Response) => {
   let summonerByNameApiReponse;
+  let summonerInDB: Summoner | null;
 
   if (!req.params.name) return res.status(409).json({ success: false, result: "Check Summoner Name" });
 
   try {
     // Get Summoner Data
-    summonerByNameApiReponse = await getSummonerByName(req.params.name);
+
+    summonerInDB = await findSummonerByName(req.params.name);
+
+    if (summonerInDB === null) {
+      summonerByNameApiReponse = await getSummonerByName(req.params.name);
+
+      summonerInDB = await createSummoner(summonerByNameApiReponse.data);
+    }
   } catch (error: any) {
     return res.status(500).json({
       succes: false,
       result: error.message,
     });
   }
-
-  let summonerInDB: Summoner = await createSummoner(summonerByNameApiReponse.data);
 
   // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
   if (!checkIfSummonerCanBeUpdated(summonerInDB)) {
@@ -98,7 +104,7 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
       summonerByLeagueInDB = await saveSummonerByLeague(Response.data);
     }
 
-    if (summonerByLeagueInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
+    if (summonerByLeagueInDB.updatedAt! < new Date().getTime()) {
       // Refresh Summoner Data
       updateSummonerByLeague(queueType, Response.data.entries);
       updateSumonersByQueue(summonerByLeagueInDB);
