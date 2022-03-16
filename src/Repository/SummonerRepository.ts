@@ -22,6 +22,20 @@ export const findAllSummoners = async (): Promise<Summoner[] | null> => {
   }
 };
 
+export const findAllSummonersByRank = async (searchRankSolo: string) => {
+  try {
+    let foundSummoner: Summoner[] | null = await SummonerSchema.find({ rankSolo: searchRankSolo }).lean(); // .lean() returns only the json and not the mongoose.document
+
+    if (foundSummoner != null) return foundSummoner;
+
+    return null;
+
+    // if (foundSummoner == null) return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const findSummonerByPUUID = async (puuid: String): Promise<Summoner | null> => {
   try {
     let foundSummoner: Summoner | null = await SummonerSchema.findOne({ puuid: puuid }).lean(); // .lean() returns only the json and not the mongoose.document
@@ -90,6 +104,9 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.summonerLevel = summoner.summonerLevel;
     tmpSummoner.leaguePoints = summoner.leaguePoints;
     tmpSummoner.rank = summoner.rank;
+    tmpSummoner.rankSolo = summoner.rankSolo;
+    tmpSummoner.flexSolo = summoner.flexSolo;
+    tmpSummoner.flextt = summoner.flextt;
     tmpSummoner.wins = summoner.wins;
     tmpSummoner.losses = summoner.losses;
     tmpSummoner.veteran = summoner.veteran;
@@ -131,10 +148,11 @@ export const updateSummonerBySummonerID = (summoner: Summoner) => {
   } catch (error) {}
 };
 
-export const findSummonerByLeague = async (leagueName: String): Promise<SummonerByLeague | null> => {
+export const findSummonerByLeague = async (leagueName: string, queue: string): Promise<SummonerByLeague | null> => {
   try {
     let foundSummonersByLeague: SummonerByLeague | null = await SummonerByLeagueSchema.findOne({
       tier: leagueName.toUpperCase(),
+      queue: queue,
     }).lean();
 
     if (foundSummonersByLeague != null) return foundSummonersByLeague;
@@ -195,6 +213,9 @@ export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> 
   let latestMachList: any = [];
 
   try {
+    // Check if summoner has puuid
+    // -> request summoner data by name -> add  puuid
+
     latestMachList = await getMatchesBySummonerpuuid(summoner.puuid);
   } catch (error) {
     throw error;
@@ -315,6 +336,7 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
         summonerLevel: 0,
         leaguePoints: summonerByLeagueInDB.entries[i].leaguePoints,
         rank: summonerByLeagueInDB.entries[i].rank,
+        rankSolo: "",
         wins: summonerByLeagueInDB.entries[i].wins,
         losses: summonerByLeagueInDB.entries[i].losses,
         veteran: summonerByLeagueInDB.entries[i].veteran,
@@ -325,12 +347,18 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
         updatedAt: summonerByLeagueInDB.updatedAt,
       };
 
+      // Todo Add Flex and TT
+      if (summonerByLeagueInDB?.queue === "RANKED_SOLO_5x5") {
+        summonerToSave.rankSolo = summonerByLeagueInDB.tier;
+      }
+
       createSummoner(summonerToSave);
     }
 
     if (summoner) {
       summoner.leaguePoints = summonerByLeagueInDB.entries[i].leaguePoints;
       summoner.rank = summonerByLeagueInDB.entries[i].rank;
+      summoner.rankSolo = "";
       summoner.wins = summonerByLeagueInDB.entries[i].wins;
       summoner.losses = summonerByLeagueInDB.entries[i].losses;
       summoner.veteran = summonerByLeagueInDB.entries[i].veteran;
@@ -338,9 +366,28 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
       summoner.freshBlood = summonerByLeagueInDB.entries[i].freshBlood;
       summoner.hotStreak = summonerByLeagueInDB.entries[i].hotStreak;
 
+      // Todo Add Flex and TT
+      if (summonerByLeagueInDB?.queue === "RANKED_SOLO_5x5") {
+        summoner.rankSolo = summonerByLeagueInDB.tier;
+      }
+
       updateSummonerBySummonerID(summoner);
     }
   }
+};
+
+export const validateSummonerRanks = async (updateType: string) => {
+  // current rank of top summoners
+  let summonerByLeague: SummonerByLeague | null = await findSummonerByLeague(updateType, "RANKED_SOLO_5x5");
+
+  if (!summonerByLeague) return;
+
+  // summoner as saved in db
+  let summonerList: Summoner[] | null = await findAllSummonersByRank(updateType);
+
+  // Check summonerDB entry is update to date with current league
+  console.log(summonerByLeague?.entries.length);
+  console.log(summonerList?.length);
 };
 
 //#endregion
