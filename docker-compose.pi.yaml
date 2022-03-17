@@ -14,8 +14,8 @@ services:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
-      - VIRTUAL_HOST=eloinflater.axfert.com
-      - LETSENCRYPT_HOST=eloinflater.axfert.com
+      - VIRTUAL_HOST=axfert.com
+      - LETSENCRYPT_HOST=axfert.com
     command: npm run prod
 
   leaguemongo:
