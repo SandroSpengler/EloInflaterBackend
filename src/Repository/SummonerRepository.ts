@@ -27,9 +27,9 @@ export const findAllSummoners = async (): Promise<Summoner[] | null> => {
   }
 };
 
-export const findAllSummonersByRank = async (searchRankSolo: string) => {
+export const findAllSummonersByRank = async (rank: string, queueType?: string) => {
   try {
-    let foundSummoner: Summoner[] | null = await SummonerSchema.find({ rankSolo: searchRankSolo }).lean(); // .lean() returns only the json and not the mongoose.document
+    let foundSummoner: Summoner[] | null = await SummonerSchema.find({ rankSolo: rank }).lean(); // .lean() returns only the json and not the mongoose.document
 
     if (foundSummoner != null) return foundSummoner;
 
