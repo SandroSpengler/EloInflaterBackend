@@ -58,14 +58,24 @@ const schedule = async () => {
     setTimeout(function () {
       console.log("Going to restart");
       schedule();
-    }, 1000 * 60 * 2);
+    }, 1000 * 2 * 60);
   } catch (error) {}
+};
+
+const test = (test): Promise<any> => {
+  console.log("test " + test);
+
+  const a = new Promise((resolve, reject) => {
+    resolve(test);
+  });
+
+  return a;
 };
 
 schedule();
 
 // (function schedule() {
-//   validateSummonerRanks("MASTER")
+//   test(1)
 //     .then(function () {
 //       console.log("Process finished, waiting 2 minutes");
 

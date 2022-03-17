@@ -382,6 +382,8 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
 };
 
 export const validateSummonerRanks = async (updateType: string) => {
+  console.log("updating Summoners in queue: " + updateType);
+
   // current rank of top summoners
   let summonerByLeague: SummonerByLeague | null = await findSummonerByLeague(updateType, "RANKED_SOLO_5x5");
 
