@@ -213,57 +213,42 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   return false;
 };
 
-export const updatSummonerMatches = async (summoner: Summoner): Promise<Number> => {
-  let summonerMatchCount: number = 0;
-  let latestMachList: any = [];
+export const updateQueuedSummoners = async () => {
+  let queuedSummoners: Summoner[] | null = [];
 
   try {
-    // Check if summoner has puuid
-    // -> request summoner data by name -> add  puuid
+    queuedSummoners = await findAllSummonersByRank("CHALLENGER");
 
-    latestMachList = await getMatchesBySummonerpuuid(summoner.puuid);
-  } catch (error) {
-    throw error;
-  }
+    if (queuedSummoners === null) return;
 
-  try {
-    if (summoner.matchList === undefined) summoner.matchList = [];
+    for (let [index, summoner] of queuedSummoners.entries()) {
+      try {
+        if (summoner.puuid === "" || summoner.puuid === undefined) {
+          summoner.puuid = (await getSummonerBySummonerId(summoner._id)).data.puuid;
+        }
+      } catch (error) {
+        break;
+      }
 
-    summonerMatchCount = summoner.matchList.length;
+      try {
+        let summonerMatches: String[] = (await getMatchesBySummonerpuuid(summoner.puuid)).data;
 
-    // Compares the latest 100 MatchIds for the Summoner with the already saved matchIds
-    const newMatchesList: String[] = latestMachList.data.filter(
-      (latestMatchId) =>
-        // ! = means the match is not in the array
-        !summoner?.matchList.some(({ matchId: summonerMatchId }) => latestMatchId === summonerMatchId)
-    );
-
-    for (let i = 0; i < newMatchesList.length; i++) {
-      const matchResponse = await getMatchByMatchId(newMatchesList[i]);
-
-      if (matchResponse) {
-        // check if exhaust/tabis was abused
-
-        summoner.matchList.push(checkIfSummonerAbusedMatch(summoner, matchResponse.data));
+        console.log(summonerMatches);
+      } catch (error) {
+        break;
       }
     }
 
-    await updateSummonerByPUUID(summoner);
-    await setUpdateSummonerDate(summoner.puuid);
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      let axiosError: AxiosError = error;
+    console.log(queuedSummoners);
 
-      if (axiosError.response?.status === 429) {
-        await updateSummonerByPUUID(summoner);
-        await setUpdateSummonerDate(summoner.puuid);
-      }
-    }
+    // GET Summoners that need updating from db
+    // Search Summoners for summoners that need updating
+    // await updatSummonerMatches()
+  } catch (error) {}
+};
 
-    throw error;
-  } finally {
-    return summoner.matchList.length - summonerMatchCount;
-  }
+export const updatSummonerMatches = async (summoner: Summoner) => {
+  console.log("updating summoner");
 };
 
 export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData): IMatchSchema => {
@@ -433,6 +418,7 @@ export const validateSummonerIds = async (updateType: string) => {
     }
   }
 };
+
 export const validateSummonerLeague = async (updateType: string) => {
   console.log("2. validating summonersByLeague " + updateType);
   // current rank of top summoners
