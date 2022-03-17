@@ -1,3 +1,6 @@
+import { Document } from "mongoose";
+import { IMatchSchema, MatchList } from "./MatchList";
+
 export interface Metadata {
   dataVersion: string;
   matchId: string;
@@ -14,7 +17,6 @@ export interface Challenges {
   bountyGold: number;
   buffsStolen: number;
   completeSupportQuestInTime: number;
-  controlWardTimeCoverageInRiverOrEnemyHalf: number;
   controlWardsPlaced: number;
   damagePerMinute: number;
   damageTakenOnTeamPercentage: number;
@@ -300,10 +302,10 @@ export interface Objectives {
 }
 
 export interface Team {
-  bans: Ban[];
-  objectives: Objectives;
   teamId: number;
   win: boolean;
+  bans: Ban[];
+  objectives: Objectives;
 }
 
 export interface Info {
@@ -324,7 +326,7 @@ export interface Info {
   tournamentCode: string;
 }
 
-export interface MatchData {
+export interface MatchData extends Partial<Document> {
   metadata: Metadata;
   info: Info;
 }

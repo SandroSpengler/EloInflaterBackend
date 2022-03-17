@@ -3,7 +3,7 @@ import { Schema, Document, model } from "mongoose";
 import Summoner from "../Interfaces/Summoner";
 
 //#region MatchSchema
-const metadata: Schema = new Schema(
+const Metadata: Schema = new Schema(
   {
     dataVersion: {
       type: String,
@@ -23,7 +23,7 @@ const metadata: Schema = new Schema(
   }
 );
 
-const challenges: Schema = new Schema(
+const Challenges: Schema = new Schema(
   {
     AssistStreakCount: {
       type: Number,
@@ -349,7 +349,7 @@ const challenges: Schema = new Schema(
   }
 );
 
-const participants: Schema = new Schema(
+const Participants: Schema = new Schema(
   {
     assists: {
       type: Number,
@@ -662,7 +662,7 @@ const participants: Schema = new Schema(
     },
 
     challenges: {
-      type: challenges,
+      type: Challenges,
     },
     // Skipping Perks
     // Skipping Styles
@@ -672,7 +672,7 @@ const participants: Schema = new Schema(
   }
 );
 
-const ban: Schema = new Schema(
+const Ban: Schema = new Schema(
   {
     championId: {
       type: Number,
@@ -686,24 +686,72 @@ const ban: Schema = new Schema(
   }
 );
 
-const bans: Schema = new Schema(
+const Baron: Schema = new Schema(
   {
-    teamId: {
-      type: Number,
-    },
-    win: {
+    first: {
       type: Boolean,
     },
-    ban: {
-      type: [ban],
+    kills: {
+      type: Number,
     },
   },
   {
     timestamps: true,
   }
 );
-
-const objectiveInfo: Schema = new Schema(
+const Champion: Schema = new Schema(
+  {
+    first: {
+      type: Boolean,
+    },
+    kills: {
+      type: Number,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Dragon: Schema = new Schema(
+  {
+    first: {
+      type: Boolean,
+    },
+    kills: {
+      type: Number,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Inhibitor: Schema = new Schema(
+  {
+    first: {
+      type: Boolean,
+    },
+    kills: {
+      type: Number,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const RiftHerald: Schema = new Schema(
+  {
+    first: {
+      type: Boolean,
+    },
+    kills: {
+      type: Number,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+const Tower: Schema = new Schema(
   {
     first: {
       type: Boolean,
@@ -717,25 +765,25 @@ const objectiveInfo: Schema = new Schema(
   }
 );
 
-const objective: Schema = new Schema(
+const Objectives: Schema = new Schema(
   {
     baron: {
-      type: objectiveInfo,
+      type: Baron,
     },
     champion: {
-      type: objectiveInfo,
+      type: Champion,
     },
     dragon: {
-      type: objectiveInfo,
+      type: Dragon,
     },
     inhibitor: {
-      type: objectiveInfo,
+      type: Inhibitor,
     },
     riftHerald: {
-      type: objectiveInfo,
+      type: RiftHerald,
     },
     tower: {
-      type: objectiveInfo,
+      type: Tower,
     },
   },
   {
@@ -743,7 +791,7 @@ const objective: Schema = new Schema(
   }
 );
 
-const teams: Schema = new Schema(
+const Team: Schema = new Schema(
   {
     teamId: {
       type: Number,
@@ -752,10 +800,10 @@ const teams: Schema = new Schema(
       type: Boolean,
     },
     bans: {
-      type: [bans],
+      type: [Ban],
     },
     objectives: {
-      type: [objective],
+      type: Objectives,
     },
   },
   {
@@ -763,7 +811,7 @@ const teams: Schema = new Schema(
   }
 );
 
-const info: Schema = new Schema(
+const Info: Schema = new Schema(
   {
     gameCreation: {
       type: Number,
@@ -805,10 +853,10 @@ const info: Schema = new Schema(
       type: String,
     },
     participants: {
-      type: [participants],
+      type: [Participants],
     },
     teams: {
-      type: [teams],
+      type: [Team],
     },
   },
   {
@@ -821,10 +869,10 @@ const MatchSchema = new Schema(
     _id: { type: String },
     id: { type: String },
     metadata: {
-      type: [metadata],
+      type: [Metadata],
     },
     matchId: {
-      type: [info],
+      type: [Info],
     },
   },
   {
@@ -834,6 +882,7 @@ const MatchSchema = new Schema(
 
 //#endregion
 
+//#region Summoner
 const SummonerSchema: Schema = new Schema(
   {
     _id: { type: String },
@@ -891,7 +940,6 @@ const SummonerSchema: Schema = new Schema(
     hotStreak: {
       type: Boolean,
     },
-
     matchList: {
       type: [MatchSchema],
     },
@@ -906,5 +954,7 @@ const SummonerSchema: Schema = new Schema(
     timestamps: true,
   }
 );
+
+//#endregion
 
 export default mongoose.model<Summoner>("SummonerSchema", SummonerSchema);
