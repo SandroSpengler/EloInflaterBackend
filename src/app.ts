@@ -51,9 +51,9 @@ APP.listen(PORT, () => {
 
 const schedule = async () => {
   try {
-    await validateSummonerRanks("CHALLENGER");
-    await validateSummonerRanks("GRANDMASTER");
-    await validateSummonerRanks("MASTER");
+    // await validateSummonerRanks("CHALLENGER");
+    // await validateSummonerRanks("GRANDMASTER");
+    // await validateSummonerRanks("MASTER");
 
     setTimeout(function () {
       console.log("Going to restart");
