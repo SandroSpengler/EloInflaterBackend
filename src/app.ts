@@ -3,7 +3,7 @@ import { Application, Request, Response, NextFunction } from "express";
 import * as express from "express";
 
 import { ConnectionOptions } from "tls";
-import { validateSummonerRanks } from "./Repository/SummonerRepository";
+import { validateSummonerIds, validateSummonerLeague } from "./Repository/SummonerRepository";
 import axios, { AxiosError } from "axios";
 import { resolve } from "path";
 
@@ -37,7 +37,7 @@ APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 const connectToMongoDB = () => {
   mongoose
     .connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
-    .then((data) => console.log("connected to mongodb"))
+    .then((data) => console.log("0. connected to mongodb"))
     .catch((err) => {
       console.log(err.message);
     });
@@ -46,20 +46,26 @@ const connectToMongoDB = () => {
 connectToMongoDB();
 
 APP.listen(PORT, () => {
-  console.log("Server is running");
+  console.log("0. Server is running");
 });
 
 const schedule = async () => {
   try {
-    await validateSummonerRanks("CHALLENGER");
-    await validateSummonerRanks("GRANDMASTER");
-    await validateSummonerRanks("MASTER");
+    await validateSummonerIds("CHALLENGER");
+    await validateSummonerIds("GRANDMASTER");
+    // await validateSummonerIds("MASTER");
 
-    setTimeout(function () {
+    await validateSummonerLeague("CHALLENGER");
+    await validateSummonerLeague("GRANDMASTER");
+    // await validateSummonerLeague("MASTER");
+
+    await setTimeout(function () {
       console.log("Going to restart");
       schedule();
     }, 1000 * 60 * 2);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 schedule();

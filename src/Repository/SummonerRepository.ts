@@ -381,8 +381,8 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
   }
 };
 
-export const validateSummonerRanks = async (updateType: string) => {
-  console.log("updating Summoners in queue: " + updateType);
+export const validateSummonerIds = async (updateType: string) => {
+  console.log("1. Checking Summoners Ids in queue: " + updateType);
 
   // current rank of top summoners
   let summonerByLeague: SummonerByLeague | null = await findSummonerByLeague(updateType, "RANKED_SOLO_5x5");
@@ -426,12 +426,57 @@ export const validateSummonerRanks = async (updateType: string) => {
 
         await updateSummonerBySummonerID(summonerToSave);
 
-        console.log("validated " + index);
+        console.log("1. validated " + index);
       }
     } catch (error) {
       break;
     }
   }
+};
+export const validateSummonerLeague = async (updateType: string) => {
+  console.log("2. validating summonersByLeague " + updateType);
+  // current rank of top summoners
+  let summonerByLeague: SummonerByLeague | null = await findSummonerByLeague(updateType, "RANKED_SOLO_5x5");
+  let summonerList: Summoner[] | null = await findAllSummonersByRank(updateType);
+
+  if (summonerByLeague === null || summonerByLeague === undefined) return;
+
+  if (summonerList === null || summonerList === undefined) return;
+
+  if (summonerByLeague.updatedAt! > new Date().getTime() - 3600 * 1000) {
+    // update SummonerByLeague
+    console.log("2. update SummonerByLeague");
+  }
+
+  const outDatedSummoners: Summoner[] = summonerList.filter((summoner) => {
+    if (summoner.updatedAt! > summonerByLeague?.updatedAt!) return summoner;
+  });
+
+  for (let [index, oldSummoner] of outDatedSummoners.entries()) {
+    const currentSummonerInLeague = summonerByLeague.entries.find((currentSummoner) => {
+      return currentSummoner.summonerId === oldSummoner._id;
+    });
+
+    if (currentSummonerInLeague === undefined) {
+      oldSummoner.rank = "";
+      oldSummoner.rankSolo = "";
+      oldSummoner.leaguePoints = 0;
+
+      await updateSummonerByPUUID(oldSummoner);
+
+      continue;
+    }
+
+    oldSummoner.rank = currentSummonerInLeague.rank;
+    oldSummoner.wins = currentSummonerInLeague.wins;
+    oldSummoner.losses = currentSummonerInLeague.losses;
+    oldSummoner.leaguePoints = currentSummonerInLeague.leaguePoints;
+
+    await updateSummonerByPUUID(oldSummoner);
+  }
+
+  try {
+  } catch (error) {}
 };
 
 //#endregion
