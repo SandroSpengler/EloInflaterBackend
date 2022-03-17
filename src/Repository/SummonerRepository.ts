@@ -411,7 +411,7 @@ export const validateSummonerRanks = async (updateType: string) => {
       if (summoner.puuid === undefined || summoner.puuid === "") {
         let summonerInfo;
         try {
-          summonerInfo = (await getSummonerBySummonerId(summoner.id)).data;
+          summonerInfo = (await getSummonerBySummonerId(summoner._id)).data;
         } catch (error) {
           break;
         }

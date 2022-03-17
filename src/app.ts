@@ -62,16 +62,6 @@ const schedule = async () => {
   } catch (error) {}
 };
 
-const test = (test): Promise<any> => {
-  console.log("test " + test);
-
-  const a = new Promise((resolve, reject) => {
-    resolve(test);
-  });
-
-  return a;
-};
-
 schedule();
 
 // (function schedule() {
