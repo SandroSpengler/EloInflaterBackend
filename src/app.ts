@@ -65,7 +65,7 @@ const schedule = async () => {
 
     await validateSummonerLeague("CHALLENGER");
     await validateSummonerLeague("GRANDMASTER");
-    await validateSummonerLeague("MASTER");
+    // await validateSummonerLeague("MASTER");
 
     await updateQueuedSummoners("CHALLENGER");
     await updateQueuedSummoners("GRANDMASTER");

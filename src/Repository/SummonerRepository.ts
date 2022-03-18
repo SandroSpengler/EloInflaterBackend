@@ -222,7 +222,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
     if (queuedSummoners === null) return;
 
     for (let [index, summoner] of queuedSummoners.entries()) {
-      console.log(`Getting Matches for: ${updateType} index: ${index}`);
+      console.log(`3. Getting Matches for: ${updateType} index: ${index}`);
 
       if (summoner.matchList === undefined) {
         summoner.matchList = [];
@@ -255,7 +255,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
 
           updateSummonerByPUUID(summoner);
 
-          console.log(`Summoner Match added ${summoner.name} ${index}`);
+          console.log(`3. Summoner Match added ${summoner.name} ${index}`);
         }
       } catch (error) {
         console.log(error);
