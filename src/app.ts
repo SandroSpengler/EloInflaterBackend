@@ -10,7 +10,6 @@ import {
   validateSummonerLeague,
 } from "./Repository/SummonerRepository";
 import axios, { AxiosError } from "axios";
-import { resolve } from "path";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -79,4 +78,9 @@ const schedule = async () => {
   }
 };
 
-schedule();
+if (process.env.RUN_JOB === "start") {
+  schedule();
+}
+if (process.env.RUN_JOB === "stop") {
+  console.log("0. not running any background jobs");
+}

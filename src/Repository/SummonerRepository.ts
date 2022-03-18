@@ -9,7 +9,7 @@ import {
   getSummonerBySummonerId,
 } from "../Services/Http";
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
-import axios, { Axios, AxiosResponse, AxiosError } from "axios";
+
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 
 //#region Summoner MongoDB
@@ -257,7 +257,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
 
           await updateSummonerByPUUID(summoner);
 
-          console.log(`3. Summoner Matches left ${summoner.name} ${matchesToUpdate.length - index}`);
+          console.log(`3. Summoner Matches left ${summoner.name} ${matchesToUpdate.length - index - 1}`);
         }
       } catch (error) {
         console.log(error);

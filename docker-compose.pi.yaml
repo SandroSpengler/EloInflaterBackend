@@ -12,6 +12,7 @@ services:
       - "5000"
     environment:
       - NODE_ENV=production
+      - RUN_JOB=start
       - API_KEY=${API_KEY}
       - API_KEY_FARMING=${API_KEY_FARMING}
       - VIRTUAL_HOST=eloinflater.axfert.com
