@@ -213,15 +213,17 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   return false;
 };
 
-export const updateQueuedSummoners = async () => {
+export const updateQueuedSummoners = async (updateType: string) => {
   let queuedSummoners: Summoner[] | null = [];
 
   try {
-    queuedSummoners = await findAllSummonersByRank("CHALLENGER");
+    queuedSummoners = await findAllSummonersByRank(updateType);
 
     if (queuedSummoners === null) return;
 
     for (let [index, summoner] of queuedSummoners.entries()) {
+      console.log(`Getting Matches for: ${updateType} index: ${index}`);
+
       if (summoner.matchList === undefined) {
         summoner.matchList = [];
         updateSummonerByPUUID(summoner);
@@ -260,8 +262,6 @@ export const updateQueuedSummoners = async () => {
         break;
       }
     }
-
-    console.log(queuedSummoners);
 
     // GET Summoners that need updating from db
     // Search Summoners for summoners that need updating
