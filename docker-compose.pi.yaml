@@ -13,6 +13,7 @@ services:
     environment:
       - NODE_ENV=production
       - API_KEY=${API_KEY}
+      - API_KEY_FARMING=${API_KEY_FARMING}
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
       - VIRTUAL_HOST=axfert.com
       - LETSENCRYPT_HOST=axfert.com

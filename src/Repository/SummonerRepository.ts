@@ -445,6 +445,7 @@ export const validateSummonerLeague = async (updateType: string) => {
   console.log("2. validating summonersByLeague " + updateType);
   // current rank of top summoners
   let summonerByLeague: SummonerByLeague | null = await findSummonerByLeague(updateType, "RANKED_SOLO_5x5");
+
   let summonerList: Summoner[] | null = await findAllSummonersByRank(updateType);
 
   if (summonerByLeague === null || summonerByLeague === undefined) return;
