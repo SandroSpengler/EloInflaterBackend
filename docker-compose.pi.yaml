@@ -14,6 +14,7 @@ services:
       - NODE_ENV=production
       - RUN_JOB=start
       - API_KEY=${API_KEY}
+      - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
       - VIRTUAL_HOST=eloinflater.axfert.com
       - LETSENCRYPT_HOST=eloinflater.axfert.com
     command: npm run prod
