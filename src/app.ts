@@ -60,20 +60,20 @@ APP.listen(PORT, () => {
 const schedule = async () => {
   try {
     await validateSummonerIds("CHALLENGER");
-    await validateSummonerIds("GRANDMASTER");
+    // await validateSummonerIds("GRANDMASTER");
     // await validateSummonerIds("MASTER");
 
     await validateSummonerLeague("CHALLENGER");
-    await validateSummonerLeague("GRANDMASTER");
+    // await validateSummonerLeague("GRANDMASTER");
     // await validateSummonerLeague("MASTER");
 
     await updateQueuedSummoners("CHALLENGER");
-    await updateQueuedSummoners("GRANDMASTER");
+    // await updateQueuedSummoners("GRANDMASTER");
 
     await setTimeout(function () {
       console.log("Going to restart");
       schedule();
-    }, 1000 * 60);
+    }, 1000 * 60 * 2);
   } catch (error) {
     console.log(error);
   }

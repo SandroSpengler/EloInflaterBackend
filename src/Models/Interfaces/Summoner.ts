@@ -4,6 +4,7 @@ import { IMatchSchema, MatchList } from "./MatchList";
 
 export default interface Summoner extends Partial<Document> {
   id: string;
+  summonerId: string;
   accountId: string;
   puuid: string;
   name: string;
@@ -22,6 +23,7 @@ export default interface Summoner extends Partial<Document> {
   freshBlood?: boolean;
   hotStreak?: boolean;
   matchList: MatchData[];
+  lastRankUpdate?: number;
   createdAt?: number;
   updatedAt?: number;
 }

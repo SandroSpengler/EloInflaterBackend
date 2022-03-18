@@ -11,6 +11,7 @@ export default interface SummonerByLeague extends Partial<Document> {
 }
 
 export interface EntriesByLeague extends Partial<Document> {
+  _id: string;
   summonerId: string;
   summonerName: string;
   leaguePoints: number;

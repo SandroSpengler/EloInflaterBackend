@@ -100,7 +100,8 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
 
   try {
     tmpSummoner._id = summoner.id;
-    // tmpSummoner.summonerId = summoner.summonerId;
+    tmpSummoner.id = summoner.id;
+    tmpSummoner.summonerId = summoner.summonerId;
     tmpSummoner.accountId = summoner.accountId;
     tmpSummoner.puuid = summoner.puuid;
     tmpSummoner.name = summoner.name.toLowerCase();
@@ -137,11 +138,11 @@ export const setUpdateSummonerDate = (puuid: string) => {
   } catch (error) {}
 };
 
-export const updateSummonerByPUUID = (summoner: Summoner) => {
+export const updateSummonerByPUUID = async (summoner: Summoner) => {
   try {
     let currentUnixDate = new Date().getTime();
 
-    SummonerSchema.updateOne({ puuid: summoner.puuid }, summoner).exec();
+    await SummonerSchema.updateOne({ puuid: summoner.puuid }, summoner).exec();
   } catch (error) {}
 };
 
@@ -214,12 +215,13 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
 };
 
 export const updateQueuedSummoners = async (updateType: string) => {
+  console.log("3. Starting to search for matches");
   let queuedSummoners: Summoner[] | null = [];
 
   try {
     queuedSummoners = await findAllSummonersByRank(updateType);
 
-    if (queuedSummoners === null) return;
+    if (queuedSummoners === null || queuedSummoners.length === 0) return;
 
     for (let [index, summoner] of queuedSummoners.entries()) {
       console.log(`3. Getting Matches for: ${updateType} index: ${index}`);
@@ -238,7 +240,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
       }
 
       try {
-        let summonerMatches: String[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid, true)).data;
+        let summonerMatches: String[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
 
         // Check if summoner already has those matches
 
@@ -253,9 +255,9 @@ export const updateQueuedSummoners = async (updateType: string) => {
 
           summoner.matchList.push(summonerMatchDetails);
 
-          updateSummonerByPUUID(summoner);
+          await updateSummonerByPUUID(summoner);
 
-          console.log(`3. Summoner Match added ${summoner.name} ${index}`);
+          console.log(`3. Summoner Matches left ${summoner.name} ${matchesToUpdate.length - index}`);
         }
       } catch (error) {
         console.log(error);
@@ -266,7 +268,10 @@ export const updateQueuedSummoners = async (updateType: string) => {
     // GET Summoners that need updating from db
     // Search Summoners for summoners that need updating
     // await updatSummonerMatches()
-  } catch (error) {}
+  } catch (error) {
+  } finally {
+    console.log("3. Finished searching for matches ");
+  }
 };
 
 export const updatSummonerMatches = async (summoner: Summoner) => {
@@ -334,12 +339,14 @@ export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData)
 
 export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeague) => {
   for (let i = 0; i < summonerByLeagueInDB.entries.length; i++) {
-    let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
+    // let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
+    let summoner = await findSummonerByName(summonerByLeagueInDB.entries[i].summonerName);
 
     if (!summoner) {
       let summonerToSave: Summoner = {
         _id: summonerByLeagueInDB.entries[i].summonerId,
         id: summonerByLeagueInDB.entries[i].summonerId,
+        summonerId: summonerByLeagueInDB.entries[i].summonerId,
         accountId: "",
         puuid: "",
         name: summonerByLeagueInDB.entries[i].summonerName,
@@ -364,7 +371,7 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
         summonerToSave.rankSolo = summonerByLeagueInDB.tier;
       }
 
-      createSummoner(summonerToSave);
+      await createSummoner(summonerToSave);
     }
 
     if (summoner) {
@@ -383,7 +390,7 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
         summoner.rankSolo = summonerByLeagueInDB.tier;
       }
 
-      updateSummonerBySummonerID(summoner);
+      await updateSummonerBySummonerID(summoner);
     }
   }
 };
@@ -418,7 +425,7 @@ export const validateSummonerIds = async (updateType: string) => {
       if (summoner.puuid === undefined || summoner.puuid === "") {
         let summonerInfo;
         try {
-          summonerInfo = (await getSummonerBySummonerId(summoner._id)).data;
+          summonerInfo = (await getSummonerBySummonerId(summoner.summonerId)).data;
         } catch (error) {
           break;
         }
@@ -433,7 +440,7 @@ export const validateSummonerIds = async (updateType: string) => {
 
         await updateSummonerBySummonerID(summonerToSave);
 
-        console.log("1. validated " + index);
+        console.log(`validated ${summoner.name} in queue ${updateType} at index ${index}`);
       }
     } catch (error) {
       break;
@@ -457,19 +464,26 @@ export const validateSummonerLeague = async (updateType: string) => {
     console.log("2. update SummonerByLeague");
   }
 
-  const outDatedSummoners: Summoner[] = summonerList.filter((summoner) => {
-    if (summoner.updatedAt! > summonerByLeague?.updatedAt!) return summoner;
+  let outDatedSummoners: Summoner[] = summonerList.filter((summoner) => {
+    if (summoner.lastRankUpdate === undefined) return summoner;
+
+    return summoner.lastRankUpdate! < summonerByLeague?.updatedAt!;
   });
+
+  if (outDatedSummoners === undefined || outDatedSummoners === null || outDatedSummoners.length === 0) return;
 
   for (let [index, oldSummoner] of outDatedSummoners.entries()) {
     const currentSummonerInLeague = summonerByLeague.entries.find((currentSummoner) => {
       return currentSummoner.summonerId === oldSummoner._id;
     });
 
+    console.log("updating index: " + index + ": " + currentSummonerInLeague?.summonerName);
+
     if (currentSummonerInLeague === undefined) {
       oldSummoner.rank = "";
       oldSummoner.rankSolo = "";
       oldSummoner.leaguePoints = 0;
+      oldSummoner.lastRankUpdate = summonerByLeague.updatedAt;
 
       await updateSummonerByPUUID(oldSummoner);
 
@@ -480,12 +494,16 @@ export const validateSummonerLeague = async (updateType: string) => {
     oldSummoner.wins = currentSummonerInLeague.wins;
     oldSummoner.losses = currentSummonerInLeague.losses;
     oldSummoner.leaguePoints = currentSummonerInLeague.leaguePoints;
+    oldSummoner.lastRankUpdate = summonerByLeague.updatedAt;
 
     await updateSummonerByPUUID(oldSummoner);
+    continue;
   }
 
   try {
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 //#endregion

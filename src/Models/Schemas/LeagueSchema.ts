@@ -4,6 +4,9 @@ import SummonerByLeague from "../Interfaces/SummonerByLeague";
 
 const EntriesSchema: Schema = new Schema(
   {
+    _id: {
+      type: String,
+    },
     summonerId: {
       type: String,
     },

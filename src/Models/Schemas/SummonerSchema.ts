@@ -888,6 +888,9 @@ const SummonerSchema: Schema = new Schema(
     id: {
       type: String,
     },
+    summonerId: {
+      type: String,
+    },
     accountId: {
       type: String,
     },
@@ -941,6 +944,9 @@ const SummonerSchema: Schema = new Schema(
     },
     matchList: {
       type: [MatchSchema],
+    },
+    lastRankUpdate: {
+      type: Number,
     },
     createdAt: {
       type: Number,
