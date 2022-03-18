@@ -76,11 +76,14 @@ export const getSummonersByLeague = async (queueType, queueMode): Promise<AxiosR
   }
 };
 
-export const getMatchesBySummonerpuuid = async (puuid: String): Promise<AxiosResponse<String[]>> => {
+export const getMatchesIdsBySummonerpuuid = async (
+  puuid: String,
+  datafarming?: boolean
+): Promise<AxiosResponse<String[]>> => {
   try {
     const request = axios.get<String[]>(
       `${buildBaseUrl(matchRegionUrl, "match/v5/matches/by-puuid/")}${puuid}/ids?start=0&count=100`,
-      buildConfig()
+      buildConfig(datafarming)
     );
 
     const response = await request;
@@ -114,7 +117,16 @@ const buildBaseUrl = (regionUrl, endpointUrl) => {
   return completeUrl;
 };
 
-const buildConfig = (): any => {
+const buildConfig = (datafarming?: boolean): any => {
+  if (datafarming) {
+    let config = {
+      headers: {
+        "X-Riot-Token": process.env.API_KEY_FARMING,
+      },
+    };
+    return config;
+  }
+
   let config = {
     headers: {
       "X-Riot-Token": process.env.API_KEY,

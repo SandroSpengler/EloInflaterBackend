@@ -23,7 +23,7 @@ import {
 import { formatSummonerByLeagueForSending, formatSummonerForSending } from "../../../Services/FormatDocument";
 import {
   getMatchByMatchId,
-  getMatchesBySummonerpuuid,
+  getMatchesIdsBySummonerpuuid,
   getSummonerByName,
   getSummonersByLeague,
 } from "../../../Services/Http";

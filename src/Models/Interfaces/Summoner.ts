@@ -1,4 +1,5 @@
 import { Document } from "mongoose";
+import { MatchData } from "./MatchData";
 import { IMatchSchema, MatchList } from "./MatchList";
 
 export default interface Summoner extends Partial<Document> {
@@ -20,7 +21,7 @@ export default interface Summoner extends Partial<Document> {
   inactive?: boolean;
   freshBlood?: boolean;
   hotStreak?: boolean;
-  matchList: IMatchSchema[];
+  matchList: MatchData[];
   createdAt?: number;
   updatedAt?: number;
 }

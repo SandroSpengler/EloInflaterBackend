@@ -574,7 +574,7 @@ const Participants: Schema = new Schema(
       type: Number,
     },
     summonerName: {
-      type: Number,
+      type: String,
     },
     teamEarlySurrendered: {
       type: Boolean,
@@ -660,7 +660,6 @@ const Participants: Schema = new Schema(
     win: {
       type: Boolean,
     },
-
     challenges: {
       type: Challenges,
     },
@@ -871,7 +870,7 @@ const MatchSchema = new Schema(
     metadata: {
       type: [Metadata],
     },
-    matchId: {
+    info: {
       type: [Info],
     },
   },

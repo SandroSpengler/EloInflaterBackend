@@ -4,7 +4,7 @@ import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/Summoner
 import SummonerByLeagueSchema from "../Models/Schemas/LeagueSchema";
 import {
   getMatchByMatchId,
-  getMatchesBySummonerpuuid,
+  getMatchesIdsBySummonerpuuid,
   getSummonerByName,
   getSummonerBySummonerId,
 } from "../Services/Http";
@@ -222,6 +222,11 @@ export const updateQueuedSummoners = async () => {
     if (queuedSummoners === null) return;
 
     for (let [index, summoner] of queuedSummoners.entries()) {
+      if (summoner.matchList === undefined) {
+        summoner.matchList = [];
+        updateSummonerByPUUID(summoner);
+      }
+
       try {
         if (summoner.puuid === "" || summoner.puuid === undefined) {
           summoner.puuid = (await getSummonerBySummonerId(summoner._id)).data.puuid;
@@ -231,10 +236,27 @@ export const updateQueuedSummoners = async () => {
       }
 
       try {
-        let summonerMatches: String[] = (await getMatchesBySummonerpuuid(summoner.puuid)).data;
+        let summonerMatches: String[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid, true)).data;
 
-        console.log(summonerMatches);
+        // Check if summoner already has those matches
+
+        let matchesToUpdate = summonerMatches.filter((matchId) => {
+          return !summoner.matchList.some((element) => element.metadata[0].matchId === matchId);
+        });
+
+        if (matchesToUpdate === undefined || matchesToUpdate.length <= 0) continue;
+
+        for (const [index, matchid] of matchesToUpdate.entries()) {
+          let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
+
+          summoner.matchList.push(summonerMatchDetails);
+
+          updateSummonerByPUUID(summoner);
+
+          console.log(`Summoner Match added ${summoner.name} ${index}`);
+        }
       } catch (error) {
+        console.log(error);
         break;
       }
     }
