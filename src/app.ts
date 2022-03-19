@@ -80,7 +80,7 @@ const schedule = async () => {
 
 if (process.env.RUN_JOB === "start") {
   console.log("starting");
-  // schedule();
+  schedule();
 }
 if (process.env.RUN_JOB === "stop") {
   console.log("0. not running any background jobs");
