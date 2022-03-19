@@ -13,6 +13,7 @@ services:
     environment:
       - NODE_ENV=production
       - RUN_JOB=start
+      - RUN_JOB=${RUN_JOB}
       - API_KEY=${API_KEY}
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
     command: npm run prod
