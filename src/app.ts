@@ -78,9 +78,8 @@ const schedule = async () => {
   }
 };
 
-schedule();
-
 if (process.env.RUN_JOB === "start") {
+  schedule();
   console.log("starting");
 }
 if (process.env.RUN_JOB === "stop") {
