@@ -240,8 +240,12 @@ export const updateQueuedSummoners = async (updateType: string) => {
         break;
       }
 
+      console.log(summoner.lastMatchUpdate!);
+      console.log(new Date().getTime());
+      console.log(new Date().getTime() - 3600);
+
       try {
-        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! < new Date().getTime() - 3600) {
+        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! > new Date().getTime() - 3600) {
           console.log(`3. summoner ${summoner.name} already checked during the last 1 Hour`);
 
           continue;
