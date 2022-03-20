@@ -241,7 +241,11 @@ export const updateQueuedSummoners = async (updateType: string) => {
       }
 
       try {
-        if (summoner.updatedAt! > new Date().getTime() - 1800) break;
+        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! < new Date().getTime() - 3600) {
+          console.log(`3. summoner ${summoner.name} already checked during the last 1 Hour`);
+
+          continue;
+        }
       } catch (error) {}
 
       try {
@@ -253,15 +257,21 @@ export const updateQueuedSummoners = async (updateType: string) => {
           return !summoner.matchList.some((element) => element.metadata[0].matchId === matchId);
         });
 
-        if (matchesToUpdate === undefined || matchesToUpdate.length <= 0) continue;
+        if (matchesToUpdate === undefined || matchesToUpdate.length <= 0) {
+          summoner.lastMatchUpdate = new Date().getTime();
+          await updateSummonerByPUUID(summoner);
+          continue;
+        }
 
         for (const [index, matchid] of matchesToUpdate.entries()) {
+          summoner.lastMatchUpdate = new Date().getTime();
           let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
 
           summoner.matchList.push(summonerMatchDetails);
 
           console.log(`3. Summoner Matches left ${summoner.name} ${matchesToUpdate.length - index - 1}`);
         }
+        summoner.lastMatchUpdate = new Date().getTime();
         await updateSummonerByPUUID(summoner);
       } catch (error: any) {
         if (axios.isAxiosError(error)) {
@@ -270,6 +280,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
           if (axiosError.response?.status === 429) {
             // Add Summoner to list of summoners that need updating
 
+            summoner.lastMatchUpdate = new Date().getTime();
             await updateSummonerByPUUID(summoner);
             break;
           }

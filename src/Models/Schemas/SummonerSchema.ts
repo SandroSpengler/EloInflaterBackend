@@ -948,6 +948,9 @@ const SummonerSchema: Schema = new Schema(
     lastRankUpdate: {
       type: Number,
     },
+    lastMatchUpdate: {
+      type: Number,
+    },
     createdAt: {
       type: Number,
     },
