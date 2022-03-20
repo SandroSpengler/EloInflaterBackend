@@ -15,5 +15,5 @@ services:
       - RUN_JOB=${RUN_JOB}
       - API_KEY=${API_KEY}
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
-      - export NODE_OPTIONS=--max_old_space_size=6144
+      - NODE_OPTIONS=--max_old_space_size=6144
     command: npm run prod
