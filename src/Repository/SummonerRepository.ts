@@ -11,6 +11,7 @@ import {
 import { IMatchSchema } from "../Models/Interfaces/MatchList";
 
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
+import axios, { AxiosError } from "axios";
 
 //#region Summoner MongoDB
 export const findAllSummoners = async (): Promise<Summoner[] | null> => {
@@ -255,12 +256,20 @@ export const updateQueuedSummoners = async (updateType: string) => {
 
           summoner.matchList.push(summonerMatchDetails);
 
-          await updateSummonerByPUUID(summoner);
-
           console.log(`3. Summoner Matches left ${summoner.name} ${matchesToUpdate.length - index - 1}`);
         }
-      } catch (error) {
-        console.log(error);
+        await updateSummonerByPUUID(summoner);
+      } catch (error: any) {
+        if (axios.isAxiosError(error)) {
+          let axiosError: AxiosError = error;
+
+          if (axiosError.response?.status === 429) {
+            // Add Summoner to list of summoners that need updating
+
+            await updateSummonerByPUUID(summoner);
+            break;
+          }
+        }
         break;
       }
     }
