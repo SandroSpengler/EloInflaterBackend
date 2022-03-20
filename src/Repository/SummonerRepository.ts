@@ -241,6 +241,10 @@ export const updateQueuedSummoners = async (updateType: string) => {
       }
 
       try {
+        if (summoner.updatedAt! > new Date().getTime() - 1800) break;
+      } catch (error) {}
+
+      try {
         let summonerMatches: String[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
 
         // Check if summoner already has those matches
