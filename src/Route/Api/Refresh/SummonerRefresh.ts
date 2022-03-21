@@ -106,9 +106,9 @@ router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response)
 
     if (summonerByLeagueInDB.updatedAt! < new Date().getTime()) {
       // Updates the Summoners Entries
-      updateSummonerByLeague(queueType, Response.data.entries);
+      await updateSummonerByLeague(queueType, Response.data.entries);
       // Saves the Summoner to DB
-      updateSumonersByQueue(summonerByLeagueInDB);
+      await updateSumonersByQueue(summonerByLeagueInDB);
     }
 
     // save rankedinformation to that summoner

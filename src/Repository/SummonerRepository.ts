@@ -364,7 +364,7 @@ export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData)
 export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeague) => {
   for (let i = 0; i < summonerByLeagueInDB.entries.length; i++) {
     // let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
-    let summoner = await findSummonerByName(summonerByLeagueInDB.entries[i].summonerName);
+    let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
 
     if (!summoner) {
       let summonerToSave: Summoner = {
@@ -395,7 +395,11 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
         summonerToSave.rankSolo = summonerByLeagueInDB.tier;
       }
 
-      await createSummoner(summonerToSave);
+      try {
+        await createSummoner(summonerToSave);
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     if (summoner) {
