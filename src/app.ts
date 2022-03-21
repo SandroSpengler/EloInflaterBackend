@@ -28,7 +28,16 @@ const summonerController = require("./Route/Api/Data/SummonerData");
 const leaugeController = require("./Route/Api/Data/SummonerByLeagueData");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
 
-APP.use(cors());
+let corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200, // For legacy browser support
+};
+
+APP.use(
+  cors({
+    origin: "'http://eloinflater.com'",
+  })
+);
 
 APP.get("/", (req: Request, res: Response) => {
   res.send("<h1>Main Page!!</h1>");
