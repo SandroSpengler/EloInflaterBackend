@@ -225,7 +225,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
     if (queuedSummoners === null || queuedSummoners.length === 0) return;
 
     for (let [index, summoner] of queuedSummoners.entries()) {
-      console.log(`3. Getting Matches for: ${updateType} index: ${index}`);
+      console.log(`3. Getting Matches for ${summoner.name}: ${updateType} index: ${index}`);
 
       if (summoner.matchList === undefined) {
         summoner.matchList = [];
@@ -241,7 +241,7 @@ export const updateQueuedSummoners = async (updateType: string) => {
       }
 
       try {
-        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! > new Date().getTime() - 3600) {
+        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! < new Date().getTime() - 3600) {
           console.log(`3. summoner ${summoner.name} already checked during the last 1 Hour`);
 
           continue;
