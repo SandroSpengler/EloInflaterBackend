@@ -35,7 +35,7 @@ let corsOptions = {
 
 APP.use(
   cors({
-    origin: "'http://eloinflater.com'",
+    origin: "http://eloinflater.com",
   })
 );
 
