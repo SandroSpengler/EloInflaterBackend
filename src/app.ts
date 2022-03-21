@@ -67,7 +67,7 @@ const schedule = async () => {
     // await validateSummonerLeague("MASTER");
 
     await updateQueuedSummoners("CHALLENGER");
-    await updateQueuedSummoners("GRANDMASTER");
+    // await updateQueuedSummoners("GRANDMASTER");
 
     await setTimeout(function () {
       console.log("Going to restart");
