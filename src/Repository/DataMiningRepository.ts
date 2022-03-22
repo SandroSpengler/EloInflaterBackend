@@ -64,8 +64,8 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
         }
 
         await updateSummonerBySummonerID(summoner);
-      } catch (error) {
-        throw error;
+      } catch (error: any) {
+        console.log(error.message);
         break;
       }
     }
