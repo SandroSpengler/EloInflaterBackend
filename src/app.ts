@@ -63,11 +63,11 @@ APP.listen(PORT, () => {
 
 const schedule = async () => {
   try {
-    // await validateSummonerIds("CHALLENGER");
+    await validateSummonerIds("CHALLENGER");
     // await validateSummonerIds("GRANDMASTER");
     // await validateSummonerIds("MASTER");
 
-    // await validateSummonerLeague("CHALLENGER");
+    await validateSummonerLeague("CHALLENGER");
     // await validateSummonerLeague("GRANDMASTER");
     // await validateSummonerLeague("MASTER");
 

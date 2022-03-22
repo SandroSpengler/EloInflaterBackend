@@ -1,11 +1,7 @@
 import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { getSummonerBySummonerId, getMatchesIdsBySummonerpuuid, getMatchByMatchId } from "../Services/Http";
-import {
-  addMatchesForSummonerPUUID,
-  createMatchWithSummonerInformation,
-  findAllMatchesBySummonerId,
-} from "./MatchRepository";
+import { createMatchWithSummonerInformation, findMatchById } from "./MatchRepository";
 import { findAllSummonersByRank, updateSummonerByPUUID, updateSummonerBySummonerID } from "./SummonerRepository";
 
 export const checkForNewSummonerMatches = async (updateType: string) => {
@@ -41,28 +37,32 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
       try {
         // Check what matches arent already in summoner
 
-        let newMatchIds: String[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
-        let existingMatches: MatchData[] | null = await findAllMatchesBySummonerId(summoner.summonerId);
+        let newMatchIds: string[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
 
         if (newMatchIds === undefined || newMatchIds === null || newMatchIds.length === 0) continue;
 
-        if (existingMatches === undefined || existingMatches === null) continue;
+        let matchesToUpdate: string[] = [];
 
-        let matchesToUpdate: String[] = newMatchIds.filter((newMatchId) => {
-          return !existingMatches?.some((currentMatch) => currentMatch._id === newMatchId);
-        });
+        for (const newMatchId of newMatchIds) {
+          let exsistingMatch = await findMatchById(newMatchId);
+
+          if (exsistingMatch != null && exsistingMatch[0] === undefined) {
+            matchesToUpdate.push(newMatchId);
+          }
+        }
 
         if (matchesToUpdate === undefined || matchesToUpdate.length === 0) continue;
 
         for (const [index, matchid] of matchesToUpdate.entries()) {
           let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
 
+          summoner.lastMatchUpdate = new Date().getTime();
+
           await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
 
           console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
         }
 
-        summoner.lastMatchUpdate = new Date().getTime();
         await updateSummonerBySummonerID(summoner);
       } catch (error) {
         break;

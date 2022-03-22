@@ -16,15 +16,15 @@ export const findAllMachtes = async (): Promise<MatchData[] | null> => {
   return null;
 };
 
-export const findMatchById = async (matchId: string): Promise<MatchData | null> => {
-  let matchById: MatchData | null;
+export const findMatchById = async (matchId: string): Promise<MatchData[] | null> => {
+  let matchById: MatchData[] | null;
   try {
     matchById = await MatchSchema.find({ _id: matchId }).lean();
 
     return matchById;
-  } catch (error) {}
-
-  return null;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const findAllMatchesBySummonerId = async (summonerId: string): Promise<MatchData[] | null> => {
@@ -58,8 +58,6 @@ export const createMatchWithSummonerInformation = async (
     let tmpMatch = new MatchSchema();
 
     tmpMatch._id = match.metadata.matchId;
-    tmpMatch.summonerId = summonerId;
-    tmpMatch.summonerPUUID = summonerPUUID;
     tmpMatch.metadata = match.metadata;
     tmpMatch.info = match.info;
 

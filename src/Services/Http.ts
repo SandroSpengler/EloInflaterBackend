@@ -76,9 +76,9 @@ export const getSummonersByLeague = async (queueType, queueMode): Promise<AxiosR
   }
 };
 
-export const getMatchesIdsBySummonerpuuid = async (puuid: String): Promise<AxiosResponse<String[]>> => {
+export const getMatchesIdsBySummonerpuuid = async (puuid: string): Promise<AxiosResponse<string[]>> => {
   try {
-    const request = axios.get<String[]>(
+    const request = axios.get<string[]>(
       `${buildBaseUrl(matchRegionUrl, "match/v5/matches/by-puuid/")}${puuid}/ids?start=0&count=100`,
       buildConfig()
     );
