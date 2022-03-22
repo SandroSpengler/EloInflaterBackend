@@ -27,7 +27,7 @@ export const getSummonerByName = async (name, datafarming?: boolean): Promise<Ax
 
     return await response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw error;
   }
 };
@@ -40,7 +40,7 @@ export const getSummonerBySummonerId = async (id: string): Promise<AxiosResponse
 
     return await response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw error;
   }
 };
@@ -71,7 +71,7 @@ export const getSummonersByLeague = async (queueType, queueMode): Promise<AxiosR
 
     return await response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw error;
   }
 };
@@ -87,7 +87,7 @@ export const getMatchesIdsBySummonerpuuid = async (puuid: string): Promise<Axios
 
     return await response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw error;
   }
 };
@@ -103,7 +103,7 @@ export const getMatchByMatchId = async (matchId: String): Promise<AxiosResponse<
 
     return await response;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw error;
   }
 };
