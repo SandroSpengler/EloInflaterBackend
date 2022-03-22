@@ -22,6 +22,7 @@ const APP: Application = express();
 
 const summonerController = require("./Route/Api/Data/SummonerData");
 const leaugeController = require("./Route/Api/Data/SummonerByLeagueData");
+const matchController = require("./Route/Api/Data/Match");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
 
 let corsOptions = {
@@ -41,6 +42,7 @@ APP.get("/", (req: Request, res: Response) => {
 
 APP.use("/api/data/summoner", jsonParser, summonerController);
 APP.use("/api/data/league", jsonParser, leaugeController);
+APP.use("/api/data/match", jsonParser, matchController);
 APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 
 const connectToMongoDB = () => {
