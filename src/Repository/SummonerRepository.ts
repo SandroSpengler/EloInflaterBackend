@@ -12,6 +12,7 @@ import { IMatchSchema } from "../Models/Interfaces/MatchList";
 
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 import axios, { AxiosError } from "axios";
+import { addMatchesForSummonerPUUID } from "./MatchRepository";
 
 //#region Summoner MongoDB
 export const findAllSummoners = async (): Promise<Summoner[] | null> => {
@@ -30,7 +31,9 @@ export const findAllSummoners = async (): Promise<Summoner[] | null> => {
 
 export const findAllSummonersByRank = async (rank: string, queueType?: string) => {
   try {
-    let foundSummoner: Summoner[] | null = await SummonerSchema.find({ rankSolo: rank }).lean(); // .lean() returns only the json and not the mongoose.document
+    let foundSummoner: Summoner[] | null;
+
+    foundSummoner = await SummonerSchema.find({ rankSolo: rank }).populate("matchList").lean();
 
     if (foundSummoner != null) return foundSummoner;
 
@@ -213,89 +216,6 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   if (summoner.updatedAt! < new Date().getTime()) return true;
 
   return false;
-};
-
-export const updateQueuedSummoners = async (updateType: string) => {
-  console.log("3. Starting to search for matches");
-  let queuedSummoners: Summoner[] | null = [];
-
-  try {
-    queuedSummoners = await findAllSummonersByRank(updateType);
-
-    if (queuedSummoners === null || queuedSummoners.length === 0) return;
-
-    for (let [index, summoner] of queuedSummoners.entries()) {
-      console.log(`3. Getting Matches for ${summoner.name}: ${updateType} index: ${index}`);
-
-      if (summoner.matchList === undefined) {
-        summoner.matchList = [];
-        updateSummonerByPUUID(summoner);
-      }
-
-      try {
-        if (summoner.puuid === "" || summoner.puuid === undefined) {
-          summoner.puuid = (await getSummonerBySummonerId(summoner._id)).data.puuid;
-        }
-      } catch (error) {
-        break;
-      }
-
-      try {
-        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! < new Date().getTime() - 3600) {
-          console.log(`3. summoner ${summoner.name} already checked during the last 1 Hour`);
-
-          continue;
-        }
-      } catch (error) {}
-
-      try {
-        let summonerMatches: String[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
-
-        // Check if summoner already has those matches
-
-        let matchesToUpdate = summonerMatches.filter((matchId) => {
-          return !summoner.matchList.some((element) => element.metadata[0].matchId === matchId);
-        });
-
-        if (matchesToUpdate === undefined || matchesToUpdate.length <= 0) {
-          summoner.lastMatchUpdate = new Date().getTime();
-          await updateSummonerByPUUID(summoner);
-          continue;
-        }
-
-        for (const [index, matchid] of matchesToUpdate.entries()) {
-          summoner.lastMatchUpdate = new Date().getTime();
-          let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
-
-          summoner.matchList.push(summonerMatchDetails);
-
-          console.log(`3. Summoner Matches left ${summoner.name} ${matchesToUpdate.length - index - 1}`);
-        }
-        summoner.lastMatchUpdate = new Date().getTime();
-        await updateSummonerByPUUID(summoner);
-      } catch (error: any) {
-        if (axios.isAxiosError(error)) {
-          let axiosError: AxiosError = error;
-
-          if (axiosError.response?.status === 429) {
-            // Add Summoner to list of summoners that need updating
-
-            summoner.lastMatchUpdate = new Date().getTime();
-            await updateSummonerByPUUID(summoner);
-            break;
-          }
-        }
-        break;
-      }
-    }
-
-    // GET Summoners that need updating from db
-    // Search Summoners for summoners that need updating
-    // await updatSummonerMatches()
-  } catch (error) {
-  } finally {
-    console.log("3. Finished searching for matches ");
-  }
 };
 
 export const updatSummonerMatches = async (summoner: Summoner) => {

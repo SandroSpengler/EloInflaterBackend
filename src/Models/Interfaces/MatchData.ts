@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { Schema, Document } from "mongoose";
 import { IMatchSchema, MatchList } from "./MatchList";
 
 export interface Metadata {
@@ -327,6 +327,10 @@ export interface Info {
 }
 
 export interface MatchData extends Partial<Document> {
+  _id: String;
+  id: String;
+  summonerId: string;
+  summonerPUUID: string;
   metadata: Metadata;
   info: Info;
 }
