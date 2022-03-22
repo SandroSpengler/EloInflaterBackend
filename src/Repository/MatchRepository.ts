@@ -37,7 +37,7 @@ export const findAllMatchesBySummonerPUUID = async (summonerPUUID: string): Prom
       //   },
       // })
       .where("metadata.participants")
-      .in(["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"])
+      .in([summonerPUUID])
       // .all(["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"])
       .lean();
 

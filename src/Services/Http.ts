@@ -16,7 +16,7 @@ let genericUrl = "/lol/";
 // changes for each endpoint
 let enpointUrl = "";
 
-export const getSummonerByName = async (name, datafarming?: boolean): Promise<AxiosResponse<Summoner>> => {
+export const getSummonerByName = async (name: string): Promise<AxiosResponse<Summoner>> => {
   try {
     const request = axios.get<Summoner>(
       `${buildBaseUrl(regionUrl, "summoner/v4/summoners/by-name/")}${name}`,
