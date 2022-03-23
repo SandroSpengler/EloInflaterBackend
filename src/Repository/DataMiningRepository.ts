@@ -26,11 +26,9 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
       }
 
       try {
-        if (
-          summoner.lastMatchUpdate! !== undefined &&
-          new Date().getTime() - 3600 < summoner.lastMatchUpdate! &&
-          summoner.lastMatchUpdate! > new Date().getTime()
-        ) {
+        let unixTimeStamp = new Date().getTime() - 3600 * 1000;
+
+        if (summoner.lastMatchUpdate! !== undefined && unixTimeStamp < summoner.lastMatchUpdate!) {
           console.log(`3. Summoner ${summoner.name} already checked during the last 1 Hour`);
 
           continue;
@@ -42,6 +40,8 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
         // Check what matches arent already in summoner
 
         let newMatchIds: string[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
+        summoner.lastMatchUpdate = new Date().getTime();
+        await updateSummonerBySummonerID(summoner);
 
         if (newMatchIds === undefined || newMatchIds === null || newMatchIds.length === 0) continue;
 
@@ -59,8 +59,6 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
 
         for (const [index, matchid] of matchesToUpdate.entries()) {
           let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
-
-          summoner.lastMatchUpdate = new Date().getTime();
 
           await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
 
