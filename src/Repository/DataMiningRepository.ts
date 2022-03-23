@@ -26,7 +26,11 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
       }
 
       try {
-        if (summoner.lastMatchUpdate! !== undefined && summoner.lastMatchUpdate! > new Date().getTime() - 3600) {
+        if (
+          summoner.lastMatchUpdate! !== undefined &&
+          new Date().getTime() - 3600 < summoner.lastMatchUpdate! &&
+          summoner.lastMatchUpdate! > new Date().getTime()
+        ) {
           console.log(`3. Summoner ${summoner.name} already checked during the last 1 Hour`);
 
           continue;
