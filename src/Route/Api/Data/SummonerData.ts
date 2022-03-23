@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 router.get("/:name", async (req, res) => {
   if (req.params.name) {
     try {
-      let queryName = encodeURI(req.params.name);
+      let queryName = req.params.name;
 
       // Search by PUUID and by Name to get 1 less requeset
       // let summonerInDB = await findSummonerByName(Response.data.name);
@@ -61,9 +61,6 @@ router.get("/:name", async (req, res) => {
           return res.status(404).json({ success: false, message: "Summoner not found" });
         }
       }
-
-      res.status(500);
-      res.send("Error");
     }
   }
 });
