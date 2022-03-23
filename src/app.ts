@@ -80,7 +80,7 @@ const schedule = async () => {
     await setTimeout(function () {
       console.log("Going to restart");
       schedule();
-    }, 1000 * 60);
+    }, 1000 * 90);
   } catch (error: any) {
     console.log(error.message);
   }
