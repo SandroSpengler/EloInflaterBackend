@@ -212,13 +212,11 @@ export const updateSummonerByLeague = async (leagueName: string, entries: Entrie
 //#region Summoner Processing
 
 export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
-  if (summoner.updatedAt! < new Date().getTime()) return true;
+  let unixTimeStamp = new Date().getTime() - 240 * 1000;
+
+  if (unixTimeStamp < summoner.updatedAt!) return true;
 
   return false;
-};
-
-export const updatSummonerMatches = async (summoner: Summoner) => {
-  console.log("updating summoner");
 };
 
 export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData): IMatchSchema => {

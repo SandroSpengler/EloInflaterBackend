@@ -6,6 +6,7 @@ import { Request, response, Response } from "express";
 import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
 import Summoner from "../../../Models/Interfaces/Summoner";
 import { EntriesByLeague } from "../../../Models/Interfaces/SummonerByLeague";
+import { updatSummonerMatches } from "../../../Repository/DataMiningRepository";
 import {
   checkIfSummonerCanBeUpdated,
   createSummoner,
@@ -16,7 +17,6 @@ import {
   setUpdateSummonerDate,
   updateSummonerBySummonerID,
   updateSummonerByLeague,
-  updatSummonerMatches,
   findSummonerByName,
   updateSumonersByQueue,
 } from "../../../Repository/SummonerRepository";
@@ -59,11 +59,8 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
     });
   }
 
-  // update Summoner Matches
-  let updatedMatchCounter;
-
   try {
-    updatedMatchCounter = await updatSummonerMatches(summonerInDB);
+    await updatSummonerMatches(summonerInDB);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       let axiosError: AxiosError = error;
@@ -86,7 +83,7 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
   return res.status(200).json({
     success: true,
-    result: `${updatedMatchCounter} Matches Added`,
+    result: `Summoner has been updated`,
   });
 });
 

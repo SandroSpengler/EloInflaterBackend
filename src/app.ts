@@ -3,7 +3,7 @@ import { Application, Request, Response, NextFunction } from "express";
 import * as express from "express";
 
 import { ConnectionOptions } from "tls";
-import { updatSummonerMatches, validateSummonerIds, validateSummonerLeague } from "./Repository/SummonerRepository";
+import { validateSummonerIds, validateSummonerLeague } from "./Repository/SummonerRepository";
 import axios, { AxiosError } from "axios";
 import { checkForNewSummonerMatches } from "./Repository/DataMiningRepository";
 
