@@ -33,7 +33,7 @@ export const findAllSummonersByRank = async (rank: string, queueType?: string) =
   try {
     let foundSummoner: Summoner[] | null;
 
-    foundSummoner = await SummonerSchema.find({ rankSolo: rank }).populate("matchList").lean();
+    foundSummoner = await SummonerSchema.find({ rankSolo: rank }).lean();
 
     if (foundSummoner != null) return foundSummoner;
 
@@ -123,7 +123,6 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.inactive = summoner.inactive;
     tmpSummoner.freshBlood = summoner.freshBlood;
     tmpSummoner.hotStreak = summoner.hotStreak;
-    tmpSummoner.matchList = summoner.matchList;
     tmpSummoner.updatedAt = new Date().getTime();
 
     summoner = await tmpSummoner.save();
@@ -306,7 +305,6 @@ export const updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeag
         inactive: summonerByLeagueInDB.entries[i].inactive,
         freshBlood: summonerByLeagueInDB.entries[i].freshBlood,
         hotStreak: summonerByLeagueInDB.entries[i].hotStreak,
-        matchList: [],
         updatedAt: summonerByLeagueInDB.updatedAt,
       };
 

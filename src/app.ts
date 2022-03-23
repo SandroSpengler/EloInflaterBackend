@@ -67,14 +67,15 @@ const schedule = async () => {
   try {
     await validateSummonerIds("CHALLENGER");
     await validateSummonerIds("GRANDMASTER");
-    // await validateSummonerIds("MASTER");
+    await validateSummonerIds("MASTER");
 
     await validateSummonerLeague("CHALLENGER");
     await validateSummonerLeague("GRANDMASTER");
-    // await validateSummonerLeague("MASTER");
+    await validateSummonerLeague("MASTER");
 
     await checkForNewSummonerMatches("CHALLENGER");
     await checkForNewSummonerMatches("GRANDMASTER");
+    await checkForNewSummonerMatches("MASTER");
 
     await setTimeout(function () {
       console.log("Going to restart");

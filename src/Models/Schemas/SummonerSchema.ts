@@ -64,10 +64,6 @@ const SummonerSchema: Schema = new Schema(
     hotStreak: {
       type: Boolean,
     },
-    matchList: {
-      type: [],
-      default: [],
-    },
     lastRankUpdate: {
       type: Number,
     },

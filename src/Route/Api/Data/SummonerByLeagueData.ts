@@ -14,6 +14,10 @@ router.get("/:rankSolo/:queueType", async (req, res) => {
     const summoners = await findAllSummonersByRank(rank);
 
     if (summoners != null && summoners!.length > 0) {
+      summoners.sort((summonerA, summonerB) => {
+        return summonerA.leaguePoints! > summonerB.leaguePoints! ? -1 : 1;
+      });
+
       return res.status(200).json({
         success: true,
         result: summoners,

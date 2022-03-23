@@ -22,7 +22,6 @@ export default interface Summoner extends Partial<Document> {
   inactive?: boolean;
   freshBlood?: boolean;
   hotStreak?: boolean;
-  matchList: MatchData[];
   lastRankUpdate?: number;
   lastMatchUpdate?: number;
   createdAt?: number;
