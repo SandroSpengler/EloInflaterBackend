@@ -21,6 +21,7 @@ export const formatSummonerForSending = (summoner: Summoner): Summoner => {
       freshBlood: summoner.freshBlood,
       hotStreak: summoner.hotStreak,
       updatedAt: summoner.updatedAt,
+      lastMatchUpdate: summoner.lastMatchUpdate,
     };
 
     return summonerToSend;

@@ -53,7 +53,7 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
   // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
   if (!checkIfSummonerCanBeUpdated(summonerInDB)) {
-    res.status(409).json({
+    return res.status(409).json({
       success: false,
       result: "Summoner already been updated within the last hour",
     });
