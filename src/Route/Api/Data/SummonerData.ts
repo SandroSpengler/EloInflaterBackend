@@ -53,7 +53,7 @@ router.get("/:name", async (req, res) => {
         success: true,
         result: "Summoner not Found",
       });
-    } catch (error) {
+    } catch (error: any) {
       if (axios.isAxiosError(error)) {
         let axiosError: AxiosError = error;
 
@@ -61,6 +61,8 @@ router.get("/:name", async (req, res) => {
           return res.status(404).json({ success: false, message: "Summoner not found" });
         }
       }
+
+      return res.status(500).json({ succes: false, message: error.message });
     }
   }
 });
