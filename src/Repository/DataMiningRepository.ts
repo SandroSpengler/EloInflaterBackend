@@ -119,5 +119,7 @@ export const updatSummonerMatches = async (summoner: Summoner) => {
       console.log(error.message);
       throw error;
     }
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
