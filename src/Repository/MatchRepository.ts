@@ -194,6 +194,7 @@ export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) =>
       }
     });
 
+    summoner.matchCount = summonerMatches.length;
     summoner.exhaustCount = exhaustCount;
     summoner.exhaustCastCount = exhaustCastCount;
     summoner.tabisCount = tabisCount;
