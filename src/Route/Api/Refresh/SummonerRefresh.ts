@@ -7,6 +7,7 @@ import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
 import Summoner from "../../../Models/Interfaces/Summoner";
 import { EntriesByLeague } from "../../../Models/Interfaces/SummonerByLeague";
 import { updatSummonerMatches } from "../../../Repository/DataMiningRepository";
+import { checkSummonerMatchesForEloInflation } from "../../../Repository/MatchRepository";
 import {
   checkIfSummonerCanBeUpdated,
   createSummoner,
@@ -61,6 +62,8 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
 
   try {
     await updatSummonerMatches(summonerInDB);
+
+    await checkSummonerMatchesForEloInflation(summonerInDB);
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       let axiosError: AxiosError = error;

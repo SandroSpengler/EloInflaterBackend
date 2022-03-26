@@ -64,6 +64,24 @@ const SummonerSchema: Schema = new Schema(
     hotStreak: {
       type: Boolean,
     },
+    matchCount: {
+      type: Number,
+    },
+    exhaustCount: {
+      type: Number,
+    },
+    exhaustCastCount: {
+      type: Number,
+    },
+    tabisCount: {
+      type: Number,
+    },
+    zhonaysCount: {
+      type: Number,
+    },
+    zhonaysCastCount: {
+      type: Number,
+    },
     lastRankUpdate: {
       type: Number,
     },

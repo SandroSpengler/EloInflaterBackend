@@ -1,7 +1,11 @@
 import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { getSummonerBySummonerId, getMatchesIdsBySummonerpuuid, getMatchByMatchId } from "../Services/Http";
-import { createMatchWithSummonerInformation, findMatchById } from "./MatchRepository";
+import {
+  checkSummonerMatchesForEloInflation,
+  createMatchWithSummonerInformation,
+  findMatchById,
+} from "./MatchRepository";
 import { findAllSummonersByRank, updateSummonerByPUUID, updateSummonerBySummonerID } from "./SummonerRepository";
 
 export const checkForNewSummonerMatches = async (updateType: string) => {
