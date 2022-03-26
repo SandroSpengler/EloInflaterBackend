@@ -214,6 +214,8 @@ export const updateSummonerByLeague = async (leagueName: string, entries: Entrie
 export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   let unixTimeStamp = new Date().getTime() - 240 * 1000;
 
+  if (summoner.lastMatchUpdate === undefined) return true;
+
   if (unixTimeStamp > summoner.lastMatchUpdate!) return true;
 
   return false;

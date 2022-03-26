@@ -16,6 +16,7 @@ export const formatSummonerForSending = (summoner: Summoner): Summoner => {
       rank: summoner.rank,
       wins: summoner.wins,
       losses: summoner.losses,
+      rankSolo: summoner.rankSolo,
       veteran: summoner.veteran,
       inactive: summoner.inactive,
       freshBlood: summoner.freshBlood,
