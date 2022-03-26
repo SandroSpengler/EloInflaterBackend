@@ -61,6 +61,10 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
   }
 
   try {
+    await checkSummonerMatchesForEloInflation(summonerInDB);
+  } catch (error) {}
+
+  try {
     await updatSummonerMatches(summonerInDB);
 
     await checkSummonerMatchesForEloInflation(summonerInDB);
