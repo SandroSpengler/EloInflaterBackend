@@ -17,3 +17,17 @@ services:
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
       - NODE_OPTIONS=--max_old_space_size=6144
     command: npm run prod
+
+  leaguemongo:
+    container_name: "LeagueMongoPi"
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ~/External/Databases/MongoDBLeague/data:/data/db
+      - ~/External/Databases/Backup/MongoDBLeague:/Backup
+    networks:
+      - LeagueMongoDBNetwork

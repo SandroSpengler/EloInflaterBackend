@@ -101,6 +101,8 @@ export const addMatchesForSummonerPUUID = async (match: MatchData) => {
 
 export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
   try {
+    console.log("starting");
+
     if (summoner.matchList === undefined) return;
 
     let summonerMatches: MatchData[] | null = [];
