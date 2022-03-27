@@ -145,7 +145,7 @@ export const checkSummonerMatchIdLists = async () => {
     );
 
     for (let [index, summoner] of summonerToCheck!.entries()) {
-      console.log(`Updating Summoner ${summoner.name} at index ${index}`);
+      console.log(`Updating Summoner ${summoner.name} at index ${index} of ${summonerToCheck?.length}`);
 
       let matchesInDB = await findAllMatchesBySummonerPUUID(summoner.puuid);
 

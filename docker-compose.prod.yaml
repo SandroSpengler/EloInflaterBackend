@@ -29,5 +29,4 @@ services:
     volumes:
       - ~/External/Databases/MongoDBLeague/data:/data/db
       - ~/External/Databases/Backup/MongoDBLeague:/Backup
-    networks:
-      - LeagueMongoDBNetwork
+
