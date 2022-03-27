@@ -19,7 +19,7 @@ services:
     command: npm run prod
 
   leaguemongo:
-    container_name: "LeagueMongoPi"
+    container_name: "LeagueMongoProd"
     image: mongo:latest
     ports:
       - "27017:27017"

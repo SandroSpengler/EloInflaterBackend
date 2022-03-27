@@ -77,6 +77,8 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
 
           console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
         }
+
+        await checkSummonerMatchesForEloInflation(summoner);
       } catch (error: any) {
         console.log(error.message);
         break;
@@ -149,13 +151,13 @@ export const checkSummonerMatchIdLists = async () => {
 
       let matchesInDB = await findAllMatchesBySummonerPUUID(summoner.puuid);
 
+      summoner.matchList = [];
+
       for (let match of matchesInDB!) {
         summoner.matchList?.push(match._id.toString());
       }
 
       await updateSummonerByPUUID(summoner);
-
-      console.log("done");
     }
 
     console.log(summonerToCheck);

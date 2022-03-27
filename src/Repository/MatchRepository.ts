@@ -4,6 +4,7 @@ import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 
 import Summoner from "../Models/Interfaces/Summoner";
 import MatchSchema from "../Models/Schemas/MatchSchema";
+import { getMatchesIdsBySummonerpuuid } from "../Services/Http";
 import { updateSummonerByPUUID } from "./SummonerRepository";
 
 export const findAllMachtes = async (): Promise<MatchData[] | null> => {
@@ -101,8 +102,6 @@ export const addMatchesForSummonerPUUID = async (match: MatchData) => {
 
 export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
   try {
-    console.log("starting");
-
     if (summoner.matchList === undefined) return;
 
     let summonerMatches: MatchData[] | null = [];
