@@ -5,7 +5,7 @@ import * as express from "express";
 import { ConnectionOptions } from "tls";
 import { validateSummonerIds, validateSummonerLeague } from "./Repository/SummonerRepository";
 import axios, { AxiosError } from "axios";
-import { checkForNewSummonerMatches } from "./Repository/DataMiningRepository";
+import { checkForNewSummonerMatches, checkSummonerMatchIdLists } from "./Repository/DataMiningRepository";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -65,17 +65,19 @@ APP.listen(PORT, () => {
 
 const schedule = async () => {
   try {
-    await validateSummonerIds("CHALLENGER");
-    await validateSummonerIds("GRANDMASTER");
-    await validateSummonerIds("MASTER");
+    // await checkSummonerMatchIdLists();
 
-    await validateSummonerLeague("CHALLENGER");
-    await validateSummonerLeague("GRANDMASTER");
-    await validateSummonerLeague("MASTER");
+    // await validateSummonerIds("CHALLENGER");
+    // await validateSummonerIds("GRANDMASTER");
+    // await validateSummonerIds("MASTER");
 
-    await checkForNewSummonerMatches("CHALLENGER");
-    await checkForNewSummonerMatches("GRANDMASTER");
-    await checkForNewSummonerMatches("MASTER");
+    // await validateSummonerLeague("CHALLENGER");
+    // await validateSummonerLeague("GRANDMASTER");
+    // await validateSummonerLeague("MASTER");
+
+    // await checkForNewSummonerMatches("CHALLENGER");
+    // await checkForNewSummonerMatches("GRANDMASTER");
+    // await checkForNewSummonerMatches("MASTER");
 
     await setTimeout(function () {
       console.log("Going to restart");

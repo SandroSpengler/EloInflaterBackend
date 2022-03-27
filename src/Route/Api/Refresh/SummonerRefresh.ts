@@ -61,13 +61,12 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
   }
 
   try {
-    await checkSummonerMatchesForEloInflation(summonerInDB);
-  } catch (error) {}
-
-  try {
     await updatSummonerMatches(summonerInDB);
 
-    await checkSummonerMatchesForEloInflation(summonerInDB);
+    return res.status(200).json({
+      success: true,
+      result: `Summoner has been updated`,
+    });
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       let axiosError: AxiosError = error;
@@ -87,11 +86,25 @@ router.get("/byName/:name", async (req: Request, res: Response) => {
       result: `Summoner was not updated ${error.message}`,
     });
   }
+});
 
-  return res.status(200).json({
-    success: true,
-    result: `Summoner has been updated`,
-  });
+router.get("/byPUUID/:puuid", async (req: Request, res: Response) => {
+  try {
+    const summonerInDB = await findSummonerByPUUID(req.params.puuid);
+
+    if (summonerInDB) {
+      await checkSummonerMatchesForEloInflation(summonerInDB);
+
+      return res.status(200).json({
+        success: true,
+        result: `Summoner has been updated`,
+      });
+    }
+    return res.status(409).json({
+      success: true,
+      result: `Summoner was not updated `,
+    });
+  } catch (error) {}
 });
 
 router.get("/byQueue/:queueType/:queueMode", async (req: Request, res: Response) => {

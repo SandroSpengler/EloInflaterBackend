@@ -4,9 +4,15 @@ import { getSummonerBySummonerId, getMatchesIdsBySummonerpuuid, getMatchByMatchI
 import {
   checkSummonerMatchesForEloInflation,
   createMatchWithSummonerInformation,
+  findAllMatchesBySummonerPUUID,
   findMatchById,
 } from "./MatchRepository";
-import { findAllSummonersByRank, updateSummonerByPUUID, updateSummonerBySummonerID } from "./SummonerRepository";
+import {
+  findAllSummoners,
+  findAllSummonersByRank,
+  updateSummonerByPUUID,
+  updateSummonerBySummonerID,
+} from "./SummonerRepository";
 
 export const checkForNewSummonerMatches = async (updateType: string) => {
   console.log("3. Checking Matches in Queue " + updateType);
@@ -65,10 +71,12 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
 
           await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
 
+          summoner.matchList?.push(matchid);
+
+          await updateSummonerBySummonerID(summoner);
+
           console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
         }
-
-        await updateSummonerBySummonerID(summoner);
       } catch (error: any) {
         console.log(error.message);
         break;
@@ -89,40 +97,68 @@ export const updatSummonerMatches = async (summoner: Summoner) => {
   console.log("updating summoner");
 
   try {
-    try {
-      // Check what matches arent already in summoner
+    // Check what matches arent already in summoner
 
-      let newMatchIds: string[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
-      summoner.lastMatchUpdate = new Date().getTime();
-      await updateSummonerBySummonerID(summoner);
+    let newMatchIds: string[] = (await getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
+    summoner.lastMatchUpdate = new Date().getTime();
+    await updateSummonerBySummonerID(summoner);
 
-      if (newMatchIds === undefined || newMatchIds === null || newMatchIds.length === 0) return;
+    if (newMatchIds === undefined || newMatchIds === null || newMatchIds.length === 0) return;
 
-      let matchesToUpdate: string[] = [];
+    let matchesToUpdate: string[] = [];
 
-      for (const newMatchId of newMatchIds) {
-        let exsistingMatch = await findMatchById(newMatchId);
+    for (const newMatchId of newMatchIds) {
+      let exsistingMatch = await findMatchById(newMatchId);
 
-        if (exsistingMatch != null && exsistingMatch[0] === undefined) {
-          matchesToUpdate.push(newMatchId);
-        }
+      if (exsistingMatch != null && exsistingMatch[0] === undefined) {
+        matchesToUpdate.push(newMatchId);
       }
-
-      if (matchesToUpdate === undefined || matchesToUpdate.length === 0) return;
-
-      for (const [index, matchid] of matchesToUpdate.entries()) {
-        let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
-
-        await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
-
-        console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
-      }
-
-      await updateSummonerBySummonerID(summoner);
-    } catch (error: any) {
-      console.log(error.message);
-      throw error;
     }
+
+    if (matchesToUpdate === undefined || matchesToUpdate.length === 0) return;
+
+    for (const [index, matchid] of matchesToUpdate.entries()) {
+      let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
+
+      await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
+
+      summoner.matchList?.push(matchid);
+
+      await updateSummonerBySummonerID(summoner);
+
+      console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
+    }
+  } catch (error: any) {
+    console.log(error.message);
+    throw error;
+  } finally {
+    await checkSummonerMatchesForEloInflation(summoner);
+  }
+};
+
+export const checkSummonerMatchIdLists = async () => {
+  try {
+    let allSummoners = await findAllSummoners();
+
+    let summonerToCheck = allSummoners?.filter(
+      (summoner) => summoner.matchList === undefined || summoner.matchList.length === 0
+    );
+
+    for (let [index, summoner] of summonerToCheck!.entries()) {
+      console.log(`Updating Summoner ${summoner.name} at index ${index}`);
+
+      let matchesInDB = await findAllMatchesBySummonerPUUID(summoner.puuid);
+
+      for (let match of matchesInDB!) {
+        summoner.matchList?.push(match._id.toString());
+      }
+
+      await updateSummonerByPUUID(summoner);
+
+      console.log("done");
+    }
+
+    console.log(summonerToCheck);
   } catch (error) {
     throw error;
   }

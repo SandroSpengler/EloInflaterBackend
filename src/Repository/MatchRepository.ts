@@ -101,9 +101,19 @@ export const addMatchesForSummonerPUUID = async (match: MatchData) => {
 
 export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
   try {
-    let summonerMatches: MatchData[] | null = await findAllMatchesBySummonerPUUID(summoner.puuid);
+    if (summoner.matchList === undefined) return;
 
-    if (summonerMatches === null) return;
+    let summonerMatches: MatchData[] | null = [];
+
+    for (let matchId of summoner.matchList) {
+      let detailedMatch = await findMatchById(matchId);
+
+      if (detailedMatch?.[0]) {
+        summonerMatches.push(detailedMatch![0]);
+      }
+    }
+
+    if (summonerMatches === null || summonerMatches.length === 0) return;
 
     let exhaustCount: number = 0;
     let exhaustCastCount: number = 0;
@@ -126,7 +136,7 @@ export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) =>
       matchesForSummonerPUUID.push(summonerMatch);
     }
 
-    matchesForSummonerPUUID.forEach((participant: Participant) => {
+    for (let participant of matchesForSummonerPUUID) {
       if (participant?.summoner1Id === 3) {
         // summonerMatchDetails.exhaustAbused = true;
 
@@ -192,9 +202,9 @@ export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) =>
       if (participant?.item6 === 3157) {
         zhonaysCount += 1;
       }
-    });
+    }
 
-    summoner.matchCount = summonerMatches.length;
+    // summoner.matchCount = summonerMatches.length;
     summoner.exhaustCount = exhaustCount;
     summoner.exhaustCastCount = exhaustCastCount;
     summoner.tabisCount = tabisCount;
@@ -202,9 +212,13 @@ export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) =>
 
     await updateSummonerByPUUID(summoner);
 
+    return;
+
     // await setexhaustCount(exhaustCount);
     // await setexhastCastedCount(exhaustUsedCount);
     // await setTabisCount(tabisCount);
     // await setzhonaysCount(zhonaysCount);
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };

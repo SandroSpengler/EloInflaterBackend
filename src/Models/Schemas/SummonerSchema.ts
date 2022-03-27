@@ -64,8 +64,9 @@ const SummonerSchema: Schema = new Schema(
     hotStreak: {
       type: Boolean,
     },
-    matchCount: {
-      type: Number,
+    matchList: {
+      type: [String],
+      default: [],
     },
     exhaustCount: {
       type: Number,
