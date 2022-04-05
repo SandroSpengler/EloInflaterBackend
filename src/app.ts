@@ -9,7 +9,7 @@ import { checkForNewSummonerMatches, checkSummonerMatchIdLists } from "./Reposit
 
 const mongoose = require("mongoose");
 const cors = require("cors");
-const cron = require("node-cron");
+// const cron = require("node-cron");
 
 const { PORT, DB_CONNECTION } = require("./Config/config");
 
@@ -49,20 +49,21 @@ const connectToMongoDB = () => {
   mongoose
     .connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
     .then((data) => {
-      console.log("0. connected to mongodb");
+      // console.log("0. connected to mongodb");
     })
 
     .catch((err) => {
-      console.log(err.message);
+      // console.log(err.message);
     });
 };
 
 connectToMongoDB();
 
-APP.listen(PORT, () => {
-  console.log("0. Server is running");
-});
-
+if (process.env.NODE_ENV !== "test") {
+  APP.listen(PORT, () => {
+    // console.log("0. Server is running");
+  });
+}
 const schedule = async () => {
   try {
     // await checkSummonerMatchIdLists();
@@ -93,5 +94,7 @@ if (process.env.RUN_JOB === "start") {
   console.log("starting");
 }
 if (process.env.RUN_JOB === "stop") {
-  console.log("0. not running any background jobs");
+  // console.log("0. not running any background jobs");
 }
+
+export { APP };
