@@ -9,6 +9,7 @@
     "strict": true,
     "noImplicitAny": false,
     "esModuleInterop": false,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noEmit": true
   }
 }
