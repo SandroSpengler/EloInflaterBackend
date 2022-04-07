@@ -5,13 +5,14 @@
   "main": "src/app.js",
   "scripts": {
     "prod": "tsc --project ./ && node build/app.js ",
-    "test": "jest --watchAll --verbose",
+    "test": "jest --watchAll --watch --verbose",
     "dev": "nodemon",
     "build": ""
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/supertest": "^2.0.12",
     "axios": "^0.26.0",
     "body-parser": "^1.19.2",
     "cors": "^2.8.5",

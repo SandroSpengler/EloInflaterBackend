@@ -49,7 +49,9 @@ const connectToMongoDB = () => {
   mongoose
     .connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
     .then((data) => {
-      // console.log("0. connected to mongodb");
+      if (process.env.NODE_ENV !== "test") {
+        console.log("0. connected to mongodb");
+      }
     })
 
     .catch((err) => {
@@ -61,7 +63,7 @@ connectToMongoDB();
 
 if (process.env.NODE_ENV !== "test") {
   APP.listen(PORT, () => {
-    // console.log("0. Server is running");
+    console.log("0. Server is running");
   });
 }
 const schedule = async () => {
