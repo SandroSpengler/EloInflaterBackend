@@ -5,7 +5,7 @@
   "main": "src/app.js",
   "scripts": {
     "prod": "tsc --project ./ && node build/app.js ",
-    "test": "jest --watchAll --watch --verbose",
+    "test": "jest --watchAll --verbose",
     "dev": "nodemon",
     "build": ""
   },

@@ -45,8 +45,8 @@ APP.use("/api/data/league", jsonParser, leaugeController);
 APP.use("/api/data/match", jsonParser, matchController);
 APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 
-const connectToMongoDB = () => {
-  mongoose
+const connectToMongoDB = async () => {
+  await mongoose
     .connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
     .then((data) => {
       if (process.env.NODE_ENV !== "test") {
@@ -99,4 +99,4 @@ if (process.env.RUN_JOB === "stop") {
   // console.log("0. not running any background jobs");
 }
 
-export { APP };
+export { APP, connectToMongoDB };
