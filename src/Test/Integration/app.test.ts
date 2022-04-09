@@ -11,7 +11,12 @@ describe("Server startup", () => {
     expect(response.text).toMatch(/(<h1>)/);
   });
 
-  it("Expect a single Summoner", async () => {
+  afterEach(async () => {});
+});
+
+//#region Summoner Tests
+describe("Summoner CRUD-Endpoint", () => {
+  it("Expect a single Summoner with name and matchlist", async () => {
     let requestSummonerName = "forevermates";
 
     const response = await request(APP).get(`/api/data/summoner/${requestSummonerName}`);
@@ -29,5 +34,63 @@ describe("Server startup", () => {
     );
   });
 
-  afterEach(async () => {});
+  it("Expect all summoners with rankSolo matching challenger", async () => {
+    const response = await request(APP).get("/api/data/league/challenger/rankedsolo");
+
+    expect(response.statusCode === 200);
+
+    const summonersByRankSolo: Summoner[] = response.body.result;
+
+    expect(summonersByRankSolo.length).toEqual(300);
+
+    expect(summonersByRankSolo).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.any(String),
+          _id: expect.any(String),
+          matchList: expect.arrayContaining([expect.any(String)]),
+        }),
+      ])
+    );
+  });
+  it("Expect all summoners with rankSolo matching grandMaster", async () => {
+    const response = await request(APP).get("/api/data/league/grandmaster/rankedsolo");
+
+    expect(response.statusCode === 200);
+
+    const summonersByRankSolo: Summoner[] = response.body.result;
+
+    expect(summonersByRankSolo.length).toEqual(700);
+
+    expect(summonersByRankSolo).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.any(String),
+          _id: expect.any(String),
+          matchList: expect.arrayContaining([expect.any(String)]),
+        }),
+      ])
+    );
+  });
+
+  it("Expect all summoners with rankSolo matching master", async () => {
+    const response = await request(APP).get("/api/data/league/master/rankedsolo");
+
+    expect(response.statusCode === 200);
+
+    const summonersByRankSolo: Summoner[] = response.body.result;
+
+    expect(summonersByRankSolo.length).toBeGreaterThan(3000);
+
+    expect(summonersByRankSolo).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: expect.any(String),
+          _id: expect.any(String),
+          matchList: expect.arrayContaining([expect.any(String)]),
+        }),
+      ])
+    );
+  });
 });
+//#endregion
