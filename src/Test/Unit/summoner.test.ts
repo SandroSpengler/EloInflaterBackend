@@ -5,6 +5,7 @@ import {
   findSummonerByName,
   findSummonerByPUUID,
   findSummonerByID,
+  findAllSummonersByRank,
 } from "../../Repository/SummonerRepository";
 
 describe("Summoner Queries", () => {
@@ -67,6 +68,61 @@ describe("Summoner Queries", () => {
         tabisCount: expect.any(Number),
         summonerLevel: expect.any(Number),
       })
+    );
+  });
+
+  it("Expect to find all Summoners by Rank - CHALLENGER", async () => {
+    const rankSolo: string = "CHALLENGER";
+    const summonersByRank: Summoner[] | null = await findAllSummonersByRank(rankSolo);
+
+    expect(summonersByRank).not.toBeNull();
+    expect(summonersByRank?.length!).toBeGreaterThan(0);
+
+    expect(summonersByRank).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          rankSolo: rankSolo,
+          name: expect.any(String),
+          wins: expect.any(Number),
+          veteran: expect.any(Boolean),
+        }),
+      ])
+    );
+  });
+  it("Expect to find all Summoners by Rank - GRANDMASTER", async () => {
+    const rankSolo: string = "GRANDMASTER";
+    const summonersByRank: Summoner[] | null = await findAllSummonersByRank(rankSolo);
+
+    expect(summonersByRank).not.toBeNull();
+    expect(summonersByRank?.length!).toBeGreaterThan(0);
+
+    expect(summonersByRank).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          rankSolo: rankSolo,
+          name: expect.any(String),
+          wins: expect.any(Number),
+          veteran: expect.any(Boolean),
+        }),
+      ])
+    );
+  });
+  it("Expect to find all Summoners by Rank - MASTER", async () => {
+    const rankSolo: string = "MASTER";
+    const summonersByRank: Summoner[] | null = await findAllSummonersByRank(rankSolo);
+
+    expect(summonersByRank).not.toBeNull();
+    expect(summonersByRank?.length!).toBeGreaterThan(0);
+
+    expect(summonersByRank).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          rankSolo: rankSolo,
+          name: expect.any(String),
+          wins: expect.any(Number),
+          veteran: expect.any(Boolean),
+        }),
+      ])
     );
   });
 });

@@ -34,7 +34,7 @@ describe("Summoner CRUD-Endpoint", () => {
     );
   });
 
-  it("Expect all summoners with rankSolo matching challenger", async () => {
+  it("Expect all Summoners with rankSolo - CHALLENGER", async () => {
     const response = await request(APP).get("/api/data/league/challenger/rankedsolo");
 
     expect(response.statusCode === 200);
@@ -53,7 +53,7 @@ describe("Summoner CRUD-Endpoint", () => {
       ])
     );
   });
-  it("Expect all summoners with rankSolo matching grandMaster", async () => {
+  it("Expect all Summoners with rankSolo - GRANDMASTER", async () => {
     const response = await request(APP).get("/api/data/league/grandmaster/rankedsolo");
 
     expect(response.statusCode === 200);
@@ -73,7 +73,7 @@ describe("Summoner CRUD-Endpoint", () => {
     );
   });
 
-  it("Expect all summoners with rankSolo matching master", async () => {
+  it("Expect all Summoners with rankSolo - MASTER", async () => {
     const response = await request(APP).get("/api/data/league/master/rankedsolo");
 
     expect(response.statusCode === 200);
