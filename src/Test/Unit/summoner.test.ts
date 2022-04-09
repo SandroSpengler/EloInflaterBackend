@@ -6,15 +6,39 @@ import {
   findSummonerByPUUID,
   findSummonerByID,
   findAllSummonersByRank,
+  createSummoner,
 } from "../../Repository/SummonerRepository";
 
 describe("Summoner Queries", () => {
   beforeAll(async () => {
     await connectToMongoDB();
+
+    const summonerToCreate: Summoner = {
+      id: "idForTestSummoner",
+      summonerId: "summonerIdForTestSummoner",
+      accountId: "accountIdForTestSummoner",
+      puuid: "puuIdForTestSummoner",
+      name: "test summoner",
+      profileIconId: 10,
+      revisionDate: 20,
+      summonerLevel: 40,
+      matchList: [
+        "EUW1_5719815682",
+        "EUW1_5747055907",
+        "EUW1_5782762281",
+        "EUW1_5782658595",
+        "EUW1_5723924098",
+        "EUW1_5710227574",
+        "EUW1_5721290766",
+      ],
+    };
+
+    await createSummoner(summonerToCreate);
   });
 
   it("Expect to find Summoner By Name", async () => {
-    const summonerName: string = "forevermates";
+    // still case sensitive
+    const summonerName: string = "test summoner";
 
     const summoner: Summoner | null = await findSummonerByName(summonerName);
 
@@ -27,14 +51,14 @@ describe("Summoner Queries", () => {
         matchList: expect.arrayContaining([expect.any(String)]),
         puuid: expect.any(String),
         tabisCount: expect.any(Number),
-        summonerLevel: expect.any(Number),
+        // summonerLevel: expect.any(Number),
       })
     );
   });
 
   it("Expect to find Summoner By PUUID", async () => {
-    const summonerPUUID: string = "tep5qDEJjHDwq81f6gxcwDc4V_G46emxRwZzXiNhKI0NWnKe4IZ0B6MCj6aMl2UplKs0haX4f-xTnA";
-    const summonerName = "forevermates";
+    const summonerPUUID: string = "puuIdForTestSummoner";
+    const summonerName = "test summoner";
 
     const summoner: Summoner | null = await findSummonerByPUUID(summonerPUUID);
 
@@ -53,8 +77,8 @@ describe("Summoner Queries", () => {
   });
 
   it("Expect to find Summoner By ID", async () => {
-    const summonerId: string = "ngQJmMrTc_zbLR8vXHAJmKJo1OmmJXP1ncWZPm_iRUJRdnM";
-    const summonerName = "forevermates";
+    const summonerId: string = "idForTestSummoner";
+    const summonerName = "test summoner";
 
     const summoner: Summoner | null = await findSummonerByID(summonerId);
 
@@ -125,4 +149,6 @@ describe("Summoner Queries", () => {
       ])
     );
   });
+
+  it.todo("Expect Summoner to get deleted");
 });

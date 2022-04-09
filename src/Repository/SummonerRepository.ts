@@ -109,20 +109,28 @@ export const createSummoner = async (summoner: Summoner): Promise<Summoner> => {
     tmpSummoner.accountId = summoner.accountId;
     tmpSummoner.puuid = summoner.puuid;
     tmpSummoner.name = summoner.name.toLowerCase();
-    tmpSummoner.profileIconId = summoner.profileIconId;
-    tmpSummoner.revisionDate = summoner.revisionDate;
-    tmpSummoner.summonerLevel = summoner.summonerLevel;
-    tmpSummoner.leaguePoints = summoner.leaguePoints;
-    tmpSummoner.rank = summoner.rank;
-    tmpSummoner.rankSolo = summoner.rankSolo;
-    tmpSummoner.flexSolo = summoner.flexSolo;
-    tmpSummoner.flextt = summoner.flextt;
-    tmpSummoner.wins = summoner.wins;
-    tmpSummoner.losses = summoner.losses;
-    tmpSummoner.veteran = summoner.veteran;
-    tmpSummoner.inactive = summoner.inactive;
-    tmpSummoner.freshBlood = summoner.freshBlood;
-    tmpSummoner.hotStreak = summoner.hotStreak;
+
+    if (summoner.profileIconId) tmpSummoner.profileIconId = summoner.profileIconId;
+    if (summoner.revisionDate) tmpSummoner.revisionDate = summoner.revisionDate;
+    if (summoner.summonerLevel) tmpSummoner.summonerLevel = summoner.summonerLevel;
+    if (summoner.leaguePoints) tmpSummoner.leaguePoints = summoner.leaguePoints;
+    if (summoner.rank) tmpSummoner.rank = summoner.rank;
+    if (summoner.rankSolo) tmpSummoner.rankSolo = summoner.rankSolo;
+    if (summoner.flexSolo) tmpSummoner.flexSolo = summoner.flexSolo;
+    if (summoner.flextt) tmpSummoner.flextt = summoner.flextt;
+    if (summoner.wins) tmpSummoner.wins = summoner.wins;
+    if (summoner.losses) tmpSummoner.losses = summoner.losses;
+    if (summoner.veteran) tmpSummoner.veteran = summoner.veteran;
+    if (summoner.inactive) tmpSummoner.inactive = summoner.inactive;
+    if (summoner.freshBlood) tmpSummoner.freshBlood = summoner.freshBlood;
+    if (summoner.hotStreak) tmpSummoner.hotStreak = summoner.hotStreak;
+    if (summoner.matchList) tmpSummoner.matchList = summoner.matchList;
+    if (summoner.exhaustCount) tmpSummoner.exhaustCount = summoner.exhaustCount;
+    if (summoner.exhaustCastCount) tmpSummoner.exhaustCastCount = summoner.exhaustCastCount;
+    if (summoner.tabisCount) tmpSummoner.tabisCount = summoner.tabisCount;
+    if (summoner.zhonaysCount) tmpSummoner.zhonaysCount = summoner.zhonaysCount;
+    if (summoner.zhonaysCastCount) tmpSummoner.zhonaysCastCount = summoner.zhonaysCastCount;
+
     tmpSummoner.updatedAt = new Date().getTime();
 
     summoner = await tmpSummoner.save();

@@ -8,9 +8,9 @@ export default interface Summoner extends Partial<Document> {
   accountId: string;
   puuid: string;
   name: string;
-  profileIconId: number;
-  revisionDate: number;
-  summonerLevel: number;
+  profileIconId?: number;
+  revisionDate?: number;
+  summonerLevel?: number;
   leaguePoints?: number;
   rank?: string;
   rankSolo?: string;
