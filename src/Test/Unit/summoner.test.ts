@@ -7,6 +7,7 @@ import {
   findSummonerByID,
   findAllSummonersByRank,
   createSummoner,
+  deleteSummonerById,
 } from "../../Repository/SummonerRepository";
 
 describe("Summoner Queries", () => {
@@ -51,7 +52,7 @@ describe("Summoner Queries", () => {
         matchList: expect.arrayContaining([expect.any(String)]),
         puuid: expect.any(String),
         tabisCount: expect.any(Number),
-        // summonerLevel: expect.any(Number),
+        summonerLevel: expect.any(Number),
       })
     );
   });
@@ -150,5 +151,15 @@ describe("Summoner Queries", () => {
     );
   });
 
-  it.todo("Expect Summoner to get deleted");
+  it("Expect Summoner to get deleted", async () => {
+    const summonerBeforeDelete: Summoner | null = await findSummonerByID("idForTestSummoner");
+
+    expect(summonerBeforeDelete).toBeDefined();
+
+    await deleteSummonerById(summonerBeforeDelete?._id!);
+
+    const summonerAfterDelete = await findSummonerByID(summonerBeforeDelete?.id!);
+
+    expect(summonerAfterDelete).toBeNull();
+  });
 });

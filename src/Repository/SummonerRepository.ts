@@ -182,6 +182,14 @@ export const findSummonerByLeague = async (leagueName: string, queue: string): P
   }
 };
 
+export const deleteSummonerById = async (summonerId: string) => {
+  try {
+    await SummonerSchema.deleteOne({ _id: summonerId }).exec();
+  } catch (error) {
+    throw error;
+  }
+};
+
 //#endregion
 
 //#region SummonerByLeague MongoDB
