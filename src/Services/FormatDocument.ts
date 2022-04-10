@@ -4,8 +4,8 @@ import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 export const formatSummonerForSending = (summoner: Summoner): Summoner => {
   try {
     let summonerToSend = {
-      id: summoner.summonerId,
-      summonerId: summoner.summonerId,
+      id: summoner._id,
+      summonerId: summoner._id,
       accountId: summoner.accountId,
       puuid: summoner.puuid,
       name: summoner.name,

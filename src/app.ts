@@ -24,6 +24,7 @@ const summonerController = require("./Route/Api/Data/SummonerData");
 const leaugeController = require("./Route/Api/Data/SummonerByLeagueData");
 const matchController = require("./Route/Api/Data/Match");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
+const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
 
 let corsOptions = {
   origin: "*",
@@ -44,6 +45,7 @@ APP.use("/api/data/summoner", jsonParser, summonerController);
 APP.use("/api/data/league", jsonParser, leaugeController);
 APP.use("/api/data/match", jsonParser, matchController);
 APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
+APP.use("/api/refresh/match", jsonParser, matchRefreshController);
 
 const connectToMongoDB = async () => {
   await mongoose
