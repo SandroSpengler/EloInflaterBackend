@@ -3,7 +3,7 @@ import Summoner from "../Models/Interfaces/Summoner";
 import { getSummonerBySummonerId, getMatchesIdsBySummonerpuuid, getMatchByMatchId } from "../Services/Http";
 import {
   checkSummonerMatchesForEloInflation,
-  createMatchWithSummonerInformation,
+  createMatch,
   findAllMatchesBySummonerPUUID,
   findMatchById,
 } from "./MatchRepository";
@@ -59,7 +59,7 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
         for (const newMatchId of newMatchIds) {
           let exsistingMatch = await findMatchById(newMatchId);
 
-          if (exsistingMatch != null && exsistingMatch[0] === undefined) {
+          if (exsistingMatch != null && exsistingMatch === undefined) {
             matchesToUpdate.push(newMatchId);
           }
         }
@@ -69,7 +69,7 @@ export const checkForNewSummonerMatches = async (updateType: string) => {
         for (const [index, matchid] of matchesToUpdate.entries()) {
           let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
 
-          await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
+          await createMatch(summonerMatchDetails);
 
           summoner.matchList?.push(matchid);
 
@@ -112,7 +112,7 @@ export const updatSummonerMatches = async (summoner: Summoner) => {
     for (const newMatchId of newMatchIds) {
       let exsistingMatch = await findMatchById(newMatchId);
 
-      if (exsistingMatch != null && exsistingMatch[0] === undefined) {
+      if (exsistingMatch != null && exsistingMatch === undefined) {
         matchesToUpdate.push(newMatchId);
       }
     }
@@ -122,7 +122,7 @@ export const updatSummonerMatches = async (summoner: Summoner) => {
     for (const [index, matchid] of matchesToUpdate.entries()) {
       let summonerMatchDetails = (await getMatchByMatchId(matchid)).data;
 
-      await createMatchWithSummonerInformation(summonerMatchDetails, summoner.puuid, summoner.id);
+      await createMatch(summonerMatchDetails);
 
       summoner.matchList?.push(matchid);
 

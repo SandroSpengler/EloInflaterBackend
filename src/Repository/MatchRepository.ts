@@ -18,12 +18,31 @@ export const findAllMachtes = async (): Promise<MatchData[] | null> => {
   return null;
 };
 
-export const findMatchById = async (matchId: string): Promise<MatchData[] | null> => {
-  let matchById: MatchData[] | null;
+export const findMatchById = async (matchId: string): Promise<MatchData | null> => {
+  let matchById: MatchData | null;
   try {
-    matchById = await MatchSchema.find({ _id: matchId }).lean();
+    matchById = await MatchSchema.findOne({ _id: matchId }).lean();
 
     return matchById;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const findMatchesByIdList = async (matchIdList: string[]): Promise<MatchData[] | null> => {
+  let foundMatches: MatchData[] = [];
+  try {
+    if (!matchIdList || matchIdList.length === 0) return null;
+
+    for (const matchId of matchIdList) {
+      let matchById = await MatchSchema.findOne({ _id: matchId }).lean();
+
+      if (matchById === null) continue;
+
+      foundMatches.push(matchById);
+    }
+
+    return foundMatches;
   } catch (error) {
     return null;
   }
@@ -33,15 +52,16 @@ export const findAllMatchesBySummonerPUUID = async (summonerPUUID: string): Prom
   let matchesById: MatchData[] | null;
   try {
     matchesById = await MatchSchema.find({})
+      .lean()
       // .find({
       //   "metadata.participants": {
       //     $in: ["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"],
       //   },
       // })
       .where("metadata.participants")
-      .in([summonerPUUID])
-      // .all(["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"])
-      .lean();
+      .in([summonerPUUID]);
+
+    // .all(["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"])
 
     //  .in([String]) or {$in:[String]}
     // ONE of the values inside that array has to be present
@@ -57,11 +77,7 @@ export const findAllMatchesBySummonerPUUID = async (summonerPUUID: string): Prom
   }
 };
 
-export const createMatchWithSummonerInformation = async (
-  match: MatchData,
-  summonerPUUID,
-  summonerId: string
-): Promise<MatchData | null> => {
+export const createMatch = async (match: MatchData): Promise<MatchData | null> => {
   try {
     let tmpMatch = new MatchSchema();
 
@@ -109,8 +125,8 @@ export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) =>
     for (let matchId of summoner.matchList) {
       let detailedMatch = await findMatchById(matchId);
 
-      if (detailedMatch?.[0]) {
-        summonerMatches.push(detailedMatch![0]);
+      if (detailedMatch) {
+        summonerMatches.push(detailedMatch);
       }
     }
 

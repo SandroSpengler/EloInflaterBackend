@@ -527,6 +527,7 @@ const Participants: Schema = new Schema(
     },
     puuid: {
       type: String,
+      index: true,
     },
     quadraKills: {
       type: Number,
