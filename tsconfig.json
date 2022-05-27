@@ -11,6 +11,6 @@
     "noImplicitAny": false,
     "esModuleInterop": false,
     "resolveJsonModule": true,
-    "noEmit": true
+    "noEmit": false
   }
 }
