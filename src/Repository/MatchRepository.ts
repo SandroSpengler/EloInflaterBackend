@@ -29,6 +29,11 @@ export const findMatchById = async (matchId: string): Promise<MatchData | null> 
   }
 };
 
+/**
+ * Find all Matches for the MatchIds inside the Summoner.MatchList
+ *
+ * @retuns List of MatchData for Summoner
+ */
 export const findMatchesByIdList = async (matchIdList: string[]): Promise<MatchData[] | null> => {
   let foundMatches: MatchData[] = [];
   try {
@@ -116,6 +121,11 @@ export const addMatchesForSummonerPUUID = async (match: MatchData) => {
   return null;
 };
 
+/**
+ * Checks all matches of a summoner and Looks for Inflated Items/Summoners
+ *
+ * @void
+ */
 export const checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
   try {
     if (summoner.matchList === undefined) return;

@@ -2,16 +2,20 @@ import { match } from "assert";
 import { connectToMongoDB } from "../../app";
 import { MatchData } from "../../Models/Interfaces/MatchData";
 import { findAllMatchesBySummonerPUUID, findMatchById, findMatchesByIdList } from "../../Repository/MatchRepository";
+import { findSummonerByPUUID } from "../../Repository/SummonerRepository";
 
 describe("Match Queries", () => {
+  let summonerPUUID;
+
   beforeAll(async () => {
     await connectToMongoDB();
+
+    // forevermates - PUUID
+    summonerPUUID = "tep5qDEJjHDwq81f6gxcwDc4V_G46emxRwZzXiNhKI0NWnKe4IZ0B6MCj6aMl2UplKs0haX4f-xTnA";
   });
 
   // 2022/10/04 - Check after indexes are built
   it.skip("Expect matches for a Summoner by SummonerPUUID", async () => {
-    // forevermates
-    const summonerPUUID = "tep5qDEJjHDwq81f6gxcwDc4V_G46emxRwZzXiNhKI0NWnKe4IZ0B6MCj6aMl2UplKs0haX4f-xTnA";
     const matchesForSummonerByPUUID: MatchData[] | null = await findAllMatchesBySummonerPUUID(summonerPUUID);
 
     if (matchesForSummonerByPUUID === null) throw new Error();
@@ -79,5 +83,11 @@ describe("Match Queries", () => {
     for (let match of matchesInDB) {
       expect(matchList).toContain(match._id);
     }
+  });
+
+  it("Expect new Summoner Matches or 429", async () => {
+    const summoner = await findSummonerByPUUID(summonerPUUID);
+
+    let currentMatchList = summoner.matchList;
   });
 });
