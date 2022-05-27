@@ -6,7 +6,7 @@
   "scripts": {
     "prod": "tsc --project ./ && node build/app.js ",
     "test": "jest --watchAll --verbose",
-    "test:integration": "jest --watchAll --testNamePattern=app*",
+    "test:integration": "jest --watchAll --testPathPattern=src/Test/Integration",
     "dev": "nodemon",
     "build": ""
   },
