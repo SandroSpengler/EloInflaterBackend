@@ -179,7 +179,7 @@ describe("Summoner", () => {
 
       expect(sampleSummoner.updatedAt).toEqual(1648473704697);
 
-      expect(sampleSummoner?.updatedAt!).toBeLessThanw(currentDate);
+      expect(sampleSummoner?.updatedAt!).toBeLessThan(currentDate);
     });
   });
 });
