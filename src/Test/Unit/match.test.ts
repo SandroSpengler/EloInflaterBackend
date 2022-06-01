@@ -86,8 +86,8 @@ describe("Match Queries", () => {
   });
 
   it("Expect new Summoner Matches or 429", async () => {
-    const summoner = await findSummonerByPUUID(summonerPUUID);
-
-    let currentMatchList = summoner.matchList;
+    // User JSON Data for that
+    // const summoner = await findSummonerByPUUID(summonerPUUID);
+    // let currentMatchList = summoner.matchList;
   });
 });

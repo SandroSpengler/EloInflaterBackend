@@ -1,6 +1,6 @@
 // const express = require("express");
 import { Application, Request, Response, NextFunction } from "express";
-import * as express from "express";
+import express from "express";
 
 import { ConnectionOptions } from "tls";
 import { validateSummonerIds, validateSummonerLeague } from "./Repository/SummonerRepository";
