@@ -10,11 +10,13 @@ import {
   deleteSummonerById,
 } from "../../Repository/SummonerRepository";
 
-import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
+// import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
 
-describe("Summoner Queries", () => {
+describe("Summoner", () => {
+  let sampleSummoner: Summoner;
+
   beforeAll(async () => {
-    console.log(SampleSummoner);
+    sampleSummoner = require("../TestSampleData/SampleSummoner.json");
 
     await connectToMongoDB();
 
@@ -171,7 +173,13 @@ describe("Summoner Queries", () => {
 
   describe("Function Tests", () => {
     it("Summoner can be updated", () => {
-      // const sampleSummoner = findSummonerByPUUID(summoner)
+      // 2022-03-28T13:21:44.697Z
+
+      let currentDate = new Date().getTime();
+
+      expect(sampleSummoner.updatedAt).toEqual(1648473704697);
+
+      expect(sampleSummoner?.updatedAt!).toBeLessThanw(currentDate);
     });
   });
 });

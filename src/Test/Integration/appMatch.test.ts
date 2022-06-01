@@ -1,4 +1,4 @@
-import * as request from "supertest";
+import request from "supertest";
 import { Response } from "supertest";
 import { APP } from "../../app";
 

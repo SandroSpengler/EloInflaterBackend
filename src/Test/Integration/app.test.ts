@@ -1,4 +1,4 @@
-import * as request from "supertest";
+import request from "supertest";
 
 import { APP } from "../../app";
 import Summoner from "../../Models/Interfaces/Summoner";
