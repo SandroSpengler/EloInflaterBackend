@@ -7,7 +7,7 @@
     "prod": "tsc --project ./ && node build/app.js ",
     "test": "jest --watchAll --verbose",
     "test:integration": "jest --watchAll --testPathPattern=src/Test/Integration",
-    "test:unit": "jest --watchAll --testPathPattern=src/Test/Unit",
+    "test:unit": "jest --watchAll  --testPathPattern=src/Test/Unit",
     "dev": "nodemon",
     "build": ""
   },

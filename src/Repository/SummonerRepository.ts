@@ -218,7 +218,7 @@ export const updateSummonerByLeague = async (leagueName: string, entries: Entrie
     // loop through entries and update the updatedAt Time
     SummonerByLeagueSchema.updateOne(
       { tier: leagueName.toUpperCase() },
-      { entries: entries, updatedAt: currentUnixDate }
+      { entries: entries, updatedAt: currentUnixDate },
     ).exec();
   } catch (error) {}
 };
@@ -226,6 +226,13 @@ export const updateSummonerByLeague = async (leagueName: string, entries: Entrie
 //#endregion
 
 //#region Summoner Processing
+
+/**
+ *
+ * @param summoner Summoner that should be checked for updateability
+ *
+ * @returns Boolean which determines if summoner update is possible
+ */
 
 export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   let unixTimeStamp = new Date().getTime() - 240 * 1000;
@@ -246,7 +253,7 @@ export const checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData)
 
   try {
     let summonerParticipantDetails: Participant | undefined = match.info.participants.find(
-      (participant) => participant.puuid === summoner.puuid
+      (participant) => participant.puuid === summoner.puuid,
     );
 
     // SummonerIds === Exhaust (Id:3)

@@ -8,6 +8,7 @@ import {
   findAllSummonersByRank,
   createSummoner,
   deleteSummonerById,
+  checkIfSummonerCanBeUpdated,
 } from "../../Repository/SummonerRepository";
 
 // import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
@@ -60,7 +61,7 @@ describe("Summoner", () => {
           puuid: expect.any(String),
           tabisCount: expect.any(Number),
           summonerLevel: expect.any(Number),
-        })
+        }),
       );
     });
 
@@ -80,7 +81,7 @@ describe("Summoner", () => {
           matchList: expect.arrayContaining([expect.any(String)]),
           tabisCount: expect.any(Number),
           summonerLevel: expect.any(Number),
-        })
+        }),
       );
     });
 
@@ -99,7 +100,7 @@ describe("Summoner", () => {
           matchList: expect.arrayContaining([expect.any(String)]),
           tabisCount: expect.any(Number),
           summonerLevel: expect.any(Number),
-        })
+        }),
       );
     });
 
@@ -118,7 +119,7 @@ describe("Summoner", () => {
             wins: expect.any(Number),
             veteran: expect.any(Boolean),
           }),
-        ])
+        ]),
       );
     });
     it("Expect to find all Summoners by Rank - GRANDMASTER", async () => {
@@ -136,7 +137,7 @@ describe("Summoner", () => {
             wins: expect.any(Number),
             veteran: expect.any(Boolean),
           }),
-        ])
+        ]),
       );
     });
     it("Expect to find all Summoners by Rank - MASTER", async () => {
@@ -154,7 +155,7 @@ describe("Summoner", () => {
             wins: expect.any(Number),
             veteran: expect.any(Boolean),
           }),
-        ])
+        ]),
       );
     });
 
@@ -173,13 +174,24 @@ describe("Summoner", () => {
 
   describe("Function Tests", () => {
     it("Summoner can be updated", () => {
-      // 2022-03-28T13:21:44.697Z
+      // sampleSummoner.updatedAt = 2022-06-08T17:58:00+00:00
 
       let currentDate = new Date().getTime();
 
-      expect(sampleSummoner.updatedAt).toEqual(1648473704697);
+      expect(sampleSummoner.lastMatchUpdate).toEqual(1648473700836);
 
-      expect(sampleSummoner?.updatedAt!).toBeLessThan(currentDate);
+      expect(sampleSummoner?.lastMatchUpdate!).toBeLessThan(currentDate);
+
+      expect(checkIfSummonerCanBeUpdated(sampleSummoner)).toEqual(true);
+
+      sampleSummoner.lastMatchUpdate = currentDate;
+
+      expect(checkIfSummonerCanBeUpdated(sampleSummoner)).toEqual(false);
+
+      // now - 3 Hours
+      sampleSummoner.lastMatchUpdate = new Date().getTime() - 300 * 1000;
+
+      expect(checkIfSummonerCanBeUpdated(sampleSummoner)).toEqual(true);
     });
   });
 });
