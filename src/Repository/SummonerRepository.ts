@@ -231,7 +231,7 @@ export const updateSummonerByLeague = async (leagueName: string, entries: Entrie
  *
  * @param summoner Summoner that should be checked for updateability
  *
- * @returns Boolean which determines if summoner update is possible
+ * @returns Boolean which states if summoner update is possible
  */
 
 export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
@@ -241,6 +241,17 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
 
   if (unixTimeStamp > summoner.lastMatchUpdate!) return true;
 
+  return false;
+};
+
+/**
+ *
+ * @param summonerByLeague SummonersByLeague that determine if updating is possible
+ *
+ * @returns Boolean which states if summoner update is possible
+ */
+
+export const checkIfSummonersByLeagueCanBeUpdated = (summonerByLeague: SummonerByLeague): boolean => {
   return false;
 };
 

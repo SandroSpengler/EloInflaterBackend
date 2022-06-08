@@ -14,10 +14,10 @@ import {
 // import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
 
 describe("Summoner", () => {
-  let sampleSummoner: Summoner;
+  let summonerMock: Summoner;
 
   beforeAll(async () => {
-    sampleSummoner = require("../TestSampleData/SampleSummoner.json");
+    summonerMock = require("../TestSampleData/SampleSummoner.json");
 
     await connectToMongoDB();
 
@@ -172,26 +172,26 @@ describe("Summoner", () => {
     });
   });
 
-  describe("Function Tests", () => {
-    it("Summoner can be updated", () => {
+  describe("Summoner Function Tests", () => {
+    it("Function => checkIfSummonerCanBeUpdated", () => {
       // sampleSummoner.updatedAt = 2022-06-08T17:58:00+00:00
 
       let currentDate = new Date().getTime();
 
-      expect(sampleSummoner.lastMatchUpdate).toEqual(1648473700836);
+      expect(summonerMock.lastMatchUpdate).toEqual(1648473700836);
 
-      expect(sampleSummoner?.lastMatchUpdate!).toBeLessThan(currentDate);
+      expect(summonerMock?.lastMatchUpdate!).toBeLessThan(currentDate);
 
-      expect(checkIfSummonerCanBeUpdated(sampleSummoner)).toEqual(true);
+      expect(checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
 
-      sampleSummoner.lastMatchUpdate = currentDate;
+      summonerMock.lastMatchUpdate = currentDate;
 
-      expect(checkIfSummonerCanBeUpdated(sampleSummoner)).toEqual(false);
+      expect(checkIfSummonerCanBeUpdated(summonerMock)).toEqual(false);
 
       // now - 3 Hours
-      sampleSummoner.lastMatchUpdate = new Date().getTime() - 300 * 1000;
+      summonerMock.lastMatchUpdate = new Date().getTime() - 300 * 1000;
 
-      expect(checkIfSummonerCanBeUpdated(sampleSummoner)).toEqual(true);
+      expect(checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
     });
   });
 });
