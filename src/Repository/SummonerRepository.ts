@@ -233,7 +233,6 @@ export const updateSummonerByLeague = async (leagueName: string, entries: Entrie
  *
  * @returns Boolean which states if summoner update is possible
  */
-
 export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
   let unixTimeStamp = new Date().getTime() - 240 * 1000;
 
@@ -250,8 +249,14 @@ export const checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
  *
  * @returns Boolean which states if summoner update is possible
  */
-
 export const checkIfSummonersByLeagueCanBeUpdated = (summonerByLeague: SummonerByLeague): boolean => {
+  let unixTimeStamp = new Date().getTime() - 240 * 1000;
+
+  if (summonerByLeague === undefined) return false;
+  if (summonerByLeague.updatedAt === undefined) return false;
+
+  if (summonerByLeague.updatedAt! < unixTimeStamp) return true;
+
   return false;
 };
 

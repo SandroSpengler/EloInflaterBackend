@@ -5,7 +5,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via NPM",
+      "name": "Lauch Test",
       "request": "launch",
       "runtimeArgs": ["run-script", "test"],
       "runtimeExecutable": "npm",
@@ -13,7 +13,7 @@
       "type": "node"
     },
     {
-      "name": "Launch index.ts",
+      "name": "Lauch App.ts Debug instance",
       "type": "node",
       "request": "launch",
       "runtimeArgs": ["-r", "ts-node/register"],

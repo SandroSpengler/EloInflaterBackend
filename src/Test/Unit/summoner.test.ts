@@ -17,7 +17,7 @@ describe("Summoner", () => {
   let summonerMock: Summoner;
 
   beforeAll(async () => {
-    summonerMock = require("../TestSampleData/SampleSummoner.json");
+    summonerMock = require("../TestSampleData/MockSummoner.json");
 
     await connectToMongoDB();
 
