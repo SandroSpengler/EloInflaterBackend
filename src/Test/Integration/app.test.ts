@@ -17,7 +17,7 @@ describe("Server startup", () => {
 //#region Summoner Tests
 describe("Summoner CRUD-Endpoint", () => {
   it("Expect a single Summoner with name and matchlist", async () => {
-    let requestSummonerName = "forevermates";
+    let requestSummonerName = "tortenfresse";
 
     const response = await request(APP).get(`/api/data/summoner/${requestSummonerName}`);
 
@@ -30,7 +30,7 @@ describe("Summoner CRUD-Endpoint", () => {
         name: requestSummonerName,
         puuid: expect.any(String),
         matchList: expect.arrayContaining([expect.any(String)]),
-      })
+      }),
     );
   });
 
@@ -50,7 +50,7 @@ describe("Summoner CRUD-Endpoint", () => {
           _id: expect.any(String),
           matchList: expect.arrayContaining([expect.any(String)]),
         }),
-      ])
+      ]),
     );
   });
   it("Expect all Summoners with rankSolo - GRANDMASTER", async () => {
@@ -69,7 +69,7 @@ describe("Summoner CRUD-Endpoint", () => {
           _id: expect.any(String),
           matchList: expect.arrayContaining([expect.any(String)]),
         }),
-      ])
+      ]),
     );
   });
 
@@ -89,7 +89,7 @@ describe("Summoner CRUD-Endpoint", () => {
           _id: expect.any(String),
           matchList: expect.arrayContaining([expect.any(String)]),
         }),
-      ])
+      ]),
     );
   });
 });

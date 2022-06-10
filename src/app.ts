@@ -3,9 +3,8 @@ import { Application, Request, Response, NextFunction } from "express";
 import express from "express";
 
 import { ConnectionOptions } from "tls";
-import { validateSummonerIds, validateSummonerLeague } from "./Repository/SummonerRepository";
+
 import axios, { AxiosError } from "axios";
-import { checkForNewSummonerMatches, checkSummonerMatchIdLists } from "./Repository/DataMiningRepository";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -34,7 +33,7 @@ let corsOptions = {
 APP.use(
   cors({
     origin: "*",
-  })
+  }),
 );
 
 APP.get("/", (req: Request, res: Response) => {
@@ -68,33 +67,33 @@ if (process.env.NODE_ENV !== "test") {
     console.log("0. Server is running");
   });
 }
-const schedule = async () => {
-  try {
-    // await checkSummonerMatchIdLists();
+// const schedule = async () => {
+//   try {
+//     // await checkSummonerMatchIdLists();
 
-    await validateSummonerIds("CHALLENGER");
-    await validateSummonerIds("GRANDMASTER");
-    await validateSummonerIds("MASTER");
+//     await validateSummonerIds("CHALLENGER");
+//     await validateSummonerIds("GRANDMASTER");
+//     await validateSummonerIds("MASTER");
 
-    await validateSummonerLeague("CHALLENGER");
-    await validateSummonerLeague("GRANDMASTER");
-    await validateSummonerLeague("MASTER");
+//     await validateSummonerLeague("CHALLENGER");
+//     await validateSummonerLeague("GRANDMASTER");
+//     await validateSummonerLeague("MASTER");
 
-    await checkForNewSummonerMatches("CHALLENGER");
-    await checkForNewSummonerMatches("GRANDMASTER");
-    await checkForNewSummonerMatches("MASTER");
+//     await checkForNewSummonerMatches("CHALLENGER");
+//     await checkForNewSummonerMatches("GRANDMASTER");
+//     await checkForNewSummonerMatches("MASTER");
 
-    await setTimeout(function () {
-      console.log("Going to restart");
-      schedule();
-    }, 1000 * 90);
-  } catch (error: any) {
-    console.log(error.message);
-  }
-};
+//     await setTimeout(function () {
+//       console.log("Going to restart");
+//       schedule();
+//     }, 1000 * 90);
+//   } catch (error: any) {
+//     console.log(error.message);
+//   }
+// };
 
 if (process.env.RUN_JOB === "start") {
-  schedule();
+  // schedule();
   console.log("starting");
 }
 if (process.env.RUN_JOB === "stop") {

@@ -1,0 +1,134 @@
+import { SummonerByLeagueRepository } from "../Repository/SummonerByLeagueRepository";
+import { SummonerRepository } from "../Repository/SummonerRepository";
+import Summoner from "../Models/Interfaces/Summoner";
+import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
+import { RiotGamesHttp } from "./Http";
+
+export class SummonerByLeagueService {
+  public SbLRepo: SummonerByLeagueRepository;
+  public SummonerRepo: SummonerRepository;
+  public RGHttp: RiotGamesHttp;
+
+  constructor(SbLRepo: SummonerByLeagueRepository, SummonerRepo: SummonerRepository, RGHttp: RiotGamesHttp) {
+    this.SbLRepo = SbLRepo;
+    this.SummonerRepo = SummonerRepo;
+    this.RGHttp = RGHttp;
+  }
+
+  validateSummonerIds = async (updateType: string) => {
+    console.log("1. Checking Summoners Ids in queue: " + updateType);
+
+    // current rank of top summoners
+    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(
+      updateType,
+      "RANKED_SOLO_5x5",
+    );
+
+    if (!summonerByLeague) return;
+
+    // Check if summonerByLeague are newer than 24 hours
+
+    // summoner as saved in db
+    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(updateType);
+
+    if (!summonerList) return;
+
+    // const oldSummoners = summonerList?.find((summonerInDB) => {
+    //   summonerByLeague?.entries.some((currentSummoner) => currentSummoner.summonerName == summonerInDB.name);
+    // });
+
+    // Check summonerDB entry is update to date with current league
+
+    // for (let i = 0; i < summonerList.length; i++) {
+
+    for (let [index, summoner] of summonerList.entries()) {
+      // Get Summoner PUUID
+
+      try {
+        if (summoner.puuid === undefined || summoner.puuid === "") {
+          let summonerInfo;
+          try {
+            summonerInfo = (await this.RGHttp.getSummonerBySummonerId(summoner.summonerId)).data;
+          } catch (error) {
+            break;
+          }
+
+          let summonerToSave = summoner;
+
+          summonerToSave.accountId = summonerInfo.accountId;
+          summonerToSave.puuid = summonerInfo.puuid;
+          summonerToSave.profileIconId = summonerInfo.profileIconId;
+          summonerToSave.revisionDate = summonerInfo.revisionDate;
+          summonerToSave.summonerLevel = summonerInfo.summonerLevel;
+
+          await this.SummonerRepo.updateSummonerBySummonerID(summonerToSave);
+
+          console.log(`validated ${summoner.name} in queue ${updateType} at index ${index}`);
+        }
+      } catch (error) {
+        break;
+      }
+    }
+  };
+
+  validateSummonerLeague = async (updateType: string) => {
+    console.log("2. validating summonersByLeague " + updateType);
+    // current rank of top summoners
+    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(
+      updateType,
+      "RANKED_SOLO_5x5",
+    );
+
+    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(updateType);
+
+    if (summonerByLeague === null || summonerByLeague === undefined) return;
+
+    if (summonerList === null || summonerList === undefined) return;
+
+    if (summonerByLeague.updatedAt! > new Date().getTime() - 3600 * 1000) {
+      // update SummonerByLeague
+      console.log("2. update SummonerByLeague");
+    }
+
+    let outDatedSummoners: Summoner[] = summonerList.filter((summoner) => {
+      if (summoner.lastRankUpdate === undefined) return summoner;
+
+      return summoner.lastRankUpdate! < summonerByLeague?.updatedAt!;
+    });
+
+    if (outDatedSummoners === undefined || outDatedSummoners === null || outDatedSummoners.length === 0) return;
+
+    for (let [index, oldSummoner] of outDatedSummoners.entries()) {
+      const currentSummonerInLeague = summonerByLeague.entries.find((currentSummoner) => {
+        return currentSummoner.summonerId === oldSummoner._id;
+      });
+
+      console.log("updating index: " + index + ": " + currentSummonerInLeague?.summonerName);
+
+      if (currentSummonerInLeague === undefined) {
+        oldSummoner.rank = "";
+        oldSummoner.rankSolo = "";
+        oldSummoner.leaguePoints = 0;
+        oldSummoner.lastRankUpdate = summonerByLeague.updatedAt;
+
+        await this.SummonerRepo.updateSummonerByPUUID(oldSummoner);
+
+        continue;
+      }
+
+      oldSummoner.rank = currentSummonerInLeague.rank;
+      oldSummoner.wins = currentSummonerInLeague.wins;
+      oldSummoner.losses = currentSummonerInLeague.losses;
+      oldSummoner.leaguePoints = currentSummonerInLeague.leaguePoints;
+      oldSummoner.lastRankUpdate = summonerByLeague.updatedAt;
+
+      await this.SummonerRepo.updateSummonerByPUUID(oldSummoner);
+      continue;
+    }
+
+    try {
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}
