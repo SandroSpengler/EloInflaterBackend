@@ -1,14 +1,18 @@
 import { match } from "assert";
 import { connectToMongoDB } from "../../app";
 import { MatchData } from "../../Models/Interfaces/MatchData";
-import { findAllMatchesBySummonerPUUID, findMatchById, findMatchesByIdList } from "../../Repository/MatchRepository";
-import { findSummonerByPUUID } from "../../Repository/SummonerRepository";
+
+import { MatchRepository } from "../../Repository/MatchRepository";
 
 describe("Match", () => {
   describe("MongoDB Queries", () => {
     let summonerPUUID;
 
+    let matchRepo: MatchRepository;
+
     beforeAll(async () => {
+      matchRepo = new MatchRepository();
+
       await connectToMongoDB();
 
       // forevermates - PUUID
@@ -17,7 +21,9 @@ describe("Match", () => {
 
     // 2022/10/04 - Check after indexes are built
     it.skip("Expect matches for a Summoner by SummonerPUUID", async () => {
-      const matchesForSummonerByPUUID: MatchData[] | null = await findAllMatchesBySummonerPUUID(summonerPUUID);
+      const matchesForSummonerByPUUID: MatchData[] | null = await matchRepo.findAllMatchesBySummonerPUUID(
+        summonerPUUID,
+      );
 
       if (matchesForSummonerByPUUID === null) throw new Error();
 
@@ -47,7 +53,7 @@ describe("Match", () => {
       ];
 
       for (let [index, matchId] of matchIdsToFind.entries()) {
-        const foundMatch: MatchData | null = await findMatchById(matchId);
+        const foundMatch: MatchData | null = await matchRepo.findMatchById(matchId);
 
         if (foundMatch === null) throw new Error();
 
@@ -77,7 +83,7 @@ describe("Match", () => {
         "EUW1_5778806726",
       ];
 
-      const matchesInDB = await findMatchesByIdList(matchList);
+      const matchesInDB = await matchRepo.findMatchesByIdList(matchList);
 
       if (matchesInDB === null) throw new Error();
 

@@ -15,6 +15,7 @@ export class SummonerData {
 
   constructor() {
     router.get("/", this.getAllSummoner);
+    router.get("/:name", this.getSummonerByName);
   }
 
   public getAllSummoner = async (req, res) => {

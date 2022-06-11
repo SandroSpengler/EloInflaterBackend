@@ -1,7 +1,11 @@
+import { SummonerRepository } from "../../../Repository/SummonerRepository";
+
 const express = require("express");
 const router = express.Router();
 
 export class SummonerByLeagueRoute {
+  private SbLRepo: SummonerRepository = new SummonerRepository();
+
   constructor() {
     router.get("/:rankSolo/:queueType", this.byRankSoloAndQueueType);
   }
@@ -13,8 +17,7 @@ export class SummonerByLeagueRoute {
     let queueType = req.params.queueType.toUpperCase();
 
     try {
-      // const summoners = await findAllSummonersByRank(rank);
-      const summoners: any = {};
+      const summoners = await this.SbLRepo.findAllSummonersByRank(rank);
 
       if (summoners != null && summoners!.length > 0) {
         summoners.sort((summonerA, summonerB) => {

@@ -1,12 +1,6 @@
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerSchema from "../Models/Schemas/SummonerSchema";
 import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
-import SummonerByLeagueSchema from "../Models/Schemas/SummonerByLeagueSchema";
-
-import { IMatchSchema } from "../Models/Interfaces/MatchList";
-
-import { MatchData, Participant } from "../Models/Interfaces/MatchData";
-import axios, { AxiosError } from "axios";
 
 export class SummonerRepository {
   //#region Summoner MongoDB
@@ -131,6 +125,14 @@ export class SummonerRepository {
       summoner = await tmpSummoner.save();
 
       return summoner;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  deleteSummonerById = async (summonerId: string) => {
+    try {
+      await SummonerSchema.deleteOne({ _id: summonerId }).exec();
     } catch (error) {
       throw error;
     }

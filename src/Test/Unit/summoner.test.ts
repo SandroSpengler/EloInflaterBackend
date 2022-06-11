@@ -1,23 +1,22 @@
 import { connectToMongoDB } from "../../app";
 import Summoner from "../../Models/Interfaces/Summoner";
-import {
-  findAllSummoners,
-  findSummonerByName,
-  findSummonerByPUUID,
-  findSummonerByID,
-  findAllSummonersByRank,
-  createSummoner,
-  deleteSummonerById,
-  checkIfSummonerCanBeUpdated,
-} from "../../Repository/SummonerRepository";
+
+import { SummonerRepository } from "../../Repository/SummonerRepository";
+import { SummonerService } from "../../Services/SummonerService";
 
 // import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
 
 describe("Summoner", () => {
   let summonerMock: Summoner;
 
+  let summonerRepo: SummonerRepository;
+  let summonerService: SummonerService;
+
   beforeAll(async () => {
     summonerMock = require("../TestSampleData/MockSummoner.json");
+
+    summonerRepo = new SummonerRepository();
+    summonerService = new SummonerService(summonerRepo);
 
     await connectToMongoDB();
 
@@ -41,7 +40,7 @@ describe("Summoner", () => {
       ],
     };
 
-    await createSummoner(summonerToCreate);
+    await summonerRepo.createSummoner(summonerToCreate);
   });
 
   describe("MongoDB Queries", () => {
@@ -49,7 +48,7 @@ describe("Summoner", () => {
       // still case sensitive
       const summonerName: string = "test summoner";
 
-      const summoner: Summoner | null = await findSummonerByName(summonerName);
+      const summoner: Summoner | null = await summonerRepo.findSummonerByName(summonerName);
 
       expect(summoner).not.toBeNull();
 
@@ -69,7 +68,7 @@ describe("Summoner", () => {
       const summonerPUUID: string = "puuIdForTestSummoner";
       const summonerName = "test summoner";
 
-      const summoner: Summoner | null = await findSummonerByPUUID(summonerPUUID);
+      const summoner: Summoner | null = await summonerRepo.findSummonerByPUUID(summonerPUUID);
 
       expect(summoner).not.toBeNull();
 
@@ -89,7 +88,7 @@ describe("Summoner", () => {
       const summonerId: string = "idForTestSummoner";
       const summonerName = "test summoner";
 
-      const summoner: Summoner | null = await findSummonerByID(summonerId);
+      const summoner: Summoner | null = await summonerRepo.findSummonerByID(summonerId);
 
       expect(summoner).not.toBeNull();
 
@@ -106,7 +105,7 @@ describe("Summoner", () => {
 
     it("Expect to find all Summoners by Rank - CHALLENGER", async () => {
       const rankSolo: string = "CHALLENGER";
-      const summonersByRank: Summoner[] | null = await findAllSummonersByRank(rankSolo);
+      const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
 
       expect(summonersByRank).not.toBeNull();
       expect(summonersByRank?.length!).toBeGreaterThan(0);
@@ -124,7 +123,7 @@ describe("Summoner", () => {
     });
     it("Expect to find all Summoners by Rank - GRANDMASTER", async () => {
       const rankSolo: string = "GRANDMASTER";
-      const summonersByRank: Summoner[] | null = await findAllSummonersByRank(rankSolo);
+      const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
 
       expect(summonersByRank).not.toBeNull();
       expect(summonersByRank?.length!).toBeGreaterThan(0);
@@ -142,7 +141,7 @@ describe("Summoner", () => {
     });
     it("Expect to find all Summoners by Rank - MASTER", async () => {
       const rankSolo: string = "MASTER";
-      const summonersByRank: Summoner[] | null = await findAllSummonersByRank(rankSolo);
+      const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
 
       expect(summonersByRank).not.toBeNull();
       expect(summonersByRank?.length!).toBeGreaterThan(0);
@@ -160,13 +159,13 @@ describe("Summoner", () => {
     });
 
     it("Expect Summoner to get deleted", async () => {
-      const summonerBeforeDelete: Summoner | null = await findSummonerByID("idForTestSummoner");
+      const summonerBeforeDelete: Summoner | null = await summonerRepo.findSummonerByID("idForTestSummoner");
 
       expect(summonerBeforeDelete).toBeDefined();
 
-      await deleteSummonerById(summonerBeforeDelete?._id!);
+      await summonerRepo.deleteSummonerById(summonerBeforeDelete?._id!);
 
-      const summonerAfterDelete = await findSummonerByID(summonerBeforeDelete?.id!);
+      const summonerAfterDelete = await summonerRepo.findSummonerByID(summonerBeforeDelete?.id!);
 
       expect(summonerAfterDelete).toBeNull();
     });
@@ -182,16 +181,16 @@ describe("Summoner", () => {
 
       expect(summonerMock?.lastMatchUpdate!).toBeLessThan(currentDate);
 
-      expect(checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
+      expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
 
       summonerMock.lastMatchUpdate = currentDate;
 
-      expect(checkIfSummonerCanBeUpdated(summonerMock)).toEqual(false);
+      expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(false);
 
       // now - 3 Hours
       summonerMock.lastMatchUpdate = new Date().getTime() - 300 * 1000;
 
-      expect(checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
+      expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
     });
   });
 });

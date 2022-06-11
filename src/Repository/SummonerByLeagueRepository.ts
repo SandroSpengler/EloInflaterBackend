@@ -20,14 +20,6 @@ export class SummonerByLeagueRepository {
     }
   };
 
-  deleteSummonerById = async (summonerId: string) => {
-    try {
-      await SummonerSchema.deleteOne({ _id: summonerId }).exec();
-    } catch (error) {
-      throw error;
-    }
-  };
-
   saveSummonerByLeague = async (summonerByLeague: SummonerByLeague): Promise<SummonerByLeague> => {
     try {
       let tmpSummonerByLeague = new SummonerByLeagueSchema();

@@ -17,7 +17,7 @@ describe("Server startup", () => {
 //#region Summoner Tests
 describe("Summoner CRUD-Endpoint", () => {
   it("Expect a single Summoner with name and matchlist", async () => {
-    let requestSummonerName = "tortenfresse";
+    let requestSummonerName = "mespuites";
 
     const response = await request(APP).get(`/api/data/summoner/${requestSummonerName}`);
 
