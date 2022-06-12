@@ -3,9 +3,7 @@ const router = express.Router();
 
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { Request, response, Response, Router } from "express";
-import { IMatchSchema } from "../../../Models/Interfaces/MatchList";
 import Summoner from "../../../Models/Interfaces/Summoner";
-import { EntriesByLeague } from "../../../Models/Interfaces/SummonerByLeague";
 import { MatchRepository } from "../../../Repository/MatchRepository";
 
 import { SummonerByLeagueRepository } from "../../../Repository/SummonerByLeagueRepository";
@@ -114,6 +112,13 @@ export class SummonerRefreshRoute {
   public getByQueueModeAndType = async (req: Request, res: Response) => {
     let queueType = req.params.queueType;
     let queueMode = req.params.queueMode;
+
+    // 1. Get current SummonersByLeague from API ✅
+    // 2. Get SummonersByLeague in DB ✅
+    //    Save them if no SummonersByLeague exist ✅
+    // 3. Check if SummonersByLeauge can be updated
+    // 4. Update SummonersByLeauge
+    // 5. Return Status Code
 
     try {
       const Response = await this.RGHttp.getSummonersByLeague(queueType, queueMode);
