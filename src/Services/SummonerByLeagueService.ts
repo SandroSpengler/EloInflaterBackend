@@ -4,6 +4,14 @@ import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 import { RiotGamesHttp } from "./Http";
 
+/**
+ * This Service provides operations on the SummonerByLeague collection
+ *
+ * @param SbLRepo The Repository for the SummonerByLeague collection
+ * @param SummonerRepo The Repository for the Summoner collection
+ * @param RGHttp The HTTP-Service for the RIOT-Games API enpoints
+ *
+ */
 export class SummonerByLeagueService {
   public SbLRepo: SummonerByLeagueRepository;
   public SummonerRepo: SummonerRepository;
@@ -14,6 +22,23 @@ export class SummonerByLeagueService {
     this.SummonerRepo = SummonerRepo;
     this.RGHttp = RGHttp;
   }
+
+  /**
+   *
+   * @param summonerByLeague SummonersByLeague that determine if updating is possible
+   *
+   * @returns Boolean which states if summoner update is possible
+   */
+  checkIfSummonersByLeagueCanBeUpdated = (summonerByLeague: SummonerByLeague): boolean => {
+    let unixTimeStamp = new Date().getTime() - 240 * 1000;
+
+    if (summonerByLeague === undefined) return false;
+    if (summonerByLeague.updatedAt === undefined) return false;
+
+    if (summonerByLeague.updatedAt! < unixTimeStamp) return true;
+
+    return false;
+  };
 
   validateSummonerIds = async (updateType: string) => {
     console.log("1. Checking Summoners Ids in queue: " + updateType);

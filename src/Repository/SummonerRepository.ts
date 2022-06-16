@@ -1,6 +1,5 @@
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerSchema from "../Models/Schemas/SummonerSchema";
-import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
 
 export class SummonerRepository {
   //#region Summoner MongoDB
@@ -162,22 +161,3 @@ export class SummonerRepository {
     } catch (error) {}
   };
 }
-
-//#region Summoner Processing
-
-/**
- *
- * @param summonerByLeague SummonersByLeague that determine if updating is possible
- *
- * @returns Boolean which states if summoner update is possible
- */
-export const checkIfSummonersByLeagueCanBeUpdated = (summonerByLeague: SummonerByLeague): boolean => {
-  let unixTimeStamp = new Date().getTime() - 240 * 1000;
-
-  if (summonerByLeague === undefined) return false;
-  if (summonerByLeague.updatedAt === undefined) return false;
-
-  if (summonerByLeague.updatedAt! < unixTimeStamp) return true;
-
-  return false;
-};
