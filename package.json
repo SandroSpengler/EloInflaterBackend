@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
-    "prod": "tsc --project ./ && node build/app.js ",
+    "prod": "tsc --project ./ && node build/src/app.js ",
     "test": "jest --watchAll --verbose",
     "test:integration": "jest --watchAll --testPathPattern=src/Test/Integration",
     "test:unit": "jest --watchAll  --testPathPattern=src/Test/Unit",
