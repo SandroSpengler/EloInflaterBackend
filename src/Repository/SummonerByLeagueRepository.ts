@@ -3,10 +3,17 @@ import SummonerSchema from "../Models/Schemas/SummonerSchema";
 import SummonerByLeagueSchema from "../Models/Schemas/SummonerByLeagueSchema";
 
 export class SummonerByLeagueRepository {
+  /**
+   * Find SummonerByLeague Collection
+   *
+   * @param leagueName
+   * @param queue
+   * @returns Promise<SummonerByLeague>
+   */
   public findSummonerByLeague = async (leagueName: string, queue: string): Promise<SummonerByLeague | null> => {
     try {
       let foundSummonersByLeague: SummonerByLeague | null = await SummonerByLeagueSchema.findOne({
-        tier: leagueName.toUpperCase(),
+        tier: leagueName,
         queue: queue,
       }).lean();
 

@@ -35,11 +35,25 @@ describe("Summoner by Leauge Functions", () => {
     });
   });
 
+  describe("MongoDB Queries", () => {
+    it("Find SummonerByLeague Challenger Collection", () => {
+      const SbLChallenger = SbLRepo.findSummonerByLeague("challenger", "solo");
+    });
+  });
+
   describe("Functions", () => {
     it("Function => checkIfSummonersByLeagueCanBeUpdated", () => {
       expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(true);
 
       // Change Date and assert again
+
+      summonerByLeagueMock.updatedAt = new Date().getTime() * 1000;
+
+      expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(false);
+
+      summonerByLeagueMock.updatedAt = new Date().getTime() - 300 * 1000;
+
+      expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(true);
     });
   });
 });

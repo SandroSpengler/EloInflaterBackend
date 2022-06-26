@@ -28,7 +28,7 @@ export class SummonerRefreshRoute {
   constructor() {
     router.get("/byName/:name", this.getByName);
     router.get("/byPUUID/:puuid", this.getPUUID);
-    router.get("/byQueue/:queueType/:queueMode", this.getByQueueModeAndType);
+    router.get("/byQueue/:queueType/:queueMode", this.putByQueueModeAndType);
   }
 
   public getByName = async (req: Request, res: Response) => {
@@ -109,7 +109,7 @@ export class SummonerRefreshRoute {
     } catch (error) {}
   };
 
-  public getByQueueModeAndType = async (req: Request, res: Response) => {
+  public putByQueueModeAndType = async (req: Request, res: Response) => {
     let queueType = req.params.queueType;
     let queueMode = req.params.queueMode;
 
