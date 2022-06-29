@@ -4,6 +4,7 @@ const router = express.Router();
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { Request, response, Response, Router } from "express";
 import Summoner from "../../../Models/Interfaces/Summoner";
+import { SbLQueue, SbLTier } from "../../../Models/Types/SummonerByLeagueTypes";
 import { MatchRepository } from "../../../Repository/MatchRepository";
 
 import { SummonerByLeagueRepository } from "../../../Repository/SummonerByLeagueRepository";
@@ -28,7 +29,7 @@ export class SummonerRefreshRoute {
   constructor() {
     router.get("/byName/:name", this.getByName);
     router.get("/byPUUID/:puuid", this.getPUUID);
-    router.get("/byQueue/:queueType/:queueMode", this.putByQueueModeAndType);
+    router.put("/byQueue/:tier/:queue", this.putByQueueModeAndType);
   }
 
   public getByName = async (req: Request, res: Response) => {
@@ -90,6 +91,12 @@ export class SummonerRefreshRoute {
     }
   };
 
+  /**
+   * Finds Summoner by PUUID
+   *
+   * @param req The HTTP-Request
+   * @param res The HTTP Response
+   */
   public getPUUID = async (req: Request, res: Response) => {
     try {
       const summonerInDB = await this.summonerRepo.findSummonerByPUUID(req.params.puuid);
@@ -100,18 +107,47 @@ export class SummonerRefreshRoute {
         return res.status(200).json({
           success: true,
           result: `Summoner has been updated`,
+          error: null,
         });
       }
       return res.status(409).json({
         success: true,
         result: `Summoner was not updated `,
+        error: null,
       });
     } catch (error) {}
   };
 
+  /**
+   * PUT Express Endpoint: Updates SummonerByLeagueCollection for specific tier and queue
+   *
+   * @param req The HTTP-Request
+   * @param res The HTTP Response
+   */
   public putByQueueModeAndType = async (req: Request, res: Response) => {
-    let queueType = req.params.queueType;
-    let queueMode = req.params.queueMode;
+    let tier: SbLTier;
+    let queue: SbLQueue;
+
+    // GuardClose -> Params must contain strings inside the Array
+    if (!["CHALLENGER", "GRANDMASTER", "MASTER"].includes(req.params.tier)) {
+      return res.status(400).json({
+        success: false,
+        result: null,
+        error: `Parameter Tier does not match "CHALLENGER", "GRANDMASTER" or "MASTER"`,
+      });
+    }
+
+    if (!["RANKED_SOLO_5x5", "RANKED_FLEX_SR", "RANKED_FLEX_TT"].includes(req.params.queue)) {
+      return res.status(400).json({
+        success: false,
+        result: null,
+        error: `Parameter Queue does not match "RANKED_SOLO_5x5", "RANKED_FLEX_SR" or "RANKED_FLEX_TT"`,
+      });
+    }
+
+    // Needs to be casted due to Typescript not understanding the if-statement check
+    tier = req.params.tier as SbLTier;
+    queue = req.params.queue as SbLQueue;
 
     // 1. Get current SummonersByLeague from API ✅
     // 2. Get SummonersByLeague in DB ✅
@@ -121,9 +157,9 @@ export class SummonerRefreshRoute {
     // 5. Return Status Code
 
     try {
-      const Response = await this.RGHttp.getSummonersByLeague(queueType, queueMode);
+      const Response = await this.RGHttp.getSummonersByLeague(tier, queue);
 
-      let summonerByLeagueInDB = await this.SbLRepo.findSummonerByLeague(queueType, queueMode);
+      let summonerByLeagueInDB = await this.SbLRepo.findSummonerByLeague(tier, queue);
 
       if (summonerByLeagueInDB == null) {
         // If it does save Summoner to DB
@@ -132,7 +168,7 @@ export class SummonerRefreshRoute {
 
       if (summonerByLeagueInDB.updatedAt! < new Date().getTime()) {
         // Updates the Summoners Entries
-        await this.SbLRepo.updateSummonerByLeague(queueType, Response.data.entries);
+        await this.SbLRepo.updateSummonerByLeague(tier, Response.data.entries);
         // Saves the Summoner to DB
         await this.summonerService.updateSumonersByQueue(summonerByLeagueInDB);
       }
@@ -144,9 +180,10 @@ export class SummonerRefreshRoute {
       res.status(200).json({
         success: true,
         result: summonerByLeagueToSend,
+        error: null,
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ success: false, result: null, error: error.message });
     }
   };
 }

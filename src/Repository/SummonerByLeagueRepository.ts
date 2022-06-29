@@ -1,27 +1,31 @@
 import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
 import SummonerSchema from "../Models/Schemas/SummonerSchema";
 import SummonerByLeagueSchema from "../Models/Schemas/SummonerByLeagueSchema";
+import { SbLTier, SbLQueue } from "../Models/Types/SummonerByLeagueTypes";
 
 export class SummonerByLeagueRepository {
   /**
-   * Find SummonerByLeague Collection
+   * Find SummonerByLeague Collection by tier and queue
    *
-   * @param leagueName
-   * @param queue
+   * @param tier Name of the Divison Tier
+   * @param queue Name of the Queue Type
+   *
    * @returns Promise<SummonerByLeague>
    */
-  public findSummonerByLeague = async (leagueName: string, queue: string): Promise<SummonerByLeague | null> => {
+  public findSummonerByLeague = async (tier: SbLTier, queue: SbLQueue): Promise<SummonerByLeague> => {
     try {
       let foundSummonersByLeague: SummonerByLeague | null = await SummonerByLeagueSchema.findOne({
-        tier: leagueName,
+        tier: tier,
         queue: queue,
       }).lean();
 
-      if (foundSummonersByLeague != null) return foundSummonersByLeague;
+      if (foundSummonersByLeague !== null) return foundSummonersByLeague;
 
-      return null;
+      if (foundSummonersByLeague === null) {
+        throw new Error(`No entry exists for SummmonerByLeague with leagueName ${tier} and queue ${queue}`);
+      }
 
-      // if (foundSummoner == null) return null;
+      throw new Error("Could not find SummonerByLeague");
     } catch (error) {
       throw error;
     }

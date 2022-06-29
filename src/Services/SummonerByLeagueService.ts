@@ -3,6 +3,7 @@ import { SummonerRepository } from "../Repository/SummonerRepository";
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 import { RiotGamesHttp } from "./Http";
+import { SbLTier } from "../Models/Types/SummonerByLeagueTypes";
 
 /**
  * This Service provides operations on the SummonerByLeague collection
@@ -40,21 +41,18 @@ export class SummonerByLeagueService {
     return false;
   };
 
-  validateSummonerIds = async (updateType: string) => {
-    console.log("1. Checking Summoners Ids in queue: " + updateType);
+  validateSummonerIds = async (tier: SbLTier) => {
+    console.log("1. Checking Summoners Ids in queue: " + tier);
 
     // current rank of top summoners
-    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(
-      updateType,
-      "RANKED_SOLO_5x5",
-    );
+    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(tier, "RANKED_SOLO_5x5");
 
     if (!summonerByLeague) return;
 
     // Check if summonerByLeague are newer than 24 hours
 
     // summoner as saved in db
-    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(updateType);
+    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(tier);
 
     if (!summonerList) return;
 
@@ -88,7 +86,7 @@ export class SummonerByLeagueService {
 
           await this.SummonerRepo.updateSummonerBySummonerID(summonerToSave);
 
-          console.log(`validated ${summoner.name} in queue ${updateType} at index ${index}`);
+          console.log(`validated ${summoner.name} in queue ${tier} at index ${index}`);
         }
       } catch (error) {
         break;
@@ -96,15 +94,12 @@ export class SummonerByLeagueService {
     }
   };
 
-  validateSummonerLeague = async (updateType: string) => {
-    console.log("2. validating summonersByLeague " + updateType);
+  validateSummonerLeague = async (tier: SbLTier) => {
+    console.log("2. validating summonersByLeague " + tier);
     // current rank of top summoners
-    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(
-      updateType,
-      "RANKED_SOLO_5x5",
-    );
+    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(tier, "RANKED_SOLO_5x5");
 
-    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(updateType);
+    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(tier);
 
     if (summonerByLeague === null || summonerByLeague === undefined) return;
 

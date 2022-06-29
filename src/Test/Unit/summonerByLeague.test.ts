@@ -1,3 +1,4 @@
+import { connectToMongoDB } from "../../app";
 import SummonerByLeague from "../../Models/Interfaces/SummonerByLeague";
 import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
 import { SummonerRepository } from "../../Repository/SummonerRepository";
@@ -23,6 +24,8 @@ describe("Summoner by Leauge Functions", () => {
     SbLService = new SummonerByLeagueService(SbLRepo, SummonerRepo, RGHttpService);
 
     summonerByLeagueMock = require("../TestSampleData/MockSummonerByLeague.json");
+
+    await connectToMongoDB();
   });
 
   describe("Setup", () => {
@@ -36,8 +39,12 @@ describe("Summoner by Leauge Functions", () => {
   });
 
   describe("MongoDB Queries", () => {
-    it("Find SummonerByLeague Challenger Collection", () => {
-      const SbLChallenger = SbLRepo.findSummonerByLeague("challenger", "solo");
+    it("Find SummonerByLeague Challenger Collection", async () => {
+      const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+      expect(SbLChallenger.entries).toBeDefined();
+
+      expect(SbLChallenger.entries.length).toEqual(300);
     });
   });
 
