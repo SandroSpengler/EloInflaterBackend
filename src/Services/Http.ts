@@ -6,6 +6,7 @@ import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/Summoner
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchData } from "../Models/Interfaces/MatchData";
 import { MatchList } from "../Models/Interfaces/MatchList";
+import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
 
 export class RiotGamesHttp {
   // only change by Region
@@ -49,29 +50,20 @@ export class RiotGamesHttp {
     }
   };
 
-  public getSummonersByLeague = async (queueType, queueMode): Promise<AxiosResponse<SummonerByLeague>> => {
-    let queueLeague = "";
-    let queueModeDescription = "";
+  public getSummonersByLeague = async (tier: SbLTier, queue: SbLQueue): Promise<AxiosResponse<SummonerByLeague>> => {
+    let tierRequestParam = "";
 
-    if (queueType === "challenger") queueLeague = "challengerleagues";
-    if (queueType === "grandmaster") queueLeague = "grandmasterleagues";
-    if (queueType === "master") queueLeague = "masterleagues";
-
-    if (queueMode === "rankedsolo") queueModeDescription = "RANKED_SOLO_5x5";
-    if (queueMode === "flexsolo") queueModeDescription = "RANKED_FLEX_SR";
-    if (queueMode === "flextt") queueModeDescription = "RANKED_FLEX_TT";
+    if (tier === "CHALLENGER") tierRequestParam = "challengerleagues";
+    if (tier === "GRANDMASTER") tierRequestParam = "grandmasterleagues";
+    if (tier === "MASTER") tierRequestParam = "masterleagues";
 
     try {
       const request = axios.get<SummonerByLeague>(
-        `${this.buildBaseUrl(this.regionUrl, `league/v4/${queueLeague}/by-queue/`)}${queueModeDescription}`,
+        `${this.buildBaseUrl(this.regionUrl, `league/v4/${tierRequestParam}/by-queue/`)}${queue}`,
         this.buildConfig(),
       );
 
       const response = await request;
-
-      // const summonersSortedByLp = await response.data.entries.sort((summoner1, summoner2) =>
-      //   summoner1.leaguePoints > summoner2.leaguePoints ? -1 : 1
-      // );
 
       return await response;
     } catch (error) {

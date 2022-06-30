@@ -48,6 +48,12 @@ describe("Summoner by Leauge Functions", () => {
     });
   });
 
+  describe("HTTP-Requests", () => {
+    it("HTTP => Get new SummonerByLeagueCollection", () => {
+      // Request SummonerByLeagueCollection from RIOT Games API
+    });
+  });
+
   describe("Functions", () => {
     it("Function => checkIfSummonersByLeagueCanBeUpdated", () => {
       expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(true);
@@ -61,6 +67,10 @@ describe("Summoner by Leauge Functions", () => {
       summonerByLeagueMock.updatedAt = new Date().getTime() - 300 * 1000;
 
       expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(true);
+    });
+
+    it("Function => Update SummonerByLeagueCollection", () => {
+      // Get new Summoner By League Collection and save it to Database
     });
   });
 });

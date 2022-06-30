@@ -129,22 +129,6 @@ export class SummonerRepository {
     }
   };
 
-  deleteSummonerById = async (summonerId: string) => {
-    try {
-      await SummonerSchema.deleteOne({ _id: summonerId }).exec();
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  public setUpdateSummonerDate = (puuid: string) => {
-    try {
-      let currentUnixDate = new Date().getTime();
-
-      SummonerSchema.updateOne({ puuid: puuid }, { updatedAt: currentUnixDate }).exec();
-    } catch (error) {}
-  };
-
   public updateSummonerByPUUID = async (summoner: Summoner) => {
     try {
       let currentUnixDate = new Date().getTime();
@@ -158,6 +142,22 @@ export class SummonerRepository {
       let currentUnixDate = new Date().getTime();
 
       SummonerSchema.updateOne({ _id: summoner._id }, summoner).exec();
+    } catch (error) {}
+  };
+
+  deleteSummonerById = async (summonerId: string) => {
+    try {
+      await SummonerSchema.deleteOne({ _id: summonerId }).exec();
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  public setUpdateSummonerDate = (puuid: string) => {
+    try {
+      let currentUnixDate = new Date().getTime();
+
+      SummonerSchema.updateOne({ puuid: puuid }, { updatedAt: currentUnixDate }).exec();
     } catch (error) {}
   };
 }

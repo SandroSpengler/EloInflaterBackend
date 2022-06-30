@@ -192,5 +192,10 @@ describe("Summoner", () => {
 
       expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
     });
+
+    it("Function => update Summoner based on SummonerByLeagueCollection", () => {
+      // get current SummonerByLeagueCollection from DB
+      // update Summoners based on current SbLCollection
+    });
   });
 });
