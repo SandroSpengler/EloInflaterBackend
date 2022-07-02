@@ -46,11 +46,15 @@ describe("Summoner by Leauge Functions", () => {
       expect(SbLChallenger.entries).toBeDefined();
 
       expect(SbLChallenger.entries.length).toEqual(300);
+
+      expect(SbLChallenger.tier).toEqual("CHALLENGER");
+
+      expect(SbLChallenger.entries[0]).toEqual(equalSbLEntries());
     });
   });
 
   describe("HTTP-Requests", () => {
-    it("HTTP => Get new SummonerByLeagueCollection", async () => {
+    it("HTTP => Get new SummonerByLeagueCollection - CHALLENGER", async () => {
       // Request SummonerByLeagueCollection from RIOT Games API
 
       try {
@@ -59,7 +63,80 @@ describe("Summoner by Leauge Functions", () => {
         const resChallenger = await reqChallenger.data;
 
         expect(resChallenger).toBeDefined;
-        //
+
+        expect(resChallenger.entries[0]).toEqual(equalSbLEntries());
+      } catch (error: unknown | AxiosError) {
+        if (!axios.isAxiosError(error)) throw error;
+
+        expect(error.response?.status).toEqual(429);
+      }
+    });
+
+    it("HTTP => Get new SummonerByLeagueCollection - GRANDMASTER", async () => {
+      // Request SummonerByLeagueCollection from RIOT Games API
+
+      try {
+        const reqChallenger = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+        const resChallenger = await reqChallenger.data;
+
+        expect(resChallenger).toBeDefined;
+
+        expect(resChallenger.entries[0]).toEqual(equalSbLEntries());
+      } catch (error: unknown | AxiosError) {
+        if (!axios.isAxiosError(error)) throw error;
+
+        expect(error.response?.status).toEqual(429);
+      }
+    });
+
+    it("HTTP => Get new SummonerByLeagueCollection - MASTER", async () => {
+      // Request SummonerByLeagueCollection from RIOT Games API
+
+      try {
+        const reqChallenger = await RGHttpService.getSummonersByLeague("MASTER", "RANKED_SOLO_5x5");
+
+        const resChallenger = await reqChallenger.data;
+
+        expect(resChallenger).toBeDefined;
+
+        expect(resChallenger.entries[0]).toEqual(equalSbLEntries());
+      } catch (error: unknown | AxiosError) {
+        if (!axios.isAxiosError(error)) throw error;
+
+        expect(error.response?.status).toEqual(429);
+      }
+    });
+
+    it("HTTP => Get new SummonerByLeagueCollection - GRANDMASTER", async () => {
+      // Request SummonerByLeagueCollection from RIOT Games API
+
+      try {
+        const reqChallenger = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+        const resChallenger = await reqChallenger.data;
+
+        expect(resChallenger).toBeDefined;
+
+        expect(resChallenger.entries[0]).toEqual(equalSbLEntries());
+      } catch (error: unknown | AxiosError) {
+        if (!axios.isAxiosError(error)) throw error;
+
+        expect(error.response?.status).toEqual(429);
+      }
+    });
+
+    it("HTTP => Get new SummonerByLeagueCollection - MASTER", async () => {
+      // Request SummonerByLeagueCollection from RIOT Games API
+
+      try {
+        const reqChallenger = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+        const resChallenger = await reqChallenger.data;
+
+        expect(resChallenger).toBeDefined;
+
+        expect(resChallenger.entries[0]).toEqual(equalSbLEntries());
       } catch (error: unknown | AxiosError) {
         if (!axios.isAxiosError(error)) throw error;
 
@@ -88,3 +165,18 @@ describe("Summoner by Leauge Functions", () => {
     });
   });
 });
+
+const equalSbLEntries = (): jest.Expect => {
+  return expect.objectContaining({
+    summonerId: expect.any(String),
+    summonerName: expect.any(String),
+    leaguePoints: expect.any(Number),
+    rank: expect.any(String),
+    wins: expect.any(Number),
+    losses: expect.any(Number),
+    veteran: expect.any(Boolean),
+    inactive: expect.any(Boolean),
+    freshBlood: expect.any(Boolean),
+    hotStreak: expect.any(Boolean),
+  });
+};
