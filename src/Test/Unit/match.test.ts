@@ -13,7 +13,7 @@ describe("Match", () => {
     beforeAll(async () => {
       matchRepo = new MatchRepository();
 
-      await connectToMongoDB();
+      await connectToMongoDB(process.env.DB_CONNECTION);
 
       // forevermates - PUUID
       summonerPUUID = "tep5qDEJjHDwq81f6gxcwDc4V_G46emxRwZzXiNhKI0NWnKe4IZ0B6MCj6aMl2UplKs0haX4f-xTnA";

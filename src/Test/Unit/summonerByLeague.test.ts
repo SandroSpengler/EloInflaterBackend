@@ -1,3 +1,4 @@
+import axios, { AxiosError } from "axios";
 import { connectToMongoDB } from "../../app";
 import SummonerByLeague from "../../Models/Interfaces/SummonerByLeague";
 import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
@@ -25,7 +26,7 @@ describe("Summoner by Leauge Functions", () => {
 
     summonerByLeagueMock = require("../TestSampleData/MockSummonerByLeague.json");
 
-    await connectToMongoDB();
+    await connectToMongoDB(process.env.DB_CONNECTION);
   });
 
   describe("Setup", () => {
@@ -49,8 +50,21 @@ describe("Summoner by Leauge Functions", () => {
   });
 
   describe("HTTP-Requests", () => {
-    it("HTTP => Get new SummonerByLeagueCollection", () => {
+    it("HTTP => Get new SummonerByLeagueCollection", async () => {
       // Request SummonerByLeagueCollection from RIOT Games API
+
+      try {
+        const reqChallenger = await RGHttpService.getSummonersByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+        const resChallenger = await reqChallenger.data;
+
+        expect(resChallenger).toBeDefined;
+        //
+      } catch (error: unknown | AxiosError) {
+        if (!axios.isAxiosError(error)) throw error;
+
+        expect(error.response?.status).toEqual(429);
+      }
     });
   });
 

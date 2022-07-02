@@ -10,13 +10,13 @@ import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
 
 export class RiotGamesHttp {
   // only change by Region
-  protocol = "https://";
-  regionUrl = "euw1.api.riotgames.com";
-  matchRegionUrl = "europe.api.riotgames.com";
-  genericUrl = "/lol/";
+  private protocol = "https://";
+  private regionUrl = "euw1.api.riotgames.com";
+  private matchRegionUrl = "europe.api.riotgames.com";
+  private genericUrl = "/lol/";
 
   // changes for each endpoint
-  enpointUrl = "";
+  private enpointUrl = "";
 
   public getSummonerByName = async (name: string): Promise<AxiosResponse<Summoner>> => {
     try {
@@ -50,6 +50,14 @@ export class RiotGamesHttp {
     }
   };
 
+  /**
+   * HTTP-Request for SummonerByLeague
+   *
+   * @param tier Name of the Division Tier
+   * @param queue Name of the Queue Type
+   *
+   * @returns HTTP-Response cotaining the SummonersByLeauge
+   */
   public getSummonersByLeague = async (tier: SbLTier, queue: SbLQueue): Promise<AxiosResponse<SummonerByLeague>> => {
     let tierRequestParam = "";
 
@@ -110,7 +118,7 @@ export class RiotGamesHttp {
     return completeUrl;
   };
 
-  public buildConfig = (): any => {
+  private buildConfig = (): any => {
     let config = {
       headers: {
         "X-Riot-Token": process.env.API_KEY,

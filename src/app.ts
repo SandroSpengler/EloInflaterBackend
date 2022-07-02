@@ -6,11 +6,11 @@ import { ConnectionOptions } from "tls";
 
 import axios, { AxiosError } from "axios";
 
+import { config } from "./Config/config";
+
 const mongoose = require("mongoose");
 const cors = require("cors");
 // const cron = require("node-cron");
-
-const { PORT, DB_CONNECTION } = require("./Config/config");
 
 require("dotenv").config();
 
@@ -36,6 +36,9 @@ APP.use(
   }),
 );
 
+/**
+ * Default entry Point for the App
+ */
 APP.get("/", (req: Request, res: Response) => {
   res.send("<h1>Main Page!!</h1>");
 });
@@ -46,9 +49,18 @@ APP.use("/api/data/match", jsonParser, matchController);
 APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 APP.use("/api/refresh/match", jsonParser, matchRefreshController);
 
-const connectToMongoDB = async () => {
+/**
+ * Connects to the MongoDB
+ *
+ * @param connection String used to connect to MongoDB
+ */
+const connectToMongoDB = async (connection: string | undefined) => {
+  if (connection === undefined) {
+    throw new Error("No Connection String was provided");
+  }
+
   await mongoose
-    .connect(process.env.DB_CONNECTION, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
+    .connect(connection, { useNewUrlParser: true, useUnifiedTopology: true } as ConnectionOptions)
     .then((data) => {
       if (process.env.NODE_ENV !== "test") {
         console.log("0. connected to mongodb");
@@ -60,10 +72,10 @@ const connectToMongoDB = async () => {
     });
 };
 
-connectToMongoDB();
+connectToMongoDB(process.env.DB_CONNECTION);
 
 if (process.env.NODE_ENV !== "test") {
-  APP.listen(PORT, () => {
+  APP.listen(config.PORT, () => {
     console.log("0. Server is running");
   });
 }

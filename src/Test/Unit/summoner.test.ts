@@ -18,7 +18,7 @@ describe("Summoner", () => {
     summonerRepo = new SummonerRepository();
     summonerService = new SummonerService(summonerRepo);
 
-    await connectToMongoDB();
+    await connectToMongoDB(process.env.DB_CONNECTION);
 
     const summonerToCreate: Summoner = {
       id: "idForTestSummoner",
