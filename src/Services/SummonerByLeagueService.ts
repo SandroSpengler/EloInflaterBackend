@@ -3,7 +3,7 @@ import { SummonerRepository } from "../Repository/SummonerRepository";
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 import { RiotGamesHttp } from "./Http";
-import { SbLTier } from "../Models/Types/SummonerByLeagueTypes";
+import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
 
 /**
  * This Service provides operations on the SummonerByLeague collection
@@ -25,10 +25,11 @@ export class SummonerByLeagueService {
   }
 
   /**
+   * Determines if the Collection in DB is outdated
    *
    * @param summonerByLeague SummonersByLeague that determine if updating is possible
    *
-   * @returns Boolean which states if summoner update is possible
+   * @returns Boolean which states if collection can be updated
    */
   checkIfSummonersByLeagueCanBeUpdated = (summonerByLeague: SummonerByLeague): boolean => {
     let unixTimeStamp = new Date().getTime() - 240 * 1000;
@@ -41,6 +42,14 @@ export class SummonerByLeagueService {
     return false;
   };
 
+  /**
+   * Not yet tested
+   * Update Summoner information in DB
+   *
+   *
+   * @param tier
+   * @returns
+   */
   validateSummonerIds = async (tier: SbLTier) => {
     console.log("1. Checking Summoners Ids in queue: " + tier);
 
@@ -94,6 +103,15 @@ export class SummonerByLeagueService {
     }
   };
 
+  /**
+   * Not yet Tested
+   * This function looks for the current Summoners with the rank = SbL.queue and
+   * updates them with the current information
+   *
+   *
+   * @param tier
+   * @returns
+   */
   validateSummonerLeague = async (tier: SbLTier) => {
     console.log("2. validating summonersByLeague " + tier);
     // current rank of top summoners

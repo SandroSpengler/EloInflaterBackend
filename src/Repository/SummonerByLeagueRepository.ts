@@ -49,15 +49,21 @@ export class SummonerByLeagueRepository {
     }
   };
 
-  updateSummonerByLeague = async (leagueName: string, entries: EntriesByLeague[]) => {
+  updateSummonerByLeauge = async (SbL: SummonerByLeague): Promise<void> => {
+    try {
+      await SummonerByLeagueSchema.updateOne({ tier: SbL.tier }, SbL);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  updateSummonerByLeagueEntries = async (leagueName: string, entries: EntriesByLeague[]): Promise<void> => {
     try {
       let currentUnixDate = new Date().getTime();
 
-      // loop through entries and update the updatedAt Time
-      SummonerByLeagueSchema.updateOne(
-        { tier: leagueName.toUpperCase() },
-        { entries: entries, updatedAt: currentUnixDate },
-      ).exec();
-    } catch (error) {}
+      SummonerByLeagueSchema.updateOne({ tier: leagueName }, { entries: entries, updatedAt: currentUnixDate }).exec();
+    } catch (error) {
+      throw Error;
+    }
   };
 }

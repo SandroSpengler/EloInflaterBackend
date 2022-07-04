@@ -112,7 +112,7 @@ export class RiotGamesHttp {
     }
   };
 
-  public buildBaseUrl = (regionUrl, endpointUrl) => {
+  private buildBaseUrl = (regionUrl, endpointUrl) => {
     let completeUrl = `${this.protocol}${regionUrl}${this.genericUrl}${endpointUrl}`;
 
     return completeUrl;

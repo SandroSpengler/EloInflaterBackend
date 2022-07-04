@@ -168,7 +168,7 @@ export class SummonerRefreshRoute {
 
       if (summonerByLeagueInDB.updatedAt! < new Date().getTime()) {
         // Updates the Summoners Entries
-        await this.SbLRepo.updateSummonerByLeague(tier, Response.data.entries);
+        await this.SbLRepo.updateSummonerByLeagueEntries(tier, Response.data.entries);
         // Saves the Summoner to DB
         await this.summonerService.updateSumonersByQueue(summonerByLeagueInDB);
       }

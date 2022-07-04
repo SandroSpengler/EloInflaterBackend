@@ -40,7 +40,7 @@ describe("Summoner by Leauge Functions", () => {
   });
 
   describe("MongoDB Queries", () => {
-    it("Find SummonerByLeague Challenger Collection", async () => {
+    it("DB => SummonerByLeague Challenger Collection", async () => {
       const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
       expect(SbLChallenger.entries).toBeDefined();
@@ -50,6 +50,89 @@ describe("Summoner by Leauge Functions", () => {
       expect(SbLChallenger.tier).toEqual("CHALLENGER");
 
       expect(SbLChallenger.entries[0]).toEqual(equalSbLEntries());
+    });
+
+    it("DB => Update SummonerByLeagueCollection - CHALLENGER", async () => {
+      // Get new Summoner By League Collection and save it to Database
+
+      let SbLInDBBeforeUpdate = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+      let newSbL = await RGHttpService.getSummonersByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+      let SbLInDBAfterUpdate: SummonerByLeague;
+
+      let currentDate = new Date().getTime() * 1000;
+
+      expect(SbLInDBBeforeUpdate.updatedAt).toBeLessThan(currentDate);
+
+      if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDBBeforeUpdate)) {
+        try {
+          await SbLRepo.updateSummonerByLeauge(newSbL.data);
+
+          SbLInDBAfterUpdate = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+          expect(SbLInDBAfterUpdate.updatedAt!).toBeGreaterThan(SbLInDBBeforeUpdate.updatedAt!);
+
+          expect(SbLInDBAfterUpdate.entries).not.toEqual(SbLInDBBeforeUpdate.entries);
+        } catch (error) {
+          throw error;
+        }
+      }
+    });
+
+    it("DB => Update SummonerByLeagueCollection - GRANDMASTER", async () => {
+      // Get new Summoner By League Collection and save it to Database
+
+      let SbLInDBBeforeUpdate = await SbLRepo.findSummonerByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+      let newSbL = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+      let SbLInDBAfterUpdate: SummonerByLeague;
+
+      let currentDate = new Date().getTime() * 1000;
+
+      expect(SbLInDBBeforeUpdate.updatedAt).toBeLessThan(currentDate);
+
+      if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDBBeforeUpdate)) {
+        try {
+          await SbLRepo.updateSummonerByLeauge(newSbL.data);
+
+          SbLInDBAfterUpdate = await SbLRepo.findSummonerByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+          expect(SbLInDBAfterUpdate.updatedAt!).toBeGreaterThan(SbLInDBBeforeUpdate.updatedAt!);
+
+          expect(SbLInDBAfterUpdate.entries).not.toEqual(SbLInDBBeforeUpdate.entries);
+        } catch (error) {
+          throw error;
+        }
+      }
+    });
+    it("DB => Update SummonerByLeagueCollection - MASTER", async () => {
+      // Get new Summoner By League Collection and save it to Database
+
+      let SbLInDBBeforeUpdate = await SbLRepo.findSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
+
+      let newSbL = await RGHttpService.getSummonersByLeague("MASTER", "RANKED_SOLO_5x5");
+
+      let SbLInDBAfterUpdate: SummonerByLeague;
+
+      let currentDate = new Date().getTime() * 1000;
+
+      expect(SbLInDBBeforeUpdate.updatedAt).toBeLessThan(currentDate);
+
+      if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDBBeforeUpdate)) {
+        try {
+          await SbLRepo.updateSummonerByLeauge(newSbL.data);
+
+          SbLInDBAfterUpdate = await SbLRepo.findSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
+
+          expect(SbLInDBAfterUpdate.updatedAt!).toBeGreaterThan(SbLInDBBeforeUpdate.updatedAt!);
+
+          expect(SbLInDBAfterUpdate.entries).not.toEqual(SbLInDBBeforeUpdate.entries);
+        } catch (error) {
+          throw error;
+        }
+      }
     });
   });
 
@@ -158,10 +241,6 @@ describe("Summoner by Leauge Functions", () => {
       summonerByLeagueMock.updatedAt = new Date().getTime() - 300 * 1000;
 
       expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(true);
-    });
-
-    it("Function => Update SummonerByLeagueCollection", () => {
-      // Get new Summoner By League Collection and save it to Database
     });
   });
 });
