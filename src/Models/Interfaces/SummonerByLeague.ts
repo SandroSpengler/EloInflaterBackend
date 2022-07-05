@@ -1,7 +1,8 @@
 import { Document } from "mongoose";
+import { SbLTier } from "../Types/SummonerByLeagueTypes";
 
 export default interface SummonerByLeague extends Partial<Document> {
-  tier: string;
+  tier: SbLTier;
   leagueId: string;
   queue: string;
   name: string;

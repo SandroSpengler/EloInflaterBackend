@@ -87,37 +87,66 @@ export class SummonerService {
     }
   };
 
-  updateSumonersByQueue = async (summonerByLeagueInDB: SummonerByLeague) => {
-    for (let i = 0; i < summonerByLeagueInDB.entries.length; i++) {
-      // let summoner = await findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
-      let summoner = await this.summonerRepo.findSummonerByID(summonerByLeagueInDB.entries[i].summonerId);
+  /**
+   * Updates/Creates all Summoners in DB based SbLCollection
+   *
+   * @param SbLInDB
+   */
+  updateSumonersLeague = async (SbLInDB: SummonerByLeague) => {
+    // 1. Find all Summoners in DB based on SbLInDB.tier
+    // 1.1 Check if SummonersInDB are still part of SbLInDB
+    // 1.2 Update all SummonersInDB with current information from SbLInDB
+
+    const summonersByRankSolo = await this.summonerRepo.findAllSummonersByRank(SbLInDB.tier);
+
+    let outDatedSummoners: Summoner[] = [];
+
+    if (summonersByRankSolo.length === 0) {
+      throw new Error(`No Summoners found with rankSolo equal to ${SbLInDB.tier}`);
+    }
+
+    // All Summoners that are not CHALLENGER but rankSolo is CHALLENGER
+    outDatedSummoners = summonersByRankSolo.filter((summoner) => {
+      return !SbLInDB.entries.some((SbLSummoner) => summoner._id === SbLSummoner.summonerId);
+    });
+
+    // Reset rank for outdated ones
+    for (let summoner of outDatedSummoners) {
+      summoner.rankSolo = "";
+
+      this.summonerRepo.updateSummonerBySummonerID(summoner);
+    }
+
+    // create or update current ones
+    for (let summonerSbL of SbLInDB.entries) {
+      let summoner = await this.summonerRepo.findSummonerByID(summonerSbL.summonerId);
 
       if (!summoner) {
         let summonerToSave: Summoner = {
-          _id: summonerByLeagueInDB.entries[i].summonerId,
-          id: summonerByLeagueInDB.entries[i].summonerId,
-          summonerId: summonerByLeagueInDB.entries[i].summonerId,
+          _id: summonerSbL.summonerId,
+          id: summonerSbL.summonerId,
+          summonerId: summonerSbL.summonerId,
           accountId: "",
           puuid: "",
-          name: summonerByLeagueInDB.entries[i].summonerName,
+          name: summonerSbL.summonerName,
           profileIconId: 0,
           revisionDate: 0,
           summonerLevel: 0,
-          leaguePoints: summonerByLeagueInDB.entries[i].leaguePoints,
-          rank: summonerByLeagueInDB.entries[i].rank,
-          rankSolo: "",
-          wins: summonerByLeagueInDB.entries[i].wins,
-          losses: summonerByLeagueInDB.entries[i].losses,
-          veteran: summonerByLeagueInDB.entries[i].veteran,
-          inactive: summonerByLeagueInDB.entries[i].inactive,
-          freshBlood: summonerByLeagueInDB.entries[i].freshBlood,
-          hotStreak: summonerByLeagueInDB.entries[i].hotStreak,
-          updatedAt: summonerByLeagueInDB.updatedAt,
+          leaguePoints: summonerSbL.leaguePoints,
+          rank: summonerSbL.rank,
+          rankSolo: SbLInDB.tier,
+          wins: summonerSbL.wins,
+          losses: summonerSbL.losses,
+          veteran: summonerSbL.veteran,
+          inactive: summonerSbL.inactive,
+          freshBlood: summonerSbL.freshBlood,
+          hotStreak: summonerSbL.hotStreak,
+          updatedAt: SbLInDB.updatedAt,
         };
 
         // Todo Add Flex and TT
-        if (summonerByLeagueInDB?.queue === "RANKED_SOLO_5x5") {
-          summonerToSave.rankSolo = summonerByLeagueInDB.tier;
+        if (SbLInDB?.queue === "RANKED_SOLO_5x5") {
+          summonerToSave.rankSolo = SbLInDB.tier;
         }
 
         try {
@@ -128,19 +157,20 @@ export class SummonerService {
       }
 
       if (summoner) {
-        summoner.leaguePoints = summonerByLeagueInDB.entries[i].leaguePoints;
-        summoner.rank = summonerByLeagueInDB.entries[i].rank;
-        summoner.rankSolo = "";
-        summoner.wins = summonerByLeagueInDB.entries[i].wins;
-        summoner.losses = summonerByLeagueInDB.entries[i].losses;
-        summoner.veteran = summonerByLeagueInDB.entries[i].veteran;
-        summoner.inactive = summonerByLeagueInDB.entries[i].inactive;
-        summoner.freshBlood = summonerByLeagueInDB.entries[i].freshBlood;
-        summoner.hotStreak = summonerByLeagueInDB.entries[i].hotStreak;
+        summoner.name = summonerSbL.summonerName;
+        summoner.leaguePoints = summonerSbL.leaguePoints;
+        summoner.rank = summonerSbL.rank;
+        summoner.rankSolo = SbLInDB.tier;
+        summoner.wins = summonerSbL.wins;
+        summoner.losses = summonerSbL.losses;
+        summoner.veteran = summonerSbL.veteran;
+        summoner.inactive = summonerSbL.inactive;
+        summoner.freshBlood = summonerSbL.freshBlood;
+        summoner.hotStreak = summonerSbL.hotStreak;
 
         // Todo Add Flex and TT
-        if (summonerByLeagueInDB?.queue === "RANKED_SOLO_5x5") {
-          summoner.rankSolo = summonerByLeagueInDB.tier;
+        if (SbLInDB?.queue === "RANKED_SOLO_5x5") {
+          summoner.rankSolo = SbLInDB.tier;
         }
 
         await this.summonerRepo.updateSummonerBySummonerID(summoner);

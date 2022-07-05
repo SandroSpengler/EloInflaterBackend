@@ -1,5 +1,6 @@
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerSchema from "../Models/Schemas/SummonerSchema";
+import { SbLTier } from "../Models/Types/SummonerByLeagueTypes";
 
 export class SummonerRepository {
   //#region Summoner MongoDB
@@ -17,15 +18,20 @@ export class SummonerRepository {
     }
   };
 
-  public findAllSummonersByRank = async (rank: string, queueType?: string) => {
+  /**
+   * Finds all summoners in SummonerCollection based on Parameters
+   *
+   * @param rankSolo Soloqueue rank
+   *
+   * @returns List of Summoners || Emtpy List
+   */
+  public findAllSummonersByRank = async (rankSolo: SbLTier): Promise<Summoner[]> => {
     try {
-      let foundSummoner: Summoner[] | null;
+      let foundSummoner: Summoner[];
 
-      foundSummoner = await SummonerSchema.find({ rankSolo: rank }).lean();
+      foundSummoner = await SummonerSchema.find({ rankSolo: rankSolo }).lean();
 
-      if (foundSummoner != null) return foundSummoner;
-
-      return null;
+      return foundSummoner;
 
       // if (foundSummoner == null) return null;
     } catch (error) {
@@ -47,6 +53,13 @@ export class SummonerRepository {
     }
   };
 
+  /**
+   * Finds a summoner in DB based on summonerId
+   *
+   * @param summonerId the id of the summoner
+   *
+   * @returns The found summoner
+   */
   public findSummonerByID = async (summonerId: String): Promise<Summoner | null> => {
     try {
       let foundSummoner: Summoner | null = await SummonerSchema.findOne({ _id: summonerId }).lean(); // .lean() returns only the json and not the mongoose.document

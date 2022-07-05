@@ -1,5 +1,7 @@
 import { connectToMongoDB } from "../../app";
 import Summoner from "../../Models/Interfaces/Summoner";
+import { SbLTier } from "../../Models/Types/SummonerByLeagueTypes";
+import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
 
 import { SummonerRepository } from "../../Repository/SummonerRepository";
 import { SummonerService } from "../../Services/SummonerService";
@@ -12,11 +14,15 @@ describe("Summoner", () => {
   let summonerRepo: SummonerRepository;
   let summonerService: SummonerService;
 
+  let SbLRepo: SummonerByLeagueRepository;
+
   beforeAll(async () => {
     summonerMock = require("../TestSampleData/MockSummoner.json");
 
     summonerRepo = new SummonerRepository();
     summonerService = new SummonerService(summonerRepo);
+
+    SbLRepo = new SummonerByLeagueRepository();
 
     await connectToMongoDB(process.env.DB_CONNECTION);
 
@@ -44,7 +50,7 @@ describe("Summoner", () => {
   });
 
   describe("MongoDB Queries", () => {
-    it("Expect to find Summoner By Name", async () => {
+    it("DB => Expect to find Summoner By Name", async () => {
       // still case sensitive
       const summonerName: string = "test summoner";
 
@@ -64,7 +70,7 @@ describe("Summoner", () => {
       );
     });
 
-    it("Expect to find Summoner By PUUID", async () => {
+    it("DB => Expect to find Summoner By PUUID", async () => {
       const summonerPUUID: string = "puuIdForTestSummoner";
       const summonerName = "test summoner";
 
@@ -84,7 +90,7 @@ describe("Summoner", () => {
       );
     });
 
-    it("Expect to find Summoner By ID", async () => {
+    it("DB => Expect to find Summoner By ID", async () => {
       const summonerId: string = "idForTestSummoner";
       const summonerName = "test summoner";
 
@@ -103,8 +109,8 @@ describe("Summoner", () => {
       );
     });
 
-    it("Expect to find all Summoners by Rank - CHALLENGER", async () => {
-      const rankSolo: string = "CHALLENGER";
+    it("DB => Expect to find all Summoners by Rank - CHALLENGER", async () => {
+      const rankSolo: SbLTier = "CHALLENGER";
       const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
 
       expect(summonersByRank).not.toBeNull();
@@ -121,8 +127,8 @@ describe("Summoner", () => {
         ]),
       );
     });
-    it("Expect to find all Summoners by Rank - GRANDMASTER", async () => {
-      const rankSolo: string = "GRANDMASTER";
+    it("DB => Expect to find all Summoners by Rank - GRANDMASTER", async () => {
+      const rankSolo: SbLTier = "GRANDMASTER";
       const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
 
       expect(summonersByRank).not.toBeNull();
@@ -139,8 +145,8 @@ describe("Summoner", () => {
         ]),
       );
     });
-    it("Expect to find all Summoners by Rank - MASTER", async () => {
-      const rankSolo: string = "MASTER";
+    it("DB => Expect to find all Summoners by Rank - MASTER", async () => {
+      const rankSolo: SbLTier = "MASTER";
       const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
 
       expect(summonersByRank).not.toBeNull();
@@ -158,7 +164,7 @@ describe("Summoner", () => {
       );
     });
 
-    it("Expect Summoner to get deleted", async () => {
+    it("DB => Expect Summoner to get deleted", async () => {
       const summonerBeforeDelete: Summoner | null = await summonerRepo.findSummonerByID("idForTestSummoner");
 
       expect(summonerBeforeDelete).toBeDefined();
@@ -193,9 +199,47 @@ describe("Summoner", () => {
       expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
     });
 
-    it("Function => update Summoner based on SummonerByLeagueCollection", () => {
-      // get current SummonerByLeagueCollection from DB
-      // update Summoners based on current SbLCollection
+    it("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
+      const SbLInDB = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+      await summonerService.updateSumonersLeague(SbLInDB);
+
+      const summonersInDB = await summonerRepo.findAllSummonersByRank("CHALLENGER");
+
+      for (let summoner of summonersInDB) {
+        const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
+
+        expect(summoner.id).toEqual(summonerInSbL?.summonerId);
+      }
     });
+
+    it("Function => update Summoner by SbLCollection - GRANDMASTER", async () => {
+      const SbLInDB = await SbLRepo.findSummonerByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+      await summonerService.updateSumonersLeague(SbLInDB);
+
+      const summonersInDB = await summonerRepo.findAllSummonersByRank("GRANDMASTER");
+
+      for (let summoner of summonersInDB) {
+        const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
+
+        expect(summoner.id).toEqual(summonerInSbL?.summonerId);
+      }
+    });
+
+    // Too large to execute everytime
+    //   it("Function => update Summoner by SbLCollection - MASTER", async () => {
+    //     const SbLInDB = await SbLRepo.findSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
+
+    //     await summonerService.updateSumonersLeague(SbLInDB);
+
+    //     const summonersInDB = await summonerRepo.findAllSummonersByRank("MASTER");
+
+    //     for (let summoner of summonersInDB) {
+    //       const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
+
+    //       expect(summoner.id).toEqual(summonerInSbL?.summonerId);
+    //     }
+    //   }, 30000);
   });
 });

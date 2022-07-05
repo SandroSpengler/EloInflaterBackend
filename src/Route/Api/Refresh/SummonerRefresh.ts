@@ -170,7 +170,7 @@ export class SummonerRefreshRoute {
         // Updates the Summoners Entries
         await this.SbLRepo.updateSummonerByLeagueEntries(tier, Response.data.entries);
         // Saves the Summoner to DB
-        await this.summonerService.updateSumonersByQueue(summonerByLeagueInDB);
+        await this.summonerService.updateSumonersLeague(summonerByLeagueInDB);
       }
 
       // save rankedinformation to that summoner
