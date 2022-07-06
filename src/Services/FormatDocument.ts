@@ -3,7 +3,7 @@ import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 
 export const formatSummonerForSending = (summoner: Summoner): Summoner => {
   try {
-    let summonerToSend = {
+    let summonerToSend: Summoner = {
       id: summoner._id,
       summonerId: summoner._id,
       accountId: summoner.accountId,
@@ -21,7 +21,8 @@ export const formatSummonerForSending = (summoner: Summoner): Summoner => {
       inactive: summoner.inactive,
       freshBlood: summoner.freshBlood,
       hotStreak: summoner.hotStreak,
-      matchList: summoner.matchList,
+      uninflatedMatchList: summoner.uninflatedMatchList,
+      inflatedMatchList: summoner.inflatedMatchList,
       exhaustCount: summoner.exhaustCount,
       exhaustCastCount: summoner.exhaustCastCount,
       zhonaysCount: summoner.zhonaysCount,

@@ -4,6 +4,8 @@ import { SbLTier } from "../../Models/Types/SummonerByLeagueTypes";
 import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
 
 import { SummonerRepository } from "../../Repository/SummonerRepository";
+import { RiotGamesHttp } from "../../Services/Http";
+import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
 import { SummonerService } from "../../Services/SummonerService";
 
 // import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
@@ -15,14 +17,20 @@ describe("Summoner", () => {
   let summonerService: SummonerService;
 
   let SbLRepo: SummonerByLeagueRepository;
+  let SbLService: SummonerByLeagueService;
+
+  let RGHttp;
 
   beforeAll(async () => {
     summonerMock = require("../TestSampleData/MockSummoner.json");
+
+    RGHttp = undefined;
 
     summonerRepo = new SummonerRepository();
     summonerService = new SummonerService(summonerRepo);
 
     SbLRepo = new SummonerByLeagueRepository();
+    SbLService = new SummonerByLeagueService(SbLRepo, summonerRepo, RGHttp);
 
     await connectToMongoDB(process.env.DB_CONNECTION);
 
@@ -35,7 +43,7 @@ describe("Summoner", () => {
       profileIconId: 10,
       revisionDate: 20,
       summonerLevel: 40,
-      matchList: [
+      uninflatedMatchList: [
         "EUW1_5719815682",
         "EUW1_5747055907",
         "EUW1_5782762281",
@@ -44,6 +52,7 @@ describe("Summoner", () => {
         "EUW1_5710227574",
         "EUW1_5721290766",
       ],
+      inflatedMatchList: [],
     };
 
     await summonerRepo.createSummoner(summonerToCreate);
@@ -62,7 +71,7 @@ describe("Summoner", () => {
         expect.objectContaining({
           _id: expect.anything(),
           name: summonerName,
-          matchList: expect.arrayContaining([expect.any(String)]),
+          uninflatedMatchList: expect.arrayContaining([expect.any(String)]),
           puuid: expect.any(String),
           tabisCount: expect.any(Number),
           summonerLevel: expect.any(Number),
@@ -83,7 +92,7 @@ describe("Summoner", () => {
           _id: expect.anything(),
           puuid: summonerPUUID,
           name: summonerName,
-          matchList: expect.arrayContaining([expect.any(String)]),
+          uninflatedMatchList: expect.arrayContaining([expect.any(String)]),
           tabisCount: expect.any(Number),
           summonerLevel: expect.any(Number),
         }),
@@ -102,7 +111,7 @@ describe("Summoner", () => {
         expect.objectContaining({
           _id: summonerId,
           name: summonerName,
-          matchList: expect.arrayContaining([expect.any(String)]),
+          uninflatedMatchList: expect.arrayContaining([expect.any(String)]),
           tabisCount: expect.any(Number),
           summonerLevel: expect.any(Number),
         }),
@@ -127,6 +136,7 @@ describe("Summoner", () => {
         ]),
       );
     });
+
     it("DB => Expect to find all Summoners by Rank - GRANDMASTER", async () => {
       const rankSolo: SbLTier = "GRANDMASTER";
       const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
@@ -145,6 +155,7 @@ describe("Summoner", () => {
         ]),
       );
     });
+
     it("DB => Expect to find all Summoners by Rank - MASTER", async () => {
       const rankSolo: SbLTier = "MASTER";
       const summonersByRank: Summoner[] | null = await summonerRepo.findAllSummonersByRank(rankSolo);
@@ -202,6 +213,10 @@ describe("Summoner", () => {
     it("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
       const SbLInDB = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
+      if (await SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDB)) {
+        return;
+      }
+
       await summonerService.updateSumonersLeague(SbLInDB);
 
       const summonersInDB = await summonerRepo.findAllSummonersByRank("CHALLENGER");
@@ -216,6 +231,10 @@ describe("Summoner", () => {
     it("Function => update Summoner by SbLCollection - GRANDMASTER", async () => {
       const SbLInDB = await SbLRepo.findSummonerByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
 
+      if (await SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDB)) {
+        return;
+      }
+
       await summonerService.updateSumonersLeague(SbLInDB);
 
       const summonersInDB = await summonerRepo.findAllSummonersByRank("GRANDMASTER");
@@ -228,18 +247,22 @@ describe("Summoner", () => {
     });
 
     // Too large to execute everytime
-    //   it("Function => update Summoner by SbLCollection - MASTER", async () => {
-    //     const SbLInDB = await SbLRepo.findSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
+    it.skip("Function => update Summoner by SbLCollection - MASTER", async () => {
+      const SbLInDB = await SbLRepo.findSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
 
-    //     await summonerService.updateSumonersLeague(SbLInDB);
+      if (await SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDB)) {
+        return;
+      }
 
-    //     const summonersInDB = await summonerRepo.findAllSummonersByRank("MASTER");
+      await summonerService.updateSumonersLeague(SbLInDB);
 
-    //     for (let summoner of summonersInDB) {
-    //       const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
+      const summonersInDB = await summonerRepo.findAllSummonersByRank("MASTER");
 
-    //       expect(summoner.id).toEqual(summonerInSbL?.summonerId);
-    //     }
-    //   }, 30000);
+      for (let summoner of summonersInDB) {
+        const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
+
+        expect(summoner.id).toEqual(summonerInSbL?.summonerId);
+      }
+    });
   });
 });

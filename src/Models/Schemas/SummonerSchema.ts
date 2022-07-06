@@ -80,7 +80,11 @@ const SummonerSchema: Schema = new Schema(
       type: Boolean,
       default: false,
     },
-    matchList: {
+    inflatedMatchList: {
+      type: [String],
+      default: [],
+    },
+    uninflatedMatchList: {
       type: [String],
       default: [],
     },
@@ -119,7 +123,7 @@ const SummonerSchema: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 //#endregion

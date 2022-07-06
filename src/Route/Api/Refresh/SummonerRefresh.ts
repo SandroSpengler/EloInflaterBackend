@@ -102,7 +102,7 @@ export class SummonerRefreshRoute {
       const summonerInDB = await this.summonerRepo.findSummonerByPUUID(req.params.puuid);
 
       if (summonerInDB) {
-        await this.matchService.checkSummonerMatchesForEloInflation(summonerInDB);
+        // await this.matchService.checkSummonerMatchesForEloInflation(summonerInDB);
 
         return res.status(200).json({
           success: true,

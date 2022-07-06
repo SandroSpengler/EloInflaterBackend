@@ -59,15 +59,15 @@ export class MatchRepository {
   findAllMatchesBySummonerPUUID = async (summonerPUUID: string): Promise<MatchData[] | null> => {
     let matchesById: MatchData[] | null;
     try {
-      matchesById = await MatchSchema.find({})
-        .lean()
-        // .find({
-        //   "metadata.participants": {
-        //     $in: ["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"],
-        //   },
-        // })
-        .where("metadata.participants")
-        .in([summonerPUUID]);
+      // matchesById = await MatchSchema.find({})
+      //   .lean()
+      //   // .find({
+      //   //   "metadata.participants": {
+      //   //     $in: ["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"],
+      //   //   },
+      //   // })
+      //   .where("metadata.participants")
+      //   .in([summonerPUUID]);
 
       // .all(["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"])
 
@@ -78,6 +78,16 @@ export class MatchRepository {
       // ALL of the values inside that array has to be present
 
       // .all([String]) === .in([String]) BUT .all([String,String]) !== .in([String,String])
+
+      matchesById = await MatchSchema.find({ "info.participants.puuid": summonerPUUID }).lean();
+      // .select("info");
+      // .find({
+      //   "metadata.participants": {
+      //     $in: ["wNmqP7H1ywT7s9VV-i6gMaaUD9d6ugPuqmf2U6wOHdPpFCBdwDkc29cfhVltttRRVwUbwvI0yz4AnQ"],
+      //   },
+      // })
+      // .where("metadata.participants")
+      // .in([summonerPUUID]);
 
       return matchesById;
     } catch (error) {

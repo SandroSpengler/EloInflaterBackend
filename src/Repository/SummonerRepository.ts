@@ -125,7 +125,8 @@ export class SummonerRepository {
       if (summoner.inactive) tmpSummoner.inactive = summoner.inactive;
       if (summoner.freshBlood) tmpSummoner.freshBlood = summoner.freshBlood;
       if (summoner.hotStreak) tmpSummoner.hotStreak = summoner.hotStreak;
-      if (summoner.matchList) tmpSummoner.matchList = summoner.matchList;
+      if (summoner.inflatedMatchList) tmpSummoner.inflatedMatchList = summoner.inflatedMatchList;
+      if (summoner.uninflatedMatchList) tmpSummoner.uninflatedMatchList = summoner.uninflatedMatchList;
       if (summoner.exhaustCount) tmpSummoner.exhaustCount = summoner.exhaustCount;
       if (summoner.exhaustCastCount) tmpSummoner.exhaustCastCount = summoner.exhaustCastCount;
       if (summoner.tabisCount) tmpSummoner.tabisCount = summoner.tabisCount;

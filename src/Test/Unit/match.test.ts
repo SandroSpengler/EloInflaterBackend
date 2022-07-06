@@ -20,7 +20,7 @@ describe("Match", () => {
     });
 
     // 2022/10/04 - Check after indexes are built
-    it.skip("Expect matches for a Summoner by SummonerPUUID", async () => {
+    it("Expect matches for a Summoner by SummonerPUUID", async () => {
       const matchesForSummonerByPUUID: MatchData[] | null = await matchRepo.findAllMatchesBySummonerPUUID(
         summonerPUUID,
       );
@@ -28,7 +28,7 @@ describe("Match", () => {
       if (matchesForSummonerByPUUID === null) throw new Error();
 
       expect(matchesForSummonerByPUUID.length).toBeGreaterThan(10);
-    }, 30000);
+    });
 
     it("Expect to find match by MatchID", async () => {
       const matchIdsToFind: string[] = [

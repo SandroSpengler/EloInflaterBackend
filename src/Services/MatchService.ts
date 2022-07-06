@@ -14,127 +14,129 @@ export class MatchService {
    *
    * @void
    */
-  public checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
-    try {
-      if (summoner.matchList === undefined) return;
+  // public checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
+  //   try {
+  //     // get matches from db
 
-      let summonerMatches: MatchData[] | null = [];
+  //     if (summoner.matchList === undefined) return;
 
-      for (let matchId of summoner.matchList) {
-        let detailedMatch = await this.matchRepo.findMatchById(matchId);
+  //     let summonerMatches: MatchData[] | null = [];
 
-        if (detailedMatch) {
-          summonerMatches.push(detailedMatch);
-        }
-      }
+  //     for (let matchId of summoner.matchList) {
+  //       let detailedMatch = await this.matchRepo.findMatchById(matchId);
 
-      if (summonerMatches === null || summonerMatches.length === 0) return;
+  //       if (detailedMatch) {
+  //         summonerMatches.push(detailedMatch);
+  //       }
+  //     }
 
-      let exhaustCount: number = 0;
-      let exhaustCastCount: number = 0;
-      let tabisCount: number = 0;
-      let zhonaysCount: number = 0;
+  //     if (summonerMatches === null || summonerMatches.length === 0) return;
 
-      if (summonerMatches === undefined) return;
+  //     let exhaustCount: number = 0;
+  //     let exhaustCastCount: number = 0;
+  //     let tabisCount: number = 0;
+  //     let zhonaysCount: number = 0;
 
-      let matchesForSummonerPUUID: Participant[] = [];
+  //     if (summonerMatches === undefined) return;
 
-      for (const [index, match] of summonerMatches.entries()) {
-        let summonerMatch: Participant | undefined = match.info[0].participants.find((participant) => {
-          return participant.puuid === summoner?.puuid;
-        });
+  //     let matchesForSummonerPUUID: Participant[] = [];
 
-        if (summonerMatch === undefined) {
-          continue;
-        }
+  //     for (const [index, match] of summonerMatches.entries()) {
+  //       let summonerMatch: Participant | undefined = match.info[0].participants.find((participant) => {
+  //         return participant.puuid === summoner?.puuid;
+  //       });
 
-        matchesForSummonerPUUID.push(summonerMatch);
-      }
+  //       if (summonerMatch === undefined) {
+  //         continue;
+  //       }
 
-      for (let participant of matchesForSummonerPUUID) {
-        if (participant?.summoner1Id === 3) {
-          // summonerMatchDetails.exhaustAbused = true;
+  //       matchesForSummonerPUUID.push(summonerMatch);
+  //     }
 
-          exhaustCount += 1;
-          exhaustCastCount += participant.summoner1Casts;
-        }
+  //     for (let participant of matchesForSummonerPUUID) {
+  //       if (participant?.summoner1Id === 3) {
+  //         // summonerMatchDetails.exhaustAbused = true;
 
-        if (participant?.summoner2Id === 3) {
-          // summonerMatchDetails.exhaustAbused = true;
+  //         exhaustCount += 1;
+  //         exhaustCastCount += participant.summoner1Casts;
+  //       }
 
-          exhaustCount += 1;
-          exhaustCastCount += participant.summoner2Casts;
-        }
+  //       if (participant?.summoner2Id === 3) {
+  //         // summonerMatchDetails.exhaustAbused = true;
 
-        // Items === Tabis (Id: 3047)
-        // Items === Zhonay's (Id: 3157)
+  //         exhaustCount += 1;
+  //         exhaustCastCount += participant.summoner2Casts;
+  //       }
 
-        if (participant?.item0 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item0 === 3157) {
-          zhonaysCount += 1;
-        }
+  //       // Items === Tabis (Id: 3047)
+  //       // Items === Zhonay's (Id: 3157)
 
-        if (participant?.item1 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item1 === 3157) {
-          zhonaysCount += 1;
-        }
+  //       if (participant?.item0 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item0 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
 
-        if (participant?.item2 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item2 === 3157) {
-          zhonaysCount += 1;
-        }
+  //       if (participant?.item1 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item1 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
 
-        if (participant?.item3 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item3 === 3157) {
-          zhonaysCount += 1;
-        }
+  //       if (participant?.item2 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item2 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
 
-        if (participant?.item4 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item4 === 3157) {
-          zhonaysCount += 1;
-        }
+  //       if (participant?.item3 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item3 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
 
-        if (participant?.item5 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item5 === 3157) {
-          zhonaysCount += 1;
-        }
+  //       if (participant?.item4 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item4 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
 
-        if (participant?.item6 === 3047) {
-          tabisCount += 1;
-        }
-        if (participant?.item6 === 3157) {
-          zhonaysCount += 1;
-        }
-      }
+  //       if (participant?.item5 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item5 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
 
-      // summoner.matchCount = summonerMatches.length;
-      summoner.exhaustCount = exhaustCount;
-      summoner.exhaustCastCount = exhaustCastCount;
-      summoner.tabisCount = tabisCount;
-      summoner.zhonaysCount = zhonaysCount;
+  //       if (participant?.item6 === 3047) {
+  //         tabisCount += 1;
+  //       }
+  //       if (participant?.item6 === 3157) {
+  //         zhonaysCount += 1;
+  //       }
+  //     }
 
-      // await updateSummonerByPUUID(summoner);
+  //     // summoner.matchCount = summonerMatches.length;
+  //     summoner.exhaustCount = exhaustCount;
+  //     summoner.exhaustCastCount = exhaustCastCount;
+  //     summoner.tabisCount = tabisCount;
+  //     summoner.zhonaysCount = zhonaysCount;
 
-      return;
+  //     // await updateSummonerByPUUID(summoner);
 
-      // await setexhaustCount(exhaustCount);
-      // await setexhastCastedCount(exhaustUsedCount);
-      // await setTabisCount(tabisCount);
-      // await setzhonaysCount(zhonaysCount);
-    } catch (error) {
-      throw error;
-    }
-  };
+  //     return;
+
+  //     // await setexhaustCount(exhaustCount);
+  //     // await setexhastCastedCount(exhaustUsedCount);
+  //     // await setTabisCount(tabisCount);
+  //     // await setzhonaysCount(zhonaysCount);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
 }

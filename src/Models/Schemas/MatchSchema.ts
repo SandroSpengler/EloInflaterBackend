@@ -20,7 +20,7 @@ const Metadata: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Challenges: Schema = new Schema(
@@ -346,7 +346,7 @@ const Challenges: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Participants: Schema = new Schema(
@@ -527,7 +527,7 @@ const Participants: Schema = new Schema(
     },
     puuid: {
       type: String,
-      index: true,
+      // index: true,
     },
     quadraKills: {
       type: Number,
@@ -669,7 +669,7 @@ const Participants: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Ban: Schema = new Schema(
@@ -683,7 +683,7 @@ const Ban: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Baron: Schema = new Schema(
@@ -697,7 +697,7 @@ const Baron: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 const Champion: Schema = new Schema(
   {
@@ -710,7 +710,7 @@ const Champion: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 const Dragon: Schema = new Schema(
   {
@@ -723,7 +723,7 @@ const Dragon: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 const Inhibitor: Schema = new Schema(
   {
@@ -736,7 +736,7 @@ const Inhibitor: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 const RiftHerald: Schema = new Schema(
   {
@@ -749,7 +749,7 @@ const RiftHerald: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 const Tower: Schema = new Schema(
   {
@@ -762,7 +762,7 @@ const Tower: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Objectives: Schema = new Schema(
@@ -788,7 +788,7 @@ const Objectives: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Team: Schema = new Schema(
@@ -808,7 +808,7 @@ const Team: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Info: Schema = new Schema(
@@ -861,7 +861,7 @@ const Info: Schema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const MatchSchema = new Schema(
@@ -879,8 +879,11 @@ const MatchSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
+
+// MatchSchema.index({ "info.participants.puuid": 1 });
+Participants.index({ puuid: 1 });
 
 //#endregion
 export default mongoose.model<MatchData>("MatchSchema", MatchSchema);

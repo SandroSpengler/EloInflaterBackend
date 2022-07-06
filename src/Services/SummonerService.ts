@@ -28,65 +28,6 @@ export class SummonerService {
     return false;
   };
 
-  checkIfSummonerAbusedMatch = (summoner: Summoner, match: MatchData): IMatchSchema => {
-    let summonerMatchDetails: IMatchSchema = {
-      matchId: match.metadata.matchId,
-      exhaustAbused: false,
-      tabisAbused: false,
-    };
-
-    try {
-      let summonerParticipantDetails: Participant | undefined = match.info.participants.find(
-        (participant) => participant.puuid === summoner.puuid,
-      );
-
-      // SummonerIds === Exhaust (Id:3)
-
-      if (summonerParticipantDetails?.summoner1Id === 3) {
-        summonerMatchDetails.exhaustAbused = true;
-      }
-
-      if (summonerParticipantDetails?.summoner2Id === 3) {
-        summonerMatchDetails.exhaustAbused = true;
-      }
-
-      // Items === Tabis (Id: 3047)
-
-      if (summonerParticipantDetails?.item0 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-      if (summonerParticipantDetails?.item1 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-      if (summonerParticipantDetails?.item2 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-      if (summonerParticipantDetails?.item3 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-      if (summonerParticipantDetails?.item4 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-      if (summonerParticipantDetails?.item5 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-      if (summonerParticipantDetails?.item6 === 3047) {
-        summonerMatchDetails.tabisAbused = true;
-        return summonerMatchDetails;
-      }
-
-      return summonerMatchDetails;
-    } catch (error) {
-      throw error;
-    }
-  };
-
   /**
    * Updates/Creates all Summoners in DB based SbLCollection
    *

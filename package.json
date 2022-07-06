@@ -8,6 +8,8 @@
     "test": "jest --watchAll --verbose",
     "test:integration": "jest --watchAll --testPathPattern=src/Test/Integration",
     "test:unit": "jest --watchAll  --testPathPattern=src/Test/Unit",
+    "test:unit:summoner": "jest --watchAll  --testPathPattern=src/Test/Unit/summoner.test.ts",
+    "test:unit:match": "jest --watchAll  --testPathPattern=src/Test/Unit/match.test.ts",
     "dev": "nodemon",
     "build": ""
   },

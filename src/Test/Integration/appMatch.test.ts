@@ -8,7 +8,7 @@ describe("SummonerMatches Endpoint", () => {
     // Create Test Summoner
   });
 
-  it("Expect a matchList to be 0", async () => {
+  it.skip("Expect a matchList to be 0", async () => {
     const summonerId: string = "ngQJmMrTc_zbLR8vXHAJmKJo1OmmJXP1ncWZPm_iRUJRdnM";
 
     // Call api/data/summoner/{summonerName}
@@ -22,7 +22,7 @@ describe("SummonerMatches Endpoint", () => {
       expect.objectContaining({
         success: expect.any(Boolean),
         result: expect.objectContaining({ id: summonerId, matchList: expect.arrayContaining([expect.any(String)]) }),
-      })
+      }),
     );
   });
 
