@@ -92,24 +92,17 @@ if (process.env.NODE_ENV !== "test") {
     console.log("0. Server is running");
   });
 }
+
 const schedule = async () => {
   try {
     // Go through all SummonerByLeague and update their MatchList
     // await checkSummonerMatchIdLists();
 
-    const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+    await updateSbLCollections();
 
-    if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLChallenger)) {
-      console.log("YES");
-    }
+    // Get Matches for Summoner
 
-    // await validateSummonerIds("CHALLENGER");
-    // await validateSummonerIds("GRANDMASTER");
-    // await validateSummonerIds("MASTER");
-
-    // await validateSummonerLeague("CHALLENGER");
-    // await validateSummonerLeague("GRANDMASTER");
-    // await validateSummonerLeague("MASTER");
+    // Check if they are inflated
 
     // await checkForNewSummonerMatches("CHALLENGER");
     // await checkForNewSummonerMatches("GRANDMASTER");
@@ -119,9 +112,50 @@ const schedule = async () => {
       console.log("Going to restart");
 
       schedule();
-    }, 1000 * 2);
+    }, 2 * 60 * 1000);
   } catch (error: any) {
     console.log(error.message);
+  }
+};
+
+const updateSbLCollections = async () => {
+  const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+
+  const SbLGrandMaster = await SbLRepo.findSummonerByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+
+  const SbLMaster = await SbLRepo.findSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
+
+  if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLChallenger)) {
+    console.log(`Updating SummonerByLeague ${SbLChallenger.tier} Collection`);
+
+    const newSbLChallenger = (await RGHttp.getSummonersByLeague("CHALLENGER", "RANKED_SOLO_5x5")).data;
+
+    await SbLRepo.updateSummonerByLeauge(newSbLChallenger);
+    await summonerService.updateSumonersByLeague(newSbLChallenger);
+
+    console.log(` SummonerByLeague ${SbLChallenger.tier} - Done`);
+  }
+
+  if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLGrandMaster)) {
+    console.log(`Updating SummonerByLeague ${SbLGrandMaster.tier} Collection`);
+
+    const newSbLGrandMaster = (await RGHttp.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5")).data;
+
+    await SbLRepo.updateSummonerByLeauge(newSbLGrandMaster);
+    await summonerService.updateSumonersByLeague(newSbLGrandMaster);
+
+    console.log(` SummonerByLeague ${SbLGrandMaster.tier} - Done`);
+  }
+
+  if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLMaster)) {
+    console.log(`Updating SummonerByLeague ${SbLMaster.tier} Collection`);
+
+    const newSbLMaster = (await RGHttp.getSummonersByLeague("MASTER", "RANKED_SOLO_5x5")).data;
+
+    await SbLRepo.updateSummonerByLeauge(newSbLMaster);
+    await summonerService.updateSumonersByLeague(newSbLMaster);
+
+    console.log(` SummonerByLeague ${SbLMaster.tier} - Done`);
   }
 };
 
