@@ -12,13 +12,13 @@ const express = require("express");
 const router = express.Router();
 
 export class MatchRoute {
+  private RGHttp: RiotGamesHttp = new RiotGamesHttp();
+
   private summonerRepo: SummonerRepository = new SummonerRepository();
-  private summonerService: SummonerService = new SummonerService(this.summonerRepo);
+  private summonerService: SummonerService = new SummonerService(this.summonerRepo, this.RGHttp);
 
   private matchRepo: MatchRepository = new MatchRepository();
-  private matchService: MatchService = new MatchService(this.matchRepo);
-
-  private RGHttp: RiotGamesHttp = new RiotGamesHttp();
+  private matchService: MatchService = new MatchService(this.matchRepo, this.RGHttp);
 
   constructor() {
     router.get("/:name", this.matchByName);

@@ -7,6 +7,11 @@ import { ConnectionOptions } from "tls";
 import axios, { AxiosError } from "axios";
 
 import { config } from "./Config/config";
+import { SummonerRepository } from "./Repository/SummonerRepository";
+import { SummonerService } from "./Services/SummonerService";
+import { RiotGamesHttp } from "./Services/Http";
+import { SummonerByLeagueRepository } from "./Repository/SummonerByLeagueRepository";
+import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -24,6 +29,14 @@ const leaugeController = require("./Route/Api/Data/SummonerByLeagueData");
 const matchController = require("./Route/Api/Data/Match");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
 const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
+
+const RGHttp = new RiotGamesHttp();
+
+const summonerRepo = new SummonerRepository();
+const summonerService = new SummonerService(summonerRepo, RGHttp);
+
+const SbLRepo = new SummonerByLeagueRepository();
+const SbLService = new SummonerByLeagueService(SbLRepo, summonerRepo, RGHttp);
 
 let corsOptions = {
   origin: "*",
@@ -79,34 +92,42 @@ if (process.env.NODE_ENV !== "test") {
     console.log("0. Server is running");
   });
 }
-// const schedule = async () => {
-//   try {
-//     // await checkSummonerMatchIdLists();
+const schedule = async () => {
+  try {
+    // Go through all SummonerByLeague and update their MatchList
+    // await checkSummonerMatchIdLists();
 
-//     await validateSummonerIds("CHALLENGER");
-//     await validateSummonerIds("GRANDMASTER");
-//     await validateSummonerIds("MASTER");
+    const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
-//     await validateSummonerLeague("CHALLENGER");
-//     await validateSummonerLeague("GRANDMASTER");
-//     await validateSummonerLeague("MASTER");
+    if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLChallenger)) {
+      console.log("YES");
+    }
 
-//     await checkForNewSummonerMatches("CHALLENGER");
-//     await checkForNewSummonerMatches("GRANDMASTER");
-//     await checkForNewSummonerMatches("MASTER");
+    // await validateSummonerIds("CHALLENGER");
+    // await validateSummonerIds("GRANDMASTER");
+    // await validateSummonerIds("MASTER");
 
-//     await setTimeout(function () {
-//       console.log("Going to restart");
-//       schedule();
-//     }, 1000 * 90);
-//   } catch (error: any) {
-//     console.log(error.message);
-//   }
-// };
+    // await validateSummonerLeague("CHALLENGER");
+    // await validateSummonerLeague("GRANDMASTER");
+    // await validateSummonerLeague("MASTER");
+
+    // await checkForNewSummonerMatches("CHALLENGER");
+    // await checkForNewSummonerMatches("GRANDMASTER");
+    // await checkForNewSummonerMatches("MASTER");
+
+    await setTimeout(function () {
+      console.log("Going to restart");
+
+      schedule();
+    }, 1000 * 2);
+  } catch (error: any) {
+    console.log(error.message);
+  }
+};
 
 if (process.env.RUN_JOB === "start") {
-  // schedule();
   console.log("starting");
+  schedule();
 }
 if (process.env.RUN_JOB === "stop") {
   // console.log("0. not running any background jobs");

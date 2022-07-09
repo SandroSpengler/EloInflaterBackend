@@ -14,13 +14,13 @@ import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
  *
  */
 export class SummonerByLeagueService {
-  public SbLRepo: SummonerByLeagueRepository;
-  public SummonerRepo: SummonerRepository;
+  public sbLRepo: SummonerByLeagueRepository;
+  public summonerRepo: SummonerRepository;
   public RGHttp: RiotGamesHttp;
 
   constructor(SbLRepo: SummonerByLeagueRepository, SummonerRepo: SummonerRepository, RGHttp: RiotGamesHttp) {
-    this.SbLRepo = SbLRepo;
-    this.SummonerRepo = SummonerRepo;
+    this.sbLRepo = SbLRepo;
+    this.summonerRepo = SummonerRepo;
     this.RGHttp = RGHttp;
   }
 
@@ -32,7 +32,8 @@ export class SummonerByLeagueService {
    * @returns Boolean which states if collection can be updated
    */
   checkIfSummonersByLeagueCanBeUpdated = (summonerByLeague: SummonerByLeague): boolean => {
-    let unixTimeStamp = new Date().getTime() - 240 * 1000;
+    // 8 Hours
+    let unixTimeStamp = new Date().getTime() - 8 * 60 * 60 * 1000;
 
     if (summonerByLeague === undefined) return false;
     if (summonerByLeague.updatedAt === undefined) return false;
@@ -40,67 +41,6 @@ export class SummonerByLeagueService {
     if (summonerByLeague.updatedAt! < unixTimeStamp) return true;
 
     return false;
-  };
-
-  /**
-   * Not yet tested
-   * Update Summoner information in DB
-   *
-   *
-   * @param tier
-   * @returns
-   */
-  validateSummonerIds = async (tier: SbLTier) => {
-    console.log("1. Checking Summoners Ids in queue: " + tier);
-
-    // current rank of top summoners
-    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(tier, "RANKED_SOLO_5x5");
-
-    if (!summonerByLeague) return;
-
-    // Check if summonerByLeague are newer than 24 hours
-
-    // summoner as saved in db
-    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(tier);
-
-    if (!summonerList) return;
-
-    // const oldSummoners = summonerList?.find((summonerInDB) => {
-    //   summonerByLeague?.entries.some((currentSummoner) => currentSummoner.summonerName == summonerInDB.name);
-    // });
-
-    // Check summonerDB entry is update to date with current league
-
-    // for (let i = 0; i < summonerList.length; i++) {
-
-    for (let [index, summoner] of summonerList.entries()) {
-      // Get Summoner PUUID
-
-      try {
-        if (summoner.puuid === undefined || summoner.puuid === "") {
-          let summonerInfo;
-          try {
-            summonerInfo = (await this.RGHttp.getSummonerBySummonerId(summoner.summonerId)).data;
-          } catch (error) {
-            break;
-          }
-
-          let summonerToSave = summoner;
-
-          summonerToSave.accountId = summonerInfo.accountId;
-          summonerToSave.puuid = summonerInfo.puuid;
-          summonerToSave.profileIconId = summonerInfo.profileIconId;
-          summonerToSave.revisionDate = summonerInfo.revisionDate;
-          summonerToSave.summonerLevel = summonerInfo.summonerLevel;
-
-          await this.SummonerRepo.updateSummonerBySummonerID(summonerToSave);
-
-          console.log(`validated ${summoner.name} in queue ${tier} at index ${index}`);
-        }
-      } catch (error) {
-        break;
-      }
-    }
   };
 
   /**
@@ -115,9 +55,9 @@ export class SummonerByLeagueService {
   validateSummonerLeague = async (tier: SbLTier) => {
     console.log("2. validating summonersByLeague " + tier);
     // current rank of top summoners
-    let summonerByLeague: SummonerByLeague | null = await this.SbLRepo.findSummonerByLeague(tier, "RANKED_SOLO_5x5");
+    let summonerByLeague: SummonerByLeague | null = await this.sbLRepo.findSummonerByLeague(tier, "RANKED_SOLO_5x5");
 
-    let summonerList: Summoner[] | null = await this.SummonerRepo.findAllSummonersByRank(tier);
+    let summonerList: Summoner[] | null = await this.summonerRepo.findAllSummonersByRank(tier);
 
     if (summonerByLeague === null || summonerByLeague === undefined) return;
 
@@ -149,7 +89,7 @@ export class SummonerByLeagueService {
         oldSummoner.leaguePoints = 0;
         oldSummoner.lastRankUpdate = summonerByLeague.updatedAt;
 
-        await this.SummonerRepo.updateSummonerByPUUID(oldSummoner);
+        await this.summonerRepo.updateSummonerByPUUID(oldSummoner);
 
         continue;
       }
@@ -160,7 +100,7 @@ export class SummonerByLeagueService {
       oldSummoner.leaguePoints = currentSummonerInLeague.leaguePoints;
       oldSummoner.lastRankUpdate = summonerByLeague.updatedAt;
 
-      await this.SummonerRepo.updateSummonerByPUUID(oldSummoner);
+      await this.summonerRepo.updateSummonerByPUUID(oldSummoner);
       continue;
     }
 

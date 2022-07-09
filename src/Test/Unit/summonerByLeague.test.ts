@@ -238,7 +238,7 @@ describe("Summoner by Leauge Functions", () => {
 
       expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(false);
 
-      summonerByLeagueMock.updatedAt = new Date().getTime() - 300 * 1000;
+      summonerByLeagueMock.updatedAt = new Date().getTime() - 501 * 60 * 1000;
 
       expect(SbLService.checkIfSummonersByLeagueCanBeUpdated(summonerByLeagueMock)).toEqual(true);
     });

@@ -16,15 +16,15 @@ import { MatchService } from "../../../Services/MatchService";
 import { SummonerService } from "../../../Services/SummonerService";
 
 export class SummonerRefreshRoute {
+  private RGHttp: RiotGamesHttp = new RiotGamesHttp();
+
   private summonerRepo: SummonerRepository = new SummonerRepository();
-  private summonerService: SummonerService = new SummonerService(this.summonerRepo);
+  private summonerService: SummonerService = new SummonerService(this.summonerRepo, this.RGHttp);
 
   private SbLRepo: SummonerByLeagueRepository = new SummonerByLeagueRepository();
 
-  private RGHttp: RiotGamesHttp = new RiotGamesHttp();
-
   private matchRepo: MatchRepository = new MatchRepository();
-  private matchService: MatchService = new MatchService(this.matchRepo);
+  private matchService: MatchService = new MatchService(this.matchRepo, this.RGHttp);
 
   constructor() {
     router.get("/byName/:name", this.getByName);
@@ -170,7 +170,7 @@ export class SummonerRefreshRoute {
         // Updates the Summoners Entries
         await this.SbLRepo.updateSummonerByLeagueEntries(tier, Response.data.entries);
         // Saves the Summoner to DB
-        await this.summonerService.updateSumonersLeague(summonerByLeagueInDB);
+        await this.summonerService.updateSumonersByLeague(summonerByLeagueInDB);
       }
 
       // save rankedinformation to that summoner

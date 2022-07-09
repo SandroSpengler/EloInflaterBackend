@@ -1,13 +1,24 @@
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchRepository } from "../Repository/MatchRepository";
+import { RiotGamesHttp } from "./Http";
 
 export class MatchService {
   private matchRepo: MatchRepository;
+  private RGHttp: RiotGamesHttp;
 
-  constructor(matchRepository: MatchRepository) {
+  constructor(matchRepository: MatchRepository, RGHttp: RiotGamesHttp) {
     this.matchRepo = matchRepository;
+    this.RGHttp = RGHttp;
   }
+
+  public addRecentMatchesForSummoner = async (summonerPUUID: string) => {
+    try {
+      const sumonerMatches = await this.matchRepo.findAllMatchesBySummonerPUUID(summonerPUUID);
+
+      const recentMatches = await this.RGHttp.getMatchesIdsBySummonerpuuid(summonerPUUID);
+    } catch (error) {}
+  };
 
   /**
    * Checks all matches of a summoner and Looks for Inflated Items/Summoners

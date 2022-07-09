@@ -4,12 +4,16 @@ import { IMatchSchema } from "../Models/Interfaces/MatchList";
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 import { SummonerByLeagueService } from "./SummonerByLeagueService";
+import { RiotGamesHttp } from "./Http";
 
 export class SummonerService {
   public summonerRepo: SummonerRepository;
 
-  constructor(summonerRepo: SummonerRepository) {
+  public RGHttp: RiotGamesHttp;
+
+  constructor(summonerRepo: SummonerRepository, RGHttp: RiotGamesHttp) {
     this.summonerRepo = summonerRepo;
+    this.RGHttp = RGHttp;
   }
 
   /**
@@ -19,7 +23,8 @@ export class SummonerService {
    * @returns Boolean which states if summoner update is possible
    */
   checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
-    let unixTimeStamp = new Date().getTime() - 240 * 1000;
+    // 2 Minutes
+    let unixTimeStamp = new Date().getTime() - 2 * 60 * 1000;
 
     if (summoner.lastMatchUpdate === undefined) return true;
 
@@ -29,11 +34,47 @@ export class SummonerService {
   };
 
   /**
+   * Not yet tested
+   * Update Summoner information in DB
+   *
+   *
+   * @param summonerId Id of the Summoner
+   * @returns
+   */
+  validateSummonerById = async (summonerId: string) => {
+    if (!summonerId) throw new Error("No SummonerId provided");
+
+    try {
+      const summonerInDB = await this.summonerRepo.findSummonerByID(summonerId);
+
+      const RGsummoner = (await this.RGHttp.getSummonerBySummonerId(summonerId)).data;
+
+      if (summonerInDB === null) {
+        await this.summonerRepo.createSummoner(RGsummoner);
+
+        return;
+      } else {
+        summonerInDB.id = RGsummoner.id;
+        summonerInDB.puuid = RGsummoner.puuid;
+        summonerInDB.accountId = RGsummoner.accountId;
+        summonerInDB.name = RGsummoner.name;
+        summonerInDB.profileIconId = RGsummoner.profileIconId;
+        summonerInDB.revisionDate = RGsummoner.revisionDate;
+        summonerInDB.summonerLevel = RGsummoner.summonerLevel;
+
+        await this.summonerRepo.updateSummonerBySummonerID(summonerInDB);
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  /**
    * Updates/Creates all Summoners in DB based SbLCollection
    *
    * @param SbLInDB
    */
-  updateSumonersLeague = async (SbLInDB: SummonerByLeague) => {
+  updateSumonersByLeague = async (SbLInDB: SummonerByLeague) => {
     // 1. Find all Summoners in DB based on SbLInDB.tier
     // 1.1 Check if SummonersInDB are still part of SbLInDB
     // 1.2 Update all SummonersInDB with current information from SbLInDB

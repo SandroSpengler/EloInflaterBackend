@@ -28,7 +28,7 @@ describe("Summoner CRUD-Endpoint", () => {
     expect(summoner).toEqual(
       expect.objectContaining({
         name: requestSummonerName,
-        // puuid: expect.any(String),
+        puuid: expect.any(String),
         // matchList: expect.arrayContaining([expect.any(String)]),
       }),
     );

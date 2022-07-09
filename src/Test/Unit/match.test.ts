@@ -1,28 +1,41 @@
 import { match } from "assert";
 import { connectToMongoDB } from "../../app";
 import { MatchData } from "../../Models/Interfaces/MatchData";
+import Summoner from "../../Models/Interfaces/Summoner";
 
 import { MatchRepository } from "../../Repository/MatchRepository";
+import { SummonerRepository } from "../../Repository/SummonerRepository";
+import { RiotGamesHttp } from "../../Services/Http";
+import { MatchService } from "../../Services/MatchService";
 
 describe("Match", () => {
+  let summonerMock: Summoner;
+
+  let RGHttp: RiotGamesHttp;
+
+  let matchRepo: MatchRepository;
+  let matchService: MatchService;
+
+  let summonerRepo: SummonerRepository;
+
+  beforeAll(async () => {
+    RGHttp = new RiotGamesHttp();
+
+    matchRepo = new MatchRepository();
+    matchService = new MatchService(matchRepo, RGHttp);
+
+    summonerRepo = new SummonerRepository();
+
+    summonerMock = require("../TestSampleData/MockSummoner.json");
+
+    await connectToMongoDB(process.env.DB_CONNECTION);
+  });
+
   describe("MongoDB Queries", () => {
-    let summonerPUUID;
-
-    let matchRepo: MatchRepository;
-
-    beforeAll(async () => {
-      matchRepo = new MatchRepository();
-
-      await connectToMongoDB(process.env.DB_CONNECTION);
-
-      // forevermates - PUUID
-      summonerPUUID = "tep5qDEJjHDwq81f6gxcwDc4V_G46emxRwZzXiNhKI0NWnKe4IZ0B6MCj6aMl2UplKs0haX4f-xTnA";
-    });
-
     // 2022/10/04 - Check after indexes are built
-    it("Expect matches for a Summoner by SummonerPUUID", async () => {
+    it("DB => Expect matches for a Summoner by SummonerPUUID", async () => {
       const matchesForSummonerByPUUID: MatchData[] | null = await matchRepo.findAllMatchesBySummonerPUUID(
-        summonerPUUID,
+        summonerMock.puuid,
       );
 
       if (matchesForSummonerByPUUID === null) throw new Error();
@@ -30,7 +43,7 @@ describe("Match", () => {
       expect(matchesForSummonerByPUUID.length).toBeGreaterThan(10);
     });
 
-    it("Expect to find match by MatchID", async () => {
+    it("DB => Expect to find match by MatchID", async () => {
       const matchIdsToFind: string[] = [
         "EUW1_5786731345",
         "EUW1_5786607943",
@@ -61,7 +74,7 @@ describe("Match", () => {
       }
     });
 
-    it("Expect all matches in DB for MatchList", async () => {
+    it("DB => Expect all matches in DB for MatchList", async () => {
       const matchList: string[] = [
         "EUW1_5786731345",
         "EUW1_5786607943",
@@ -91,11 +104,24 @@ describe("Match", () => {
         expect(matchList).toContain(match._id);
       }
     });
+  });
 
-    it("Expect new Summoner Matches or 429", async () => {
-      // User JSON Data for that
-      // const summoner = await findSummonerByPUUID(summonerPUUID);
-      // let currentMatchList = summoner.matchList;
+  describe("Functions", () => {
+    it.skip("Function => Add/Update recent Matches for Summoner", async () => {
+      // Update Summoner Matches
+      /// GET Matches for User eg 73
+      // in DB are 73
+      // Call update MatchesForUser
+
+      const summoner = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+
+      if (summoner === null) throw new Error("Mock Summoner not found in DB");
+
+      const summonerMatches = await matchRepo.findAllMatchesBySummonerPUUID(summonerMock.puuid);
+
+      console.log(summonerMatches?.length);
+
+      expect(summonerMatches?.length).toEqual(summoner?.uninflatedMatchList?.length);
     });
   });
 });

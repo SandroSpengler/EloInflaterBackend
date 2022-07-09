@@ -19,15 +19,15 @@ describe("Summoner", () => {
   let SbLRepo: SummonerByLeagueRepository;
   let SbLService: SummonerByLeagueService;
 
-  let RGHttp;
+  let RGHttp: RiotGamesHttp;
 
   beforeAll(async () => {
     summonerMock = require("../TestSampleData/MockSummoner.json");
 
-    RGHttp = undefined;
+    RGHttp = new RiotGamesHttp();
 
     summonerRepo = new SummonerRepository();
-    summonerService = new SummonerService(summonerRepo);
+    summonerService = new SummonerService(summonerRepo, RGHttp);
 
     SbLRepo = new SummonerByLeagueRepository();
     SbLService = new SummonerByLeagueService(SbLRepo, summonerRepo, RGHttp);
@@ -217,7 +217,7 @@ describe("Summoner", () => {
         return;
       }
 
-      await summonerService.updateSumonersLeague(SbLInDB);
+      await summonerService.updateSumonersByLeague(SbLInDB);
 
       const summonersInDB = await summonerRepo.findAllSummonersByRank("CHALLENGER");
 
@@ -235,7 +235,7 @@ describe("Summoner", () => {
         return;
       }
 
-      await summonerService.updateSumonersLeague(SbLInDB);
+      await summonerService.updateSumonersByLeague(SbLInDB);
 
       const summonersInDB = await summonerRepo.findAllSummonersByRank("GRANDMASTER");
 
@@ -254,7 +254,7 @@ describe("Summoner", () => {
         return;
       }
 
-      await summonerService.updateSumonersLeague(SbLInDB);
+      await summonerService.updateSumonersByLeague(SbLInDB);
 
       const summonersInDB = await summonerRepo.findAllSummonersByRank("MASTER");
 
@@ -262,6 +262,21 @@ describe("Summoner", () => {
         const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
 
         expect(summoner.id).toEqual(summonerInSbL?.summonerId);
+      }
+    }, 45000);
+
+    it("Function => validate SummonerInformation by SummonerId", async () => {
+      try {
+        await summonerService.validateSummonerById(undefined as any);
+      } catch (error: any) {
+        expect(error.message).toContain("No SummonerId provided");
+      }
+
+      try {
+        // Need to mock DB here
+        await summonerService.validateSummonerById(summonerMock.summonerId);
+      } catch (error) {
+        console.log(error);
       }
     });
   });

@@ -8,10 +8,10 @@ const express = require("express");
 const router = express.Router();
 
 export class SummonerData {
-  private summonerRepo: SummonerRepository = new SummonerRepository();
-  private summonerService: SummonerService = new SummonerService(this.summonerRepo);
-
   private RGHttp: RiotGamesHttp = new RiotGamesHttp();
+
+  private summonerRepo: SummonerRepository = new SummonerRepository();
+  private summonerService: SummonerService = new SummonerService(this.summonerRepo, this.RGHttp);
 
   constructor() {
     router.get("/", this.getAllSummoner);
