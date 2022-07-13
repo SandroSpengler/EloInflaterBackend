@@ -183,7 +183,14 @@ export class DataMiningService {
   //   }
   // };
 
-  addUnassingedMatchesToSummoner = async (summoner: Summoner) => {
+  /**
+   * Finds all Matches in DB for a summoner and adds them to the Summoner.Matchlists
+   *
+   * @param summoner The Summoner that should be checked for
+   *
+   * @void
+   */
+  addUnassignedMatchesToSummoner = async (summoner: Summoner) => {
     if (summoner === undefined || summoner === null) throw new Error("No Summoner was provided");
     if (summoner.puuid === undefined) throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
 

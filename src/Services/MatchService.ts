@@ -22,9 +22,12 @@ export class MatchService {
   };
 
   /**
+   * Checks if the Summoner in that Match was inflated
    *
+   * @param match The Match to be check on
+   * @param summonerPUUID The ID of the Summoner to check for
    *
-   * @void
+   * @returns The Evaluation that determines if the summoner is inflated
    */
   public checkSummonerInMatchForEloInflation = (match: MatchData, summonerPUUID: string): matchEvaluation => {
     if (match === undefined || summonerPUUID === undefined) throw new Error("Parameters not properly provided");

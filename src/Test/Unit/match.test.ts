@@ -117,14 +117,13 @@ describe("Match", () => {
       if (summonerInDB === null) throw new Error("Function => Summoner does not exist in DB");
 
       try {
-        await dataMiningService.addUnassingedMatchesToSummoner(summonerInDB);
+        await dataMiningService.addUnassignedMatchesToSummoner(summonerInDB);
 
         const matchesInDBForSummoner = await matchRepo.findAllMatchesBySummonerPUUID(summonerInDB.puuid);
 
         const summonerInDBUpdated = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
 
         if (summonerInDBUpdated === null) throw new Error();
-        console.log(matchesInDBForSummoner.length);
 
         expect(summonerInDB.uninflatedMatchList.length + summonerInDB.inflatedMatchList.length).toEqual(
           matchesInDBForSummoner.length,
