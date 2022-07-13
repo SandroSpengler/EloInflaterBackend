@@ -2,6 +2,7 @@ FROM node:16.13.0
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./package.json /usr/src/app
+RUN rm -r /usr/src/app/build
 ARG NODE_ENV
 RUN if [ "$NODE_ENV" = "development" ]; \
     then npm install; \
