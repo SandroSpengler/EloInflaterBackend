@@ -128,7 +128,7 @@ const schedule = async () => {
       console.log("Cycle done - Restarting");
 
       schedule();
-    }, 2 * 1 * 1000);
+    }, 2 * 15 * 1000);
   }
 };
 

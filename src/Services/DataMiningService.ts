@@ -65,6 +65,8 @@ export class DataMiningService {
           await this.matchRepo.createMatch(matchData);
         }
       }
+      let currentTime = new Date().getTime() * 1000;
+      summoner.lastMatchUpdate = currentTime;
     } catch (error) {
       throw error;
     } finally {
@@ -117,9 +119,6 @@ export class DataMiningService {
           summoner.uninflatedMatchList.push(match._id);
         }
       }
-
-      let currentTime = new Date().getTime() * 1000;
-      summoner.lastMatchUpdate = currentTime;
 
       await this.summonerRepo.updateSummonerByPUUID(summoner);
     } catch (error) {
