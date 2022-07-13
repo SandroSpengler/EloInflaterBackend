@@ -28,7 +28,7 @@ describe("Match", () => {
 
     summonerRepo = new SummonerRepository();
 
-    dataMiningService = new DataMiningService(summonerRepo, matchRepo, matchService);
+    dataMiningService = new DataMiningService(summonerRepo, RGHttp, matchRepo, matchService);
 
     summonerMock = require("../TestSampleData/MockSummoner.json");
 
@@ -133,21 +133,28 @@ describe("Match", () => {
       }
     });
 
-    it.skip("Function => Add/Update recent Matches for Summoner", async () => {
+    it("Function => Add/Update recent Matches for Summoner", async () => {
       // Update Summoner Matches
       /// GET Matches for User eg 73
       // in DB are 73
       // Call update MatchesForUser
 
-      const summoner = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+      const summonerBeforeUpdate = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
 
-      if (summoner === null) throw new Error("Mock Summoner not found in DB");
+      if (summonerBeforeUpdate === null) throw new Error("Mock Summoner not found in DB");
 
       const summonerMatches = await matchRepo.findAllMatchesBySummonerPUUID(summonerMock.puuid);
 
-      console.log(summonerMatches?.length);
+      expect(summonerBeforeUpdate.uninflatedMatchList.length + summonerBeforeUpdate.inflatedMatchList.length).toEqual(
+        summonerMatches.length,
+      );
 
-      expect(summonerMatches?.length).toEqual(summoner?.uninflatedMatchList?.length);
+      try {
+        await dataMiningService.addNewMatchesToSummoner(summonerBeforeUpdate);
+      } catch (error) {
+        // console.log(error);
+        throw error;
+      }
     });
   });
 });

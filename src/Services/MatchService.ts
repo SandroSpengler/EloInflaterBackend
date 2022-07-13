@@ -42,6 +42,8 @@ export class MatchService {
         return participantByPUUID.puuid === summonerPUUID;
       });
 
+      if (participantByPUUID === undefined) throw new Error("Could not find summoner in MatchData");
+
       if (participantByPUUID.summoner1Id === 3) {
         exhaustCount += 1;
         exhaustCastCount += participantByPUUID.summoner1Casts;
@@ -97,7 +99,7 @@ export class MatchService {
         zhonaysCount += 1;
       }
 
-      if (exhaustCount < 0 || exhaustCastCount < 0 || tabisCount < 0 || zhonaysCount < 0) {
+      if (exhaustCount > 0 || exhaustCastCount > 0 || tabisCount > 0 || zhonaysCount > 0) {
         const evaluation: matchEvaluation = {
           inflated: true,
           exhaustCount: exhaustCount,
@@ -106,16 +108,16 @@ export class MatchService {
           zhonaysCount: zhonaysCount,
         };
         return evaluation;
+      } else {
+        const evaluation: matchEvaluation = {
+          inflated: false,
+          exhaustCount: exhaustCount,
+          exhaustCastCount: exhaustCastCount,
+          tabisCount: tabisCount,
+          zhonaysCount: zhonaysCount,
+        };
+        return evaluation;
       }
-
-      const evaluation: matchEvaluation = {
-        inflated: false,
-        exhaustCount: exhaustCount,
-        exhaustCastCount: exhaustCastCount,
-        tabisCount: tabisCount,
-        zhonaysCount: zhonaysCount,
-      };
-      return evaluation;
     } catch (error) {
       throw error;
     }

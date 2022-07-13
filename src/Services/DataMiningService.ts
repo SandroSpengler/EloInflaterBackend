@@ -13,175 +13,64 @@ export class DataMiningService {
   private matchRepo: MatchRepository;
   private matchService: MatchService;
 
-  // private RGHttp: RiotGamesHttp;
+  private RGHttp: RiotGamesHttp;
 
   constructor(
     summonerRepo: SummonerRepository,
     // summonerService: SummonerService,
-    // RGHttp: RiotGamesHttp,
+    RGHttp: RiotGamesHttp,
     matchRepo: MatchRepository,
     matchService: MatchService,
   ) {
+    this.RGHttp = RGHttp;
     this.summonerRepo = summonerRepo;
     // this.summonerService = summonerService;
 
     this.matchRepo = matchRepo;
     this.matchService = matchService;
-
-    // this.RGHttp = RGHttp;
   }
 
-  // checkForNewSummonerMatches = async (updateType: string) => {
-  //   console.log("3. Checking Matches in Queue " + updateType);
-  //   let queuedSummoners: Summoner[] | null = [];
+  /**
+   * Requests new Matches for Summoner and adds them
+   *
+   * @param summoner Summoner that new matches should be added for
+   *
+   * @void
+   */
+  addNewMatchesToSummoner = async (summoner: Summoner) => {
+    try {
+      const matchResponse = await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner.puuid);
 
-  //   try {
-  //     queuedSummoners = await this.summonerRepo.findAllSummonersByRank(updateType);
+      const matchesForSummoner = await matchResponse.data;
 
-  //     if (queuedSummoners === null || queuedSummoners.length === 0) return;
+      const newMatchIdsForSummoner = matchesForSummoner.filter((matchId) => {
+        let checkUninflated = summoner.uninflatedMatchList.find((summonerMatchId) => summonerMatchId === matchId);
 
-  //     for (let [index, summoner] of queuedSummoners.entries()) {
-  //       console.log(`3. Getting Matches for ${summoner.name}: ${updateType} index: ${index}`);
+        let checkinflated = summoner.inflatedMatchList.find((summonerMatchId) => summonerMatchId === matchId);
 
-  //       try {
-  //         if (summoner.puuid === "" || summoner.puuid === undefined) {
-  //           summoner.puuid = (await this.RGHttp.getSummonerBySummonerId(summoner._id)).data.puuid;
-  //           await this.summonerRepo.updateSummonerBySummonerID(summoner);
-  //         }
-  //       } catch (error) {
-  //         break;
-  //       }
+        // assinged matches can be returned here
+        if (checkUninflated || checkinflated) return;
 
-  //       try {
-  //         let unixTimeStamp = new Date().getTime() - 3600 * 96 * 1000;
-  //         if (summoner.lastMatchUpdate! !== undefined && unixTimeStamp < summoner.lastMatchUpdate!) {
-  //           console.log(`3. Summoner ${summoner.name} already checked recently`);
+        return matchId;
+      });
 
-  //           continue;
-  //         }
-  //       } catch (error) {}
+      if (newMatchIdsForSummoner.length === 0) return;
 
-  //       // Update Summoner Matches
-  //       try {
-  //         // Check what matches arent already in summoner
+      for (let [index, matchId] of newMatchIdsForSummoner.entries()) {
+        console.log(`Adding Match ${index} of ${newMatchIdsForSummoner.length}`);
+        const matchInDB = await this.matchRepo.findMatchById(matchId);
 
-  //         let newMatchIds: string[] = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
-  //         summoner.lastMatchUpdate = new Date().getTime();
-  //         await this.summonerRepo.updateSummonerBySummonerID(summoner);
-
-  //         if (newMatchIds === undefined || newMatchIds === null || newMatchIds.length === 0) continue;
-
-  //         let matchesToUpdate: string[] = [];
-
-  //         for (const newMatchId of newMatchIds) {
-  //           let exsistingMatch = await this.matchRepo.findMatchById(newMatchId);
-
-  //           if (exsistingMatch != null && exsistingMatch === undefined) {
-  //             matchesToUpdate.push(newMatchId);
-  //           }
-  //         }
-
-  //         if (matchesToUpdate === undefined || matchesToUpdate.length === 0) continue;
-
-  //         for (const [index, matchid] of matchesToUpdate.entries()) {
-  //           let summonerMatchDetails = (await this.RGHttp.getMatchByMatchId(matchid)).data;
-
-  //           await this.matchRepo.createMatch(summonerMatchDetails);
-
-  //           summoner.matchList?.push(matchid);
-
-  //           await this.summonerRepo.updateSummonerBySummonerID(summoner);
-
-  //           console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
-  //         }
-
-  //         await this.matchService.checkSummonerMatchesForEloInflation(summoner);
-  //       } catch (error: any) {
-  //         console.log(error.message);
-  //         break;
-  //       }
-  //     }
-
-  //     // GET Summoners that need updating from db
-  //     // Search Summoners for summoners that need updating
-  //     // await updatSummonerMatches()
-  //   } catch (error) {
-  //     throw error;
-  //   } finally {
-  //     console.log("3. Finished searching for matches ");
-  //   }
-  // };
-
-  // updatSummonerMatches = async (summoner: Summoner) => {
-  //   console.log("updating summoner");
-
-  //   try {
-  //     // Check what matches arent already in summoner
-
-  //     let newMatchIds: string[] = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner.puuid)).data;
-  //     summoner.lastMatchUpdate = new Date().getTime();
-  //     await this.summonerRepo.updateSummonerBySummonerID(summoner);
-
-  //     if (newMatchIds === undefined || newMatchIds === null || newMatchIds.length === 0) return;
-
-  //     let matchesToUpdate: string[] = [];
-
-  //     for (const newMatchId of newMatchIds) {
-  //       let exsistingMatch = await this.matchRepo.findMatchById(newMatchId);
-
-  //       if (exsistingMatch != null && exsistingMatch === undefined) {
-  //         matchesToUpdate.push(newMatchId);
-  //       }
-  //     }
-
-  //     if (matchesToUpdate === undefined || matchesToUpdate.length === 0) return;
-
-  //     for (const [index, matchid] of matchesToUpdate.entries()) {
-  //       let summonerMatchDetails = (await this.RGHttp.getMatchByMatchId(matchid)).data;
-
-  //       await this.matchRepo.createMatch(summonerMatchDetails);
-
-  //       summoner.matchList?.push(matchid);
-
-  //       await this.summonerRepo.updateSummonerBySummonerID(summoner);
-
-  //       console.log(`3. Added Match for ${summoner.name} at index: ${index}`);
-  //     }
-  //   } catch (error: any) {
-  //     console.log(error.message);
-  //     throw error;
-  //   } finally {
-  //     await this.matchService.checkSummonerMatchesForEloInflation(summoner);
-  //   }
-  // };
-
-  // checkSummonerMatchIdLists = async () => {
-  //   try {
-  //     let allSummoners = await this.summonerRepo.findAllSummoners();
-
-  //     let summonerToCheck = allSummoners?.filter(
-  //       (summoner) => summoner.matchList === undefined || summoner.matchList.length === 0,
-  //     );
-
-  //     for (let [index, summoner] of summonerToCheck!.entries()) {
-  //       console.log(`Updating Summoner ${summoner.name} at index ${index} of ${summonerToCheck?.length}`);
-
-  //       let matchesInDB = await this.matchRepo.findAllMatchesBySummonerPUUID(summoner.puuid);
-
-  //       summoner.matchList = [];
-
-  //       for (let match of matchesInDB!) {
-  //         summoner.matchList?.push(match._id.toString());
-  //       }
-
-  //       await this.summonerRepo.updateSummonerByPUUID(summoner);
-  //     }
-
-  //     console.log(summonerToCheck);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
+        if (matchInDB === null) {
+          const matchData = (await this.RGHttp.getMatchByMatchId(matchId)).data;
+          await this.matchRepo.createMatch(matchData);
+        }
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      await this.addUnassignedMatchesToSummoner(summoner);
+    }
+  };
 
   /**
    * Finds all Matches in DB for a summoner and adds them to the Summoner.Matchlists
@@ -228,6 +117,9 @@ export class DataMiningService {
           summoner.uninflatedMatchList.push(match._id);
         }
       }
+
+      let currentTime = new Date().getTime() * 1000;
+      summoner.lastMatchUpdate = currentTime;
 
       await this.summonerRepo.updateSummonerByPUUID(summoner);
     } catch (error) {

@@ -13,6 +13,9 @@ import { RiotGamesHttp } from "./Services/Http";
 import { SummonerByLeagueRepository } from "./Repository/SummonerByLeagueRepository";
 import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
 import Summoner from "./Models/Interfaces/Summoner";
+import { DataMiningService } from "./Services/DataMiningService";
+import { MatchRepository } from "./Repository/MatchRepository";
+import { MatchService } from "./Services/MatchService";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -38,6 +41,11 @@ const summonerService = new SummonerService(summonerRepo, RGHttp);
 
 const SbLRepo = new SummonerByLeagueRepository();
 const SbLService = new SummonerByLeagueService(SbLRepo, summonerRepo, RGHttp);
+
+const matchRepo = new MatchRepository();
+const matchService = new MatchService(matchRepo, RGHttp);
+
+const dataMiningService = new DataMiningService(summonerRepo, RGHttp, matchRepo, matchService);
 
 let corsOptions = {
   origin: "*",
@@ -99,20 +107,28 @@ const schedule = async () => {
     // Go through all SummonerByLeague and update their MatchList
     // await checkSummonerMatchIdLists();
 
+    console.group("Updating SbL");
     await updateSbLCollections();
+    console.groupEnd();
 
+    console.group("Validation");
     await validateSummonerInSbLCollection();
+    console.groupEnd();
 
     // Get new Matches for Summoner
     // Check at the same time for unassigned ones
+
+    console.group("Matches");
+    await addNewMatches();
+    console.groupEnd();
   } catch (error: any) {
-    console.log(error.message);
+    console.error(error.message);
   } finally {
     await setTimeout(() => {
       console.log("Cycle done - Restarting");
 
       schedule();
-    }, 2 * 60 * 1000);
+    }, 2 * 1 * 1000);
   }
 };
 
@@ -183,6 +199,30 @@ const validateSummonerInSbLCollection = async () => {
   }
 
   console.log("validating SbLCollection finished");
+};
+
+const addNewMatches = async () => {
+  const SummonerRankChallenger = await summonerRepo.findAllSummonersByRank("CHALLENGER");
+
+  const SummonerRankGrandMaster = await summonerRepo.findAllSummonersByRank("GRANDMASTER");
+
+  const SummonerRankMaster = await summonerRepo.findAllSummonersByRank("MASTER");
+
+  const allSummoners = [...SummonerRankChallenger, ...SummonerRankGrandMaster, ...SummonerRankMaster];
+
+  try {
+    for (let [index, summoner] of allSummoners.entries()) {
+      if (summonerService.checkIfSummonerCanBeUpdated(summoner)) {
+        const informationString: string = `Updating Summoner matches for ${summoner.name} at ${index} of ${allSummoners.length}`;
+
+        console.log(informationString);
+
+        await dataMiningService.addNewMatchesToSummoner(summoner);
+      }
+    }
+  } catch (error) {
+    throw error;
+  }
 };
 
 if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {

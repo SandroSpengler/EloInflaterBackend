@@ -82,6 +82,8 @@ export class RiotGamesHttp {
 
   public getMatchesIdsBySummonerpuuid = async (puuid: string): Promise<AxiosResponse<string[]>> => {
     try {
+      await this.sleep(200);
+
       const request = axios.get<string[]>(
         `${this.buildBaseUrl(this.matchRegionUrl, "match/v5/matches/by-puuid/")}${puuid}/ids?start=0&count=100`,
         this.buildConfig(),
@@ -98,7 +100,7 @@ export class RiotGamesHttp {
 
   public getMatchByMatchId = async (matchId: String): Promise<AxiosResponse<MatchData>> => {
     try {
-      const request = axios.get<MatchData>(
+      const request = await axios.get<MatchData>(
         `${this.buildBaseUrl(this.matchRegionUrl, "match/v5/matches/")}${matchId}`,
         this.buildConfig(),
       );
@@ -126,6 +128,11 @@ export class RiotGamesHttp {
     };
 
     return config;
+  };
+
+  private sleep = (ms = 200): Promise<void> => {
+    // console.log("Kindly remember to remove `sleep`");
+    return new Promise((resolve) => setTimeout(resolve, ms));
   };
 }
 // module.exports = { getSummonerByName, getSummonersByLeague };
