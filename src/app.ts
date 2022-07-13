@@ -12,6 +12,7 @@ import { SummonerService } from "./Services/SummonerService";
 import { RiotGamesHttp } from "./Services/Http";
 import { SummonerByLeagueRepository } from "./Repository/SummonerByLeagueRepository";
 import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
+import Summoner from "./Models/Interfaces/Summoner";
 
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -100,21 +101,18 @@ const schedule = async () => {
 
     await updateSbLCollections();
 
-    // Get Matches for Summoner
+    await validateSummonerInSbLCollection();
 
-    // Check if they are inflated
-
-    // await checkForNewSummonerMatches("CHALLENGER");
-    // await checkForNewSummonerMatches("GRANDMASTER");
-    // await checkForNewSummonerMatches("MASTER");
-
-    await setTimeout(function () {
-      console.log("Going to restart");
+    // Get new Matches for Summoner
+    // Check at the same time for unassigned ones
+  } catch (error: any) {
+    console.log(error.message);
+  } finally {
+    await setTimeout(() => {
+      console.log("Cycle done - Restarting");
 
       schedule();
     }, 2 * 60 * 1000);
-  } catch (error: any) {
-    console.log(error.message);
   }
 };
 
@@ -157,6 +155,34 @@ const updateSbLCollections = async () => {
 
     console.log(` SummonerByLeague ${SbLMaster.tier} - Done`);
   }
+
+  console.log("updating SbLCollections finished");
+};
+
+const validateSummonerInSbLCollection = async () => {
+  const SummonerRankChallenger = await summonerRepo.findAllSummonersByRank("CHALLENGER");
+
+  const SummonerRankGrandMaster = await summonerRepo.findAllSummonersByRank("GRANDMASTER");
+
+  const SummonerRankMaster = await summonerRepo.findAllSummonersByRank("MASTER");
+
+  const allSummoners = [...SummonerRankChallenger, ...SummonerRankGrandMaster, ...SummonerRankMaster];
+
+  try {
+    for (let [index, summoner] of allSummoners.entries()) {
+      if (summoner.puuid === "" || summoner._id === "" || summoner.accountId === "") {
+        const informationString: string = `validating summonerId for Summoner ${summoner.name} at ${index} of ${allSummoners.length}`;
+
+        console.log(informationString);
+
+        await summonerService.validateSummonerById(summoner._id);
+      }
+    }
+  } catch (error) {
+    throw error;
+  }
+
+  console.log("validating SbLCollection finished");
 };
 
 if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {
