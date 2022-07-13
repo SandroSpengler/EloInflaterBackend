@@ -3,11 +3,11 @@ version: "3"
 services:
   leagueabuserbackend:
     container_name: "LeagueAbuserBackend"
-    image: sandrospengler/leagueabuserbackend
-    build:
-      context: ${LeagueAbuserBackend}
-      args:
-        NODE_ENV: production
+    image: sandrospengler/leagueabuserbackend:latest
+    #    build:
+    #      context: ${LeagueAbuserBackend}
+    #      args:
+    #        NODE_ENV: production
     ports:
       - "5000"
     environment:
@@ -22,6 +22,8 @@ services:
   leaguemongo:
     container_name: "LeagueMongoPi"
     image: mongo:bionic
+    ports:
+      - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
