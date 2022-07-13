@@ -7,6 +7,7 @@ import { MatchRepository } from "../../Repository/MatchRepository";
 import { SummonerRepository } from "../../Repository/SummonerRepository";
 import { RiotGamesHttp } from "../../Services/Http";
 import { MatchService } from "../../Services/MatchService";
+import { DataMiningService } from "../../Services/DataMiningService";
 
 describe("Match", () => {
   let summonerMock: Summoner;
@@ -17,6 +18,7 @@ describe("Match", () => {
   let matchService: MatchService;
 
   let summonerRepo: SummonerRepository;
+  let dataMiningService: DataMiningService;
 
   beforeAll(async () => {
     RGHttp = new RiotGamesHttp();
@@ -25,6 +27,8 @@ describe("Match", () => {
     matchService = new MatchService(matchRepo, RGHttp);
 
     summonerRepo = new SummonerRepository();
+
+    dataMiningService = new DataMiningService(summonerRepo, matchRepo, matchService);
 
     summonerMock = require("../TestSampleData/MockSummoner.json");
 
@@ -107,6 +111,29 @@ describe("Match", () => {
   });
 
   describe("Functions", () => {
+    it("Function => All Matches in DB in SummonerMatchList", async () => {
+      const summonerInDB = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+
+      if (summonerInDB === null) throw new Error("Function => Summoner does not exist in DB");
+
+      try {
+        await dataMiningService.addUnassingedMatchesToSummoner(summonerInDB);
+
+        const matchesInDBForSummoner = await matchRepo.findAllMatchesBySummonerPUUID(summonerInDB.puuid);
+
+        const summonerInDBUpdated = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+
+        if (summonerInDBUpdated === null) throw new Error();
+        console.log(matchesInDBForSummoner.length);
+
+        expect(summonerInDB.uninflatedMatchList.length + summonerInDB.inflatedMatchList.length).toEqual(
+          matchesInDBForSummoner.length,
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
+
     it.skip("Function => Add/Update recent Matches for Summoner", async () => {
       // Update Summoner Matches
       /// GET Matches for User eg 73

@@ -1,5 +1,6 @@
 import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
+import { matchEvaluation } from "../Models/Types/MatchTypes";
 import { MatchRepository } from "../Repository/MatchRepository";
 import { RiotGamesHttp } from "./Http";
 
@@ -21,133 +22,99 @@ export class MatchService {
   };
 
   /**
-   * Checks all matches of a summoner and Looks for Inflated Items/Summoners
+   *
    *
    * @void
    */
-  // public checkSummonerMatchesForEloInflation = async (summoner: Summoner) => {
-  //   try {
-  //     // get matches from db
+  public checkSummonerInMatchForEloInflation = (match: MatchData, summonerPUUID: string): matchEvaluation => {
+    if (match === undefined || summonerPUUID === undefined) throw new Error("Parameters not properly provided");
 
-  //     if (summoner.matchList === undefined) return;
+    try {
+      let exhaustCount: number = 0;
+      let exhaustCastCount: number = 0;
+      let tabisCount: number = 0;
+      let zhonaysCount: number = 0;
 
-  //     let summonerMatches: MatchData[] | null = [];
+      let participantByPUUID: Participant = match.info[0].participants.find((participantByPUUID) => {
+        return participantByPUUID.puuid === summonerPUUID;
+      });
 
-  //     for (let matchId of summoner.matchList) {
-  //       let detailedMatch = await this.matchRepo.findMatchById(matchId);
+      if (participantByPUUID.summoner1Id === 3) {
+        exhaustCount += 1;
+        exhaustCastCount += participantByPUUID.summoner1Casts;
+      }
 
-  //       if (detailedMatch) {
-  //         summonerMatches.push(detailedMatch);
-  //       }
-  //     }
+      if (participantByPUUID?.summoner2Id === 3) {
+        // summonerMatchDetails.exhaustAbused = true;
+        exhaustCount += 1;
+        exhaustCastCount += participantByPUUID.summoner2Casts;
+      }
+      // Items === Tabis (Id: 3047)
+      // Items === Zhonay's (Id: 3157)
+      if (participantByPUUID?.item0 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item0 === 3157) {
+        zhonaysCount += 1;
+      }
+      if (participantByPUUID?.item1 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item1 === 3157) {
+        zhonaysCount += 1;
+      }
+      if (participantByPUUID?.item2 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item2 === 3157) {
+        zhonaysCount += 1;
+      }
+      if (participantByPUUID?.item3 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item3 === 3157) {
+        zhonaysCount += 1;
+      }
+      if (participantByPUUID?.item4 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item4 === 3157) {
+        zhonaysCount += 1;
+      }
+      if (participantByPUUID?.item5 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item5 === 3157) {
+        zhonaysCount += 1;
+      }
+      if (participantByPUUID?.item6 === 3047) {
+        tabisCount += 1;
+      }
+      if (participantByPUUID?.item6 === 3157) {
+        zhonaysCount += 1;
+      }
 
-  //     if (summonerMatches === null || summonerMatches.length === 0) return;
+      if (exhaustCount < 0 || exhaustCastCount < 0 || tabisCount < 0 || zhonaysCount < 0) {
+        const evaluation: matchEvaluation = {
+          inflated: true,
+          exhaustCount: exhaustCount,
+          exhaustCastCount: exhaustCastCount,
+          tabisCount: tabisCount,
+          zhonaysCount: zhonaysCount,
+        };
+        return evaluation;
+      }
 
-  //     let exhaustCount: number = 0;
-  //     let exhaustCastCount: number = 0;
-  //     let tabisCount: number = 0;
-  //     let zhonaysCount: number = 0;
-
-  //     if (summonerMatches === undefined) return;
-
-  //     let matchesForSummonerPUUID: Participant[] = [];
-
-  //     for (const [index, match] of summonerMatches.entries()) {
-  //       let summonerMatch: Participant | undefined = match.info[0].participants.find((participant) => {
-  //         return participant.puuid === summoner?.puuid;
-  //       });
-
-  //       if (summonerMatch === undefined) {
-  //         continue;
-  //       }
-
-  //       matchesForSummonerPUUID.push(summonerMatch);
-  //     }
-
-  //     for (let participant of matchesForSummonerPUUID) {
-  //       if (participant?.summoner1Id === 3) {
-  //         // summonerMatchDetails.exhaustAbused = true;
-
-  //         exhaustCount += 1;
-  //         exhaustCastCount += participant.summoner1Casts;
-  //       }
-
-  //       if (participant?.summoner2Id === 3) {
-  //         // summonerMatchDetails.exhaustAbused = true;
-
-  //         exhaustCount += 1;
-  //         exhaustCastCount += participant.summoner2Casts;
-  //       }
-
-  //       // Items === Tabis (Id: 3047)
-  //       // Items === Zhonay's (Id: 3157)
-
-  //       if (participant?.item0 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item0 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-
-  //       if (participant?.item1 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item1 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-
-  //       if (participant?.item2 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item2 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-
-  //       if (participant?.item3 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item3 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-
-  //       if (participant?.item4 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item4 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-
-  //       if (participant?.item5 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item5 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-
-  //       if (participant?.item6 === 3047) {
-  //         tabisCount += 1;
-  //       }
-  //       if (participant?.item6 === 3157) {
-  //         zhonaysCount += 1;
-  //       }
-  //     }
-
-  //     // summoner.matchCount = summonerMatches.length;
-  //     summoner.exhaustCount = exhaustCount;
-  //     summoner.exhaustCastCount = exhaustCastCount;
-  //     summoner.tabisCount = tabisCount;
-  //     summoner.zhonaysCount = zhonaysCount;
-
-  //     // await updateSummonerByPUUID(summoner);
-
-  //     return;
-
-  //     // await setexhaustCount(exhaustCount);
-  //     // await setexhastCastedCount(exhaustUsedCount);
-  //     // await setTabisCount(tabisCount);
-  //     // await setzhonaysCount(zhonaysCount);
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // };
+      const evaluation: matchEvaluation = {
+        inflated: false,
+        exhaustCount: exhaustCount,
+        exhaustCastCount: exhaustCastCount,
+        tabisCount: tabisCount,
+        zhonaysCount: zhonaysCount,
+      };
+      return evaluation;
+    } catch (error) {
+      throw error;
+    }
+  };
 }

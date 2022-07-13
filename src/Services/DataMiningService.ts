@@ -1,3 +1,4 @@
+import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchRepository } from "../Repository/MatchRepository";
 import { SummonerRepository } from "../Repository/SummonerRepository";
@@ -7,27 +8,27 @@ import { SummonerService } from "./SummonerService";
 
 export class DataMiningService {
   private summonerRepo: SummonerRepository;
-  private summonerService: SummonerService;
+  // private summonerService: SummonerService;
 
   private matchRepo: MatchRepository;
   private matchService: MatchService;
 
-  private RGHttp: RiotGamesHttp;
+  // private RGHttp: RiotGamesHttp;
 
   constructor(
     summonerRepo: SummonerRepository,
-    summonerService: SummonerService,
-    RGHttp: RiotGamesHttp,
+    // summonerService: SummonerService,
+    // RGHttp: RiotGamesHttp,
     matchRepo: MatchRepository,
     matchService: MatchService,
   ) {
     this.summonerRepo = summonerRepo;
-    this.summonerService = summonerService;
+    // this.summonerService = summonerService;
 
     this.matchRepo = matchRepo;
     this.matchService = matchService;
 
-    this.RGHttp = RGHttp;
+    // this.RGHttp = RGHttp;
   }
 
   // checkForNewSummonerMatches = async (updateType: string) => {
@@ -181,4 +182,49 @@ export class DataMiningService {
   //     throw error;
   //   }
   // };
+
+  addUnassingedMatchesToSummoner = async (summoner: Summoner) => {
+    if (summoner === undefined || summoner === null) throw new Error("No Summoner was provided");
+    if (summoner.puuid === undefined) throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
+
+    try {
+      const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(summoner.puuid);
+
+      if (matchesBySummonerPUUID?.length === 0) return;
+
+      const unassingedMatches = matchesBySummonerPUUID.filter((match) => {
+        let checkUninflated = summoner.uninflatedMatchList.find((summonerMatchId) => summonerMatchId === match._id);
+
+        let checkinflated = summoner.inflatedMatchList.find((summonerMatchId) => summonerMatchId === match._id);
+
+        // assinged matches can be returned here
+        if (checkUninflated || checkinflated) return;
+
+        return match;
+      });
+
+      if (unassingedMatches.length === 0) {
+        return;
+      }
+
+      for (let match of unassingedMatches) {
+        const matchEvaluation = this.matchService.checkSummonerInMatchForEloInflation(match, summoner.puuid);
+
+        if (matchEvaluation.inflated) {
+          summoner.inflatedMatchList.push(match._id);
+
+          summoner.exhaustCount += matchEvaluation.exhaustCount;
+          summoner.exhaustCastCount += matchEvaluation.exhaustCastCount;
+          summoner.tabisCount += matchEvaluation.tabisCount;
+          summoner.zhonaysCount += matchEvaluation.zhonaysCount;
+        } else {
+          summoner.uninflatedMatchList.push(match._id);
+        }
+      }
+
+      await this.summonerRepo.updateSummonerByPUUID(summoner);
+    } catch (error) {
+      throw error;
+    }
+  };
 }

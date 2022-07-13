@@ -56,8 +56,8 @@ export class MatchRepository {
     }
   };
 
-  findAllMatchesBySummonerPUUID = async (summonerPUUID: string): Promise<MatchData[] | null> => {
-    let matchesById: MatchData[] | null;
+  findAllMatchesBySummonerPUUID = async (summonerPUUID: string): Promise<MatchData[]> => {
+    let matchesById: MatchData[];
     try {
       // matchesById = await MatchSchema.find({})
       //   .lean()

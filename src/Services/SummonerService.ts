@@ -103,6 +103,7 @@ export class SummonerService {
     for (let summonerSbL of SbLInDB.entries) {
       let summoner = await this.summonerRepo.findSummonerByID(summonerSbL.summonerId);
 
+      // create new summoner
       if (!summoner) {
         let summonerToSave: Summoner = {
           _id: summonerSbL.summonerId,
@@ -121,9 +122,16 @@ export class SummonerService {
           losses: summonerSbL.losses,
           veteran: summonerSbL.veteran,
           inactive: summonerSbL.inactive,
+          inflatedMatchList: [],
+          uninflatedMatchList: [],
           freshBlood: summonerSbL.freshBlood,
           hotStreak: summonerSbL.hotStreak,
           updatedAt: SbLInDB.updatedAt,
+          exhaustCount: 0,
+          exhaustCastCount: 0,
+          tabisCount: 0,
+          zhonaysCount: 0,
+          zhonaysCastCount: 0,
         };
 
         // Todo Add Flex and TT

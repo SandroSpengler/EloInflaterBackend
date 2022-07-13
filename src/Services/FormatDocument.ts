@@ -26,6 +26,7 @@ export const formatSummonerForSending = (summoner: Summoner): Summoner => {
       exhaustCount: summoner.exhaustCount,
       exhaustCastCount: summoner.exhaustCastCount,
       zhonaysCount: summoner.zhonaysCount,
+      zhonaysCastCount: 0,
       tabisCount: summoner.tabisCount,
       updatedAt: summoner.updatedAt,
       lastMatchUpdate: summoner.lastMatchUpdate,

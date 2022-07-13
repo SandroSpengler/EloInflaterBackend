@@ -327,8 +327,8 @@ export interface Info {
 }
 
 export interface MatchData extends Partial<Document> {
-  _id: String;
-  id: String;
+  _id: string;
+  id: string;
   summonerId: string;
   summonerPUUID: string;
   metadata: Metadata;

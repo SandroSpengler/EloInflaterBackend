@@ -53,6 +53,11 @@ describe("Summoner", () => {
         "EUW1_5721290766",
       ],
       inflatedMatchList: [],
+      exhaustCount: 0,
+      exhaustCastCount: 0,
+      tabisCount: 0,
+      zhonaysCount: 0,
+      zhonaysCastCount: 0,
     };
 
     await summonerRepo.createSummoner(summonerToCreate);
