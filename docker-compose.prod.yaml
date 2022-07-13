@@ -3,11 +3,11 @@ version: "3"
 services:
   leagueabuserbackend:
     container_name: "LeagueAbuserBackend"
-    image: sandrospengler/leagueabuserbackend
-    build:
-      context: ${LeagueAbuserBackend}
-      args:
-        NODE_ENV: production
+    image: sandrospengler/leagueabuserbackend:latest
+    # build:
+    #   context: ${LeagueAbuserBackend}
+    # args:
+    #   NODE_ENV: production
     ports:
       - "5000"
     environment:
@@ -29,4 +29,3 @@ services:
     volumes:
       - ~/External/Databases/MongoDBLeague/data:/data/db
       - ~/External/Databases/Backup/MongoDBLeague:/Backup
-

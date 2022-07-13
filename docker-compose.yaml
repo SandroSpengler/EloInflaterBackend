@@ -3,9 +3,9 @@ version: "3"
 services:
   leagueabuserbackend:
     container_name: "LeagueAbuserBackend"
-    image: sandrospengler/leagueabuserbackend
-    build:
-      context: .
+    image: sandrospengler/leagueabuserbackend:latest
+    # build:
+    #   context: .
     environment:
       - PORT=5000
     networks:
