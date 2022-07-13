@@ -98,7 +98,7 @@ connectToMongoDB(process.env.DB_CONNECTION);
 
 if (process.env.NODE_ENV !== "test") {
   APP.listen(config.PORT, () => {
-    console.log("0. Server is running");
+    console.log("0. Server is running!!!");
   });
 }
 
