@@ -99,7 +99,7 @@ export class MatchRepository {
     try {
       let tmpMatch = new MatchSchema();
 
-      tmpMatch._id = match.metadata.matchId;
+      (tmpMatch._id as any) = match.metadata.matchId as any;
       tmpMatch.metadata = match.metadata;
       tmpMatch.info = match.info;
 

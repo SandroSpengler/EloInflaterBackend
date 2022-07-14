@@ -123,6 +123,7 @@ const schedule = async () => {
     console.groupEnd();
   } catch (error: any) {
     console.error(error.message);
+    console.groupEnd();
   } finally {
     await setTimeout(() => {
       console.log("Cycle done - Restarting");
