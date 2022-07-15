@@ -1,4 +1,7 @@
 import axios, { AxiosError } from "axios";
+import { Request, Response } from "express";
+import Summoner from "../../../Models/Interfaces/Summoner";
+import { SummonerResponse } from "../../../Models/Types/ApiTypes";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 import { formatSummonerForSending } from "../../../Services/FormatDocument";
 import { RiotGamesHttp } from "../../../Services/Http";
@@ -24,52 +27,73 @@ export class SummonerData {
 
       return res.status(200).json({ allSummoners });
     }
-    res.status(409).json({});
+    return res.status(409).json({
+      success: false,
+      result: null,
+      error: "Endpoint no longer exists",
+    });
   };
 
-  public getSummonerByName = async (req, res) => {
-    if (req.params.name) {
-      try {
-        let queryName = req.params.name;
+  /**
+   * Finds the SummonerByName
+   *
+   * @param req HTTP-Request
+   * @param res HTTP-Response
+   *
+   * @returns HTTP-Response
+   */
+  public getSummonerByName = async (req: Request, res: Response) => {
+    if (req.params.name === undefined || req.params.name === "") {
+      return res.status(400).json({
+        success: false,
+        result: null,
+        erorr: "No SummonerName was provided",
+      });
+    }
 
-        // Search by PUUID and by Name to get 1 less requeset
-        // let summonerInDB = await findSummonerByName(Response.data.name);
-        let summonerInDB = await this.summonerRepo.findSummonerByName(req.params.name);
+    try {
+      let queryName = req.params.name;
 
-        // if getSummonerByName/PUUID returns an entry add the summoner
-        if (summonerInDB != null) {
-          return res.status(200).json({
-            success: true,
-            result: formatSummonerForSending(summonerInDB),
-          });
-        } else {
-          let getsummonerBynameResponse = await this.RGHttp.getSummonerByName(queryName);
+      // Search by PUUID and by Name to get 1 less requeset
 
-          if (getsummonerBynameResponse.status === 200) {
-            await this.summonerRepo.createSummoner(getsummonerBynameResponse.data);
+      let summonerInDB = await this.summonerRepo.findSummonerByName(req.params.name);
 
-            return res.status(280).json({
-              success: true,
-              result: formatSummonerForSending(getsummonerBynameResponse.data),
-            });
-          }
-        }
-
-        return res.status(404).json({
+      // if getSummonerByName/PUUID returns an entry add the summoner
+      if (summonerInDB != null) {
+        return res.status(200).json({
           success: true,
-          result: "Summoner not Found",
+          result: formatSummonerForSending(summonerInDB),
+          error: null,
         });
-      } catch (error: any) {
-        if (axios.isAxiosError(error)) {
-          let axiosError: AxiosError = error;
+      } else {
+        let getsummonerBynameResponse = await this.RGHttp.getSummonerByName(queryName);
 
-          if (axiosError.response?.status === 404) {
-            return res.status(404).json({ success: false, message: "Summoner not found" });
-          }
+        if (getsummonerBynameResponse.status === 200) {
+          await this.summonerRepo.createSummoner(getsummonerBynameResponse.data);
+
+          return res.status(280).json({
+            success: true,
+            result: formatSummonerForSending(getsummonerBynameResponse.data),
+            error: null,
+          });
         }
-
-        return res.status(500).json({ succes: false, message: error.message });
       }
+
+      return res.status(404).json({
+        success: true,
+        result: "Summoner not found",
+        error: null,
+      });
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        let axiosError: AxiosError = error;
+
+        if (axiosError.response?.status === 404) {
+          return res.status(404).json({ success: false, result: null, error: "Summoner not found" });
+        }
+      }
+
+      return res.status(500).json({ succes: false, result: "Internal Server Error" });
     }
   };
 }

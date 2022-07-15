@@ -26,7 +26,7 @@ describe("SummonerMatches Endpoint", () => {
     );
   });
 
-  it("Expect matches to update", async () => {
+  it.skip("Expect matches to update", async () => {
     // Call api/refresh/summoner/byname/{summonerName}
     // Get Summoner
     // Expect Status 200 or 429

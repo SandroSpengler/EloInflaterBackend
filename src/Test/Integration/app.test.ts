@@ -16,25 +16,43 @@ describe("Server startup", () => {
 
 //#region Summoner Tests
 describe("Summoner CRUD-Endpoint", () => {
-  it.skip("Expect a single Summoner with name and matchlist", async () => {
-    let requestSummonerName = "agurin";
+  it("Expect a single Summoner with name and matchlist", async () => {
+    const summonerNames = ["agurin", "fasdhfsadfjhsdjf,,,,,..n", "", undefined];
 
-    const response = await request(APP).get(`/api/data/summoner/${requestSummonerName}`);
+    const responseWorking = await request(APP).get(`/api/data/summoner/${summonerNames[0]}`);
 
-    expect(response.statusCode === 200);
+    const summonerWorking: Summoner = responseWorking.body.result;
 
-    const summoner: Summoner = response.body.result;
+    expect(responseWorking.statusCode === 200);
 
-    expect(summoner).toEqual(
-      expect.objectContaining({
-        name: requestSummonerName,
-        puuid: expect.any(String),
-        // matchList: expect.arrayContaining([expect.any(String)]),
-      }),
-    );
+    expect(summonerWorking).toMatchObject({
+      name: "Agurin",
+      puuid: expect.any(String),
+      // matchList: expect.arrayContaining([expect.any(String)]),
+    });
+
+    const responseGibberish = await request(APP).get(`/api/data/summoner/${summonerNames[1]}`);
+
+    expect(responseGibberish.statusCode).toEqual(404);
+
+    expect(responseGibberish.body).toMatchObject({
+      success: false,
+      result: null,
+      error: "Summoner not found",
+    });
+
+    const responseEmptyString = await request(APP).get(`/api/data/summoner/${summonerNames[2]}`);
+
+    expect(responseEmptyString.statusCode).toEqual(409);
+
+    expect(responseGibberish.body).toMatchObject({
+      success: false,
+      result: null,
+      error: "Summoner not found",
+    });
   });
 
-  it("Expect all Summoners with rankSolo - CHALLENGER", async () => {
+  it.skip("Expect all Summoners with rankSolo - CHALLENGER", async () => {
     const response = await request(APP).get("/api/data/league/challenger/rankedsolo");
 
     expect(response.statusCode === 200);
@@ -53,7 +71,8 @@ describe("Summoner CRUD-Endpoint", () => {
       ]),
     );
   });
-  it("Expect all Summoners with rankSolo - GRANDMASTER", async () => {
+
+  it.skip("Expect all Summoners with rankSolo - GRANDMASTER", async () => {
     const response = await request(APP).get("/api/data/league/grandmaster/rankedsolo");
 
     expect(response.statusCode === 200);
@@ -73,7 +92,7 @@ describe("Summoner CRUD-Endpoint", () => {
     );
   });
 
-  it("Expect all Summoners with rankSolo - MASTER", async () => {
+  it.skip("Expect all Summoners with rankSolo - MASTER", async () => {
     const response = await request(APP).get("/api/data/league/master/rankedsolo");
 
     expect(response.statusCode === 200);

@@ -74,9 +74,18 @@ export class SummonerRepository {
     }
   };
 
+  /**
+   * Finds Summoner by Name caseINsensitive
+   *
+   * @param name Name of the Summoner
+   *
+   * @returns Summoner
+   */
   public findSummonerByName = async (name: String): Promise<Summoner | null> => {
     try {
-      let foundSummoner: Summoner | null = await SummonerSchema.findOne({ name: name.toLowerCase() }).lean(); // .lean() returns only the json and not the mongoose.document
+      let foundSummoner: Summoner | null = await SummonerSchema.findOne({
+        name: { $regex: new RegExp(`^${name}$`, "i") },
+      }).lean(); // .lean() returns only the json and not the mongoose.document
 
       if (foundSummoner != null) return foundSummoner;
 
