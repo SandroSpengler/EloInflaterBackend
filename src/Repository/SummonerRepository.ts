@@ -118,7 +118,7 @@ export class SummonerRepository {
       tmpSummoner.summonerId = summoner.summonerId;
       tmpSummoner.accountId = summoner.accountId;
       tmpSummoner.puuid = summoner.puuid;
-      tmpSummoner.name = summoner.name.toLowerCase();
+      tmpSummoner.name = summoner.name;
 
       if (summoner.profileIconId) tmpSummoner.profileIconId = summoner.profileIconId;
       if (summoner.revisionDate) tmpSummoner.revisionDate = summoner.revisionDate;

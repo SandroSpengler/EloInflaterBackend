@@ -89,7 +89,19 @@ export class SummonerData {
         let axiosError: AxiosError = error;
 
         if (axiosError.response?.status === 404) {
-          return res.status(404).json({ success: false, result: null, error: "Summoner not found" });
+          return res.status(404).json({
+            success: false,
+            result: null,
+            error: "Summoner not found",
+          });
+        }
+
+        if (axiosError.response?.status === 429) {
+          return res.status(429).json({
+            success: false,
+            result: null,
+            error: "Rate limit reached please try again later",
+          });
         }
       }
 

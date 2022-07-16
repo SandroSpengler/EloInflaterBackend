@@ -1,3 +1,4 @@
+import { SbLTier } from "../../../Models/Types/SummonerByLeagueTypes";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 
 const express = require("express");
@@ -11,10 +12,15 @@ export class SummonerByLeagueRoute {
   }
 
   public byRankSoloAndQueueType = async (req, res) => {
-    // challenger,gm, master
-    let rank = req.params.rankSolo.toUpperCase();
-    // 5v5 solo, flex, flex TT
-    let queueType = req.params.queueType.toUpperCase();
+    let rank: SbLTier = req.params.rankSolo.toUpperCase();
+
+    if (!["CHALLENGER", "GRANDMASTER", "MASTER"].includes(rank)) {
+      return res.status(400).json({
+        success: false,
+        result: null,
+        error: "please provide a valid rank parameter",
+      });
+    }
 
     try {
       const summoners = await this.SbLRepo.findAllSummonersByRank(rank);
@@ -27,17 +33,20 @@ export class SummonerByLeagueRoute {
         return res.status(200).json({
           success: true,
           result: summoners,
+          error: null,
         });
       }
 
       return res.status(404).json({
         success: true,
-        result: "No Summoners Found",
+        result: `no summoners found for rank ${rank}`,
+        error: null,
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
-        result: "Check provided Query Parameter",
+        result: null,
+        error: "Internal Server Error",
       });
     }
   };
