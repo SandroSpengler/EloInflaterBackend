@@ -27,12 +27,16 @@ export class SummonerRefreshRoute {
   private matchService: MatchService = new MatchService(this.matchRepo, this.RGHttp);
 
   constructor() {
-    router.get("/byName/:name", this.getByName);
-    router.get("/byPUUID/:puuid", this.getPUUID);
-    router.put("/byQueue/:tier/:queue", this.putByQueueModeAndType);
+    router.put("/byName/:name", this.getByName);
+    router.put("/byPUUID/:puuid", this.getPUUID);
   }
 
   public getByName = async (req: Request, res: Response) => {
+    // Check if summoner exsits in DB
+    // Add Summoner to DB in not exists
+    // Update Summoner matches
+    // Res => Summoner updated
+
     let summonerByNameApiReponse;
     let summonerInDB: Summoner | null;
 
@@ -116,75 +120,6 @@ export class SummonerRefreshRoute {
         error: null,
       });
     } catch (error) {}
-  };
-
-  /**
-   * PUT Express Endpoint: Updates SummonerByLeagueCollection for specific tier and queue
-   *
-   * @param req The HTTP-Request
-   * @param res The HTTP Response
-   */
-  public putByQueueModeAndType = async (req: Request, res: Response) => {
-    let tier: SbLTier;
-    let queue: SbLQueue;
-
-    // GuardClose -> Params must contain strings inside the Array
-    if (!["CHALLENGER", "GRANDMASTER", "MASTER"].includes(req.params.tier)) {
-      return res.status(400).json({
-        success: false,
-        result: null,
-        error: `Parameter Tier does not match "CHALLENGER", "GRANDMASTER" or "MASTER"`,
-      });
-    }
-
-    if (!["RANKED_SOLO_5x5", "RANKED_FLEX_SR", "RANKED_FLEX_TT"].includes(req.params.queue)) {
-      return res.status(400).json({
-        success: false,
-        result: null,
-        error: `Parameter Queue does not match "RANKED_SOLO_5x5", "RANKED_FLEX_SR" or "RANKED_FLEX_TT"`,
-      });
-    }
-
-    // Needs to be casted due to Typescript not understanding the if-statement check
-    tier = req.params.tier as SbLTier;
-    queue = req.params.queue as SbLQueue;
-
-    // 1. Get current SummonersByLeague from API ✅
-    // 2. Get SummonersByLeague in DB ✅
-    //    Save them if no SummonersByLeague exist ✅
-    // 3. Check if SummonersByLeauge can be updated
-    // 4. Update SummonersByLeauge
-    // 5. Return Status Code
-
-    try {
-      const Response = await this.RGHttp.getSummonersByLeague(tier, queue);
-
-      let summonerByLeagueInDB = await this.SbLRepo.findSummonerByLeague(tier, queue);
-
-      if (summonerByLeagueInDB == null) {
-        // If it does save Summoner to DB
-        summonerByLeagueInDB = await this.SbLRepo.saveSummonerByLeague(Response.data);
-      }
-
-      if (summonerByLeagueInDB.updatedAt! < new Date().getTime()) {
-        // Updates the Summoners Entries
-        await this.SbLRepo.updateSummonerByLeagueEntries(tier, Response.data.entries);
-        // Saves the Summoner to DB
-        await this.summonerService.updateSumonersByLeague(summonerByLeagueInDB);
-      }
-
-      // save rankedinformation to that summoner
-
-      let summonerByLeagueToSend = formatSummonerByLeagueForSending(summonerByLeagueInDB);
-
-      res.status(200).json({
-        success: true,
-        result: summonerByLeagueToSend,
-        error: null,
-      });
-    } catch (error: any) {
-      res.status(500).json({ success: false, result: null, error: error.message });
-    }
   };
 }
 new SummonerRefreshRoute();

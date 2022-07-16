@@ -1,4 +1,5 @@
 import axios, { AxiosError } from "axios";
+
 import { Request, Response } from "express";
 import Summoner from "../../../Models/Interfaces/Summoner";
 import { SummonerResponse } from "../../../Models/Types/ApiTypes";
@@ -71,9 +72,13 @@ export class SummonerData {
         if (getsummonerBynameResponse.status === 200) {
           await this.summonerRepo.createSummoner(getsummonerBynameResponse.data);
 
+          let summonerCreated = await this.summonerRepo.findSummonerByName(req.params.name);
+
+          if (summonerCreated === null) throw new Error("Summoner could ne be created");
+
           return res.status(280).json({
             success: true,
-            result: formatSummonerForSending(getsummonerBynameResponse.data),
+            result: formatSummonerForSending(summonerCreated),
             error: null,
           });
         }
