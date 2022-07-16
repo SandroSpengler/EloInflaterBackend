@@ -7,6 +7,7 @@ import Summoner from "../Models/Interfaces/Summoner";
 import { MatchData } from "../Models/Interfaces/MatchData";
 import { MatchList } from "../Models/Interfaces/MatchList";
 import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
+import { urlencoded } from "body-parser";
 
 export class RiotGamesHttp {
   // only change by Region
@@ -21,7 +22,7 @@ export class RiotGamesHttp {
   public getSummonerByName = async (name: string): Promise<AxiosResponse<Summoner>> => {
     try {
       const request = axios.get<Summoner>(
-        `${this.buildBaseUrl(this.regionUrl, "summoner/v4/summoners/by-name/")}${name}`,
+        `${this.buildBaseUrl(this.regionUrl, "summoner/v4/summoners/by-name/")}${encodeURI(name)}`,
         this.buildConfig(),
       );
 
