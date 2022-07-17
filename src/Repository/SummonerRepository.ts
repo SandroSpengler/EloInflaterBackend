@@ -21,7 +21,7 @@ export class SummonerRepository {
   /**
    * Finds all summoners in SummonerCollection based on Parameters
    *
-   * @param rankSolo Soloqueue rank
+   * @param {SbLTier} rankSolo  Soloqueue rank
    *
    * @returns List of Summoners || Emtpy List
    */

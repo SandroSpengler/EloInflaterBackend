@@ -43,6 +43,8 @@ export class DataMiningService {
 
       const matchesForSummoner = await matchResponse.data;
 
+      await this.addUnassignedMatchesToSummoner(summoner);
+
       const newMatchIdsForSummoner = matchesForSummoner.filter((matchId) => {
         let checkUninflated = summoner.uninflatedMatchList.find((summonerMatchId) => summonerMatchId === matchId);
 
