@@ -56,7 +56,14 @@ export class DataMiningService {
         return matchId;
       });
 
-      if (newMatchIdsForSummoner.length === 0) return;
+      if (newMatchIdsForSummoner.length === 0) {
+        let currentTime = new Date().getTime();
+        summoner.lastMatchUpdate = currentTime;
+
+        await this.summonerRepo.updateSummonerByPUUID(summoner);
+
+        return;
+      }
 
       for (let [index, matchId] of newMatchIdsForSummoner.entries()) {
         console.log(`Adding Match ${index} of ${newMatchIdsForSummoner.length}`);

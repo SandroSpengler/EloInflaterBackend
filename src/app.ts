@@ -211,15 +211,19 @@ const addNewMatches = async () => {
 
   const allSummoners = [...SummonerRankChallenger, ...SummonerRankGrandMaster, ...SummonerRankMaster];
 
+  const updateAbleSummoners = allSummoners.filter((summoner) => {
+    if (summonerService.checkIfSummonerCanBeUpdated(summoner)) {
+      return summoner;
+    }
+  });
+
   try {
-    for (let [index, summoner] of allSummoners.entries()) {
-      if (summonerService.checkIfSummonerCanBeUpdated(summoner)) {
-        const informationString: string = `Updating Summoner matches for ${summoner.name} at ${index} of ${allSummoners.length}`;
+    for (let [index, summoner] of updateAbleSummoners.entries()) {
+      const informationString: string = `Updating Summoner matches for ${summoner.name} at ${index} of ${updateAbleSummoners.length}`;
 
-        console.log(informationString);
+      console.log(informationString);
 
-        await dataMiningService.addNewMatchesToSummoner(summoner);
-      }
+      await dataMiningService.addNewMatchesToSummoner(summoner);
     }
   } catch (error) {
     throw error;
