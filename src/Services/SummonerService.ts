@@ -26,7 +26,7 @@ export class SummonerService {
     // 2 Hours
     let unixTimeStamp = new Date().getTime() - 8 * 60 * 60 * 1000;
 
-    if (summoner.lastMatchUpdate === undefined) return false;
+    if (summoner.lastMatchUpdate === undefined) return true;
 
     if (summoner.lastMatchUpdate < unixTimeStamp) return true;
 
