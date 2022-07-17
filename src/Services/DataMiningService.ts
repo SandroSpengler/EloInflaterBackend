@@ -67,7 +67,7 @@ export class DataMiningService {
           await this.matchRepo.createMatch(matchData);
         }
       }
-      let currentTime = new Date().getTime() * 1000;
+      let currentTime = new Date().getTime();
       summoner.lastMatchUpdate = currentTime;
     } catch (error) {
       throw error;
