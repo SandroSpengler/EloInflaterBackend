@@ -15,6 +15,7 @@ services:
       - RUN_JOB=${RUN_JOB}
       - API_KEY=${API_KEY}
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
+      - LOGGLY_TOKEN=${LOGGLY_TOKEN}
       - VIRTUAL_HOST=eloinflater.axfert.com
       - LETSENCRYPT_HOST=eloinflater.axfert.com
     command: npm run prod
