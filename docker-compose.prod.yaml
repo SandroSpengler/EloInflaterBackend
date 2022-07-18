@@ -17,6 +17,8 @@ services:
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
       - NODE_OPTIONS=--max_old_space_size=6144
     command: npm run prod
+    volumes:
+      - ~/Logs/Eloinflater:/usr/src/app/Logs
 
   leaguemongo:
     container_name: "LeagueMongoProd"

@@ -215,7 +215,7 @@ describe("Summoner", () => {
       expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
     });
 
-    it("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
+    it.skip("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
       const SbLInDB = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
       if (await SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDB)) {
@@ -285,7 +285,7 @@ describe("Summoner", () => {
       }
     });
 
-    it("404 Error", async () => {
+    it.skip("404 Error", async () => {
       const summoner = {
         _id: "s-SHlZkUSFdOFYwTBULelp9Vb3SY8QSPwXIaoAzQKIYW53_P",
         profileIconId: 4655,

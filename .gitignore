@@ -4,3 +4,4 @@ docker-compose.dev.yaml
 /build
 .dsstore
 .DS_Store
+/Logs

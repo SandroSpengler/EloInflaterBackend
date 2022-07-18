@@ -6,6 +6,7 @@ import { SummonerRepository } from "../Repository/SummonerRepository";
 import { RiotGamesHttp } from "./Http";
 import { MatchService } from "./MatchService";
 import { SummonerService } from "./SummonerService";
+import * as winston from "winston";
 
 export class DataMiningService {
   private summonerRepo: SummonerRepository;
@@ -67,7 +68,8 @@ export class DataMiningService {
       }
 
       for (let [index, matchId] of newMatchIdsForSummoner.entries()) {
-        console.log(`Adding Match ${index} of ${newMatchIdsForSummoner.length}`);
+        winston.log("info", `Adding Match ${index + 1} of ${newMatchIdsForSummoner.length}`);
+
         const matchInDB = await this.matchRepo.findMatchById(matchId);
 
         if (matchInDB === null) {
@@ -85,11 +87,11 @@ export class DataMiningService {
           }
         }
       }
-      let currentTime = new Date().getTime();
-      summoner.lastMatchUpdate = currentTime;
     } catch (error) {
       throw error;
     } finally {
+      let currentTime = new Date().getTime();
+      summoner.lastMatchUpdate = currentTime;
       await this.addUnassignedMatchesToSummoner(summoner);
     }
   };
@@ -139,10 +141,10 @@ export class DataMiningService {
           summoner.uninflatedMatchList.push(match._id);
         }
       }
-
-      await this.summonerRepo.updateSummonerByPUUID(summoner);
     } catch (error) {
       throw error;
+    } finally {
+      await this.summonerRepo.updateSummonerByPUUID(summoner);
     }
   };
 }
