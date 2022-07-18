@@ -111,7 +111,7 @@ const createLoggerWithLoggly = async (token: string | undefined) => {
 
   try {
     const LogglyLogger: Loggly = new Loggly({
-      token: "476ea9ec-b73e-48d6-9570-935f78d84439",
+      token: process.env.LOGGLY_TOKEN,
       subdomain: "eloinflater",
       tags: ["Node-JS", process.env.NODE_ENV],
       json: true,
