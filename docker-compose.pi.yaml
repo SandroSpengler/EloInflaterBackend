@@ -18,6 +18,8 @@ services:
       - VIRTUAL_HOST=eloinflater.axfert.com
       - LETSENCRYPT_HOST=eloinflater.axfert.com
     command: npm run prod
+    volumes:
+      - ~/Logs/Eloinflater:/usr/src/app/Logs
 
   leaguemongo:
     container_name: "LeagueMongoPi"
