@@ -1,3 +1,4 @@
+import axios from "axios";
 import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchRepository } from "../Repository/MatchRepository";
@@ -70,8 +71,18 @@ export class DataMiningService {
         const matchInDB = await this.matchRepo.findMatchById(matchId);
 
         if (matchInDB === null) {
-          const matchData = (await this.RGHttp.getMatchByMatchId(matchId)).data;
-          await this.matchRepo.createMatch(matchData);
+          try {
+            const matchData = (await this.RGHttp.getMatchByMatchId(matchId)).data;
+            await this.matchRepo.createMatch(matchData);
+          } catch (error) {
+            if (axios.isAxiosError(error)) {
+              if (error.response?.status === 404) {
+                continue;
+              } else {
+                throw error;
+              }
+            }
+          }
         }
       }
       let currentTime = new Date().getTime();
