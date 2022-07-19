@@ -2,32 +2,29 @@
 import { Application, Request, Response, NextFunction } from "express";
 import express from "express";
 
+import { connect } from "mongoose";
 import { ConnectionOptions } from "tls";
 
 import * as winston from "winston";
 import { format } from "winston";
+import { Loggly } from "winston-loggly-bulk";
 const { combine, timestamp, label, printf } = format;
 
-import { Loggly } from "winston-loggly-bulk";
-
-import { config } from "./Config/config";
-import { SummonerRepository } from "./Repository/SummonerRepository";
-import { SummonerService } from "./Services/SummonerService";
-import { RiotGamesHttp } from "./Services/Http";
-import { SummonerByLeagueRepository } from "./Repository/SummonerByLeagueRepository";
-import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
-import Summoner from "./Models/Interfaces/Summoner";
-import { DataMiningService } from "./Services/DataMiningService";
-import { MatchRepository } from "./Repository/MatchRepository";
-import { MatchService } from "./Services/MatchService";
-
-// const mongoose = require("mongoose");
-import { connect } from "mongoose";
 import axios from "axios";
 const cors = require("cors");
-// const cron = require("node-cron");
-
 require("dotenv").config();
+
+import { config } from "./Config/config";
+
+import { RiotGamesHttp } from "./Services/Http";
+import { SummonerRepository } from "./Repository/SummonerRepository";
+import { SummonerByLeagueRepository } from "./Repository/SummonerByLeagueRepository";
+import { MatchRepository } from "./Repository/MatchRepository";
+
+import { SummonerService } from "./Services/SummonerService";
+import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
+import { DataMiningService } from "./Services/DataMiningService";
+import { MatchService } from "./Services/MatchService";
 
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
@@ -52,11 +49,6 @@ const matchRepo = new MatchRepository();
 const matchService = new MatchService(matchRepo, RGHttp);
 
 const dataMiningService = new DataMiningService(summonerRepo, RGHttp, matchRepo, matchService);
-
-let corsOptions = {
-  origin: "*",
-  optionsSuccessStatus: 200, // For legacy browser support
-};
 
 APP.use(
   cors({
@@ -83,11 +75,11 @@ APP.use("/api/refresh/match", jsonParser, matchRefreshController);
  * @param connection String used to connect to MongoDB
  */
 const connectToMongoDB = async (connection: string | undefined) => {
-  if (connection === undefined) {
-    throw new Error("No Connection String was provided");
-  }
-
   try {
+    if (connection === undefined) {
+      throw new Error("No Connection String was provided");
+    }
+
     const connectionOption: ConnectionOptions = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -104,14 +96,19 @@ const connectToMongoDB = async (connection: string | undefined) => {
 
 connectToMongoDB(process.env.DB_CONNECTION);
 
+/**
+ * Creates the logger instance
+ *
+ * @param token Loggly token for remote logs
+ */
 const createLoggerWithLoggly = async (token: string | undefined) => {
-  if (token === undefined) {
-    throw new Error("No Loggly token was provided");
-  }
-
   try {
+    if (token === undefined) {
+      throw new Error("No Loggly token was provided");
+    }
+
     const LogglyLogger: Loggly = new Loggly({
-      token: process.env.LOGGLY_TOKEN,
+      token: token,
       subdomain: "eloinflater",
       tags: ["Node-JS", process.env.NODE_ENV],
       json: true,
@@ -129,6 +126,7 @@ const createLoggerWithLoggly = async (token: string | undefined) => {
         }),
         timestamp(),
         myFormat,
+        format.json(),
       ),
     });
 
@@ -145,7 +143,7 @@ createLoggerWithLoggly(process.env.LOGGLY_TOKEN);
 
 if (process.env.NODE_ENV !== "test") {
   APP.listen(config.PORT, () => {
-    console.log("1. Server is running!!!");
+    console.log("1. Server is running");
   });
 }
 
@@ -162,8 +160,8 @@ const schedule = async () => {
         winston.log("warn", `Rate Limit:  ${error.message}`);
         console.error(error.message);
       } else {
-        winston.error("error", error.message);
-        console.error(error.message);
+        winston.log("error", error.message);
+        console.log(error.message);
       }
     }
   } finally {
