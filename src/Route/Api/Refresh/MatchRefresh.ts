@@ -84,7 +84,11 @@ export class MatchRefreshRoute {
       }
     }
 
-    return res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res.status(500).json({
+      success: false,
+      result: null,
+      error: "Internal Server Error",
+    });
   };
 }
 
