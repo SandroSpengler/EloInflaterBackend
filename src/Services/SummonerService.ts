@@ -24,7 +24,7 @@ export class SummonerService {
    */
   checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
     // 2 Hours
-    let unixTimeStamp = new Date().getTime() - 8 * 60 * 60 * 1000;
+    let unixTimeStamp = new Date().getTime() - 12 * 60 * 60 * 1000;
 
     if (summoner.lastMatchUpdate === undefined) return true;
 
