@@ -27,99 +27,81 @@ export class SummonerRefreshRoute {
   private matchService: MatchService = new MatchService(this.matchRepo, this.RGHttp);
 
   constructor() {
-    router.put("/byName/:name", this.getByName);
-    router.put("/byPUUID/:puuid", this.getPUUID);
+    router.put("/bySummonerId/:summonerId", this.getSummonerId);
   }
 
-  public getByName = async (req: Request, res: Response) => {
-    // Check if summoner exsits in DB
-    // Add Summoner to DB in not exists
-    // Update Summoner matches
-    // Res => Summoner updated
-
-    let summonerByNameApiReponse;
-    let summonerInDB: Summoner | null;
-
-    if (!req.params.name) return res.status(409).json({ success: false, result: "Check Summoner Name" });
-
+  /**
+   * Update SummonerInformation by PUUID
+   *
+   * @param req The HTTP-Request
+   * @param res The HTTP Response
+   */
+  public getSummonerId = async (req: Request, res: Response) => {
+    // ToDo
+    // also update Summoner Rankinformation
     try {
-      // Get Summoner Data
+      const summonerId: string = req.params.summonerId;
 
-      summonerInDB = await this.summonerRepo.findSummonerByName(req.params.name);
+      if (summonerId === undefined || summonerId === "") {
+        return res.status(400).json({
+          success: false,
+          result: null,
+          erorr: "No SummonerPUUID was provided",
+        });
+      }
+
+      const summonerInDB = await this.summonerRepo.findSummonerByID(summonerId);
 
       if (summonerInDB === null) {
-        summonerByNameApiReponse = await this.RGHttp.getSummonerByName(req.params.name);
-
-        summonerInDB = await this.summonerRepo.createSummoner(summonerByNameApiReponse.data);
+        return res.status(404).json({
+          success: false,
+          result: null,
+          erorr: "Summoner does not exist in DB",
+        });
       }
-    } catch (error: any) {
-      return res.status(500).json({
-        succes: false,
-        result: error.message,
-      });
-    }
 
-    // if (summonerInDB.updatedAt! < new Date().getTime() - 3600 * 1000) {
-    if (!this.summonerService.checkIfSummonerCanBeUpdated(summonerInDB)) {
-      return res.status(409).json({
-        success: false,
-        result: "Summoner already been updated within the last hour",
-      });
-    }
+      if (!this.summonerService.checkIfSummonerCanBeUpdated(summonerInDB)) {
+        return res.status(410).json({
+          success: false,
+          result: null,
+          erorr: "Summoner already updated within the last 2 Minutes",
+        });
+      }
 
-    try {
-      // await updatSummonerMatches(summonerInDB);
+      const currentSummonerResponse = await this.RGHttp.getSummonerBySummonerId(summonerInDB.id);
+
+      await this.summonerRepo.updateSummonerByPUUID(currentSummonerResponse.data);
+
+      const updatedSummoner = await this.summonerRepo.findSummonerByID(summonerId);
 
       return res.status(200).json({
         success: true,
-        result: `Summoner has been updated`,
+        result: updatedSummoner,
+        error: null,
       });
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         let axiosError: AxiosError = error;
 
-        if (axiosError.response?.status === 429) {
-          // Add Summoner to list of summoners that need updating
+        if (axiosError.response?.status === 404) {
+          return res.status(404).json({
+            success: false,
+            result: null,
+            error: "Summoner not found",
+          });
+        }
 
+        if (axiosError.response?.status === 429) {
           return res.status(429).json({
-            success: true,
-            result: `Summoner was not updated ${error.message}`,
+            success: false,
+            result: null,
+            error: "Rate limit reached please try again later",
           });
         }
       }
 
-      return res.status(409).json({
-        success: true,
-        result: `Summoner was not updated ${error.message}`,
-      });
+      return res.status(500).json({ succes: false, result: "Internal Server Error" });
     }
-  };
-
-  /**
-   * Finds Summoner by PUUID
-   *
-   * @param req The HTTP-Request
-   * @param res The HTTP Response
-   */
-  public getPUUID = async (req: Request, res: Response) => {
-    try {
-      const summonerInDB = await this.summonerRepo.findSummonerByPUUID(req.params.puuid);
-
-      if (summonerInDB) {
-        // await this.matchService.checkSummonerMatchesForEloInflation(summonerInDB);
-
-        return res.status(200).json({
-          success: true,
-          result: `Summoner has been updated`,
-          error: null,
-        });
-      }
-      return res.status(409).json({
-        success: true,
-        result: `Summoner was not updated `,
-        error: null,
-      });
-    } catch (error) {}
   };
 }
 new SummonerRefreshRoute();

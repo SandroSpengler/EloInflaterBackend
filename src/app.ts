@@ -253,7 +253,7 @@ const addNewMatches = async () => {
   const allSummoners = [...SummonerRankChallenger, ...SummonerRankGrandMaster, ...SummonerRankMaster];
 
   const updateAbleSummoners = allSummoners.filter((summoner) => {
-    if (summonerService.checkIfSummonerCanBeUpdated(summoner)) {
+    if (summonerService.checkIfSummonerMatchesCanBeUpdated(summoner)) {
       return summoner;
     }
   });

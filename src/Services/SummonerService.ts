@@ -24,6 +24,24 @@ export class SummonerService {
    */
   checkIfSummonerCanBeUpdated = (summoner: Summoner): Boolean => {
     // 2 Hours
+    let unixTimeStamp = new Date().getTime() - 2 * 60 * 1000;
+
+    if (summoner.updatedAt === undefined) return true;
+
+    if (summoner.updatedAt < unixTimeStamp) return true;
+
+    return false;
+  };
+
+  /**
+   * Checks if summonerMatches can be updated
+   *
+   * @param summoner Summoner that should be checked for updateability
+   *
+   * @returns Boolean which states if summoner update is possible
+   */
+  checkIfSummonerMatchesCanBeUpdated = (summoner: Summoner): Boolean => {
+    // 2 Hours
     let unixTimeStamp = new Date().getTime() - 12 * 60 * 60 * 1000;
 
     if (summoner.lastMatchUpdate === undefined) return true;
