@@ -17,6 +17,7 @@ export class SummonerService {
   }
 
   /**
+   * Checks if summonerMatches can be updated
    *
    * @param summoner Summoner that should be checked for updateability
    *

@@ -27,7 +27,7 @@ export class SummonerRefreshRoute {
   private matchService: MatchService = new MatchService(this.matchRepo, this.RGHttp);
 
   constructor() {
-    router.put("/bySummonerId/:summonerId", this.getSummonerId);
+    router.put("/bySummonerId/:summonerId", this.putSummonerId);
   }
 
   /**
@@ -36,7 +36,7 @@ export class SummonerRefreshRoute {
    * @param req The HTTP-Request
    * @param res The HTTP Response
    */
-  public getSummonerId = async (req: Request, res: Response) => {
+  public putSummonerId = async (req: Request, res: Response) => {
     // ToDo
     // also update Summoner Rankinformation
     try {
