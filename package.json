@@ -6,10 +6,10 @@
   "scripts": {
     "prod": "tsc --project ./ && node build/src/app.js ",
     "test": "jest --watchAll --verbose",
-    "test:integration": "jest --watchAll --testPathPattern=src/Test/Integration",
-    "test:unit": "jest --watchAll  --testPathPattern=src/Test/Unit",
-    "test:unit:summoner": "jest --watchAll  --testPathPattern=src/Test/Unit/summoner.test.ts",
-    "test:unit:match": "jest --watchAll  --testPathPattern=src/Test/Unit/match.test.ts",
+    "test:integration": "jest --watchAll --testPathPattern=src/__test__/Integration",
+    "test:unit": "jest --watchAll  --testPathPattern=src/__test__/Unit",
+    "test:unit:summoner": "jest --watchAll  --testPathPattern=src/__test__/Unit/summoner.test.ts",
+    "test:unit:match": "jest --watchAll  --testPathPattern=src/__test__/Unit/match.test.ts",
     "dev": "nodemon",
     "build": ""
   },

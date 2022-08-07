@@ -1,12 +1,12 @@
-import { match } from "assert";
 import { connectToMongoDB } from "../../app";
-import { MatchData } from "../../Models/Interfaces/MatchData";
+
 import Summoner from "../../Models/Interfaces/Summoner";
 
 import { MatchRepository } from "../../Repository/MatchRepository";
 import { SummonerRepository } from "../../Repository/SummonerRepository";
-import { RiotGamesHttp } from "../../Services/Http";
+
 import { MatchService } from "../../Services/MatchService";
+import { RiotGamesHttp } from "../../Services/Http";
 import { DataMiningService } from "../../Services/DataMiningService";
 
 describe("Match", () => {
@@ -30,7 +30,7 @@ describe("Match", () => {
 
     dataMiningService = new DataMiningService(summonerRepo, RGHttp, matchRepo, matchService);
 
-    summonerMock = require("../TestSampleData/MockSummoner.json");
+    summonerMock = require("../../__mock__/Data/Summoner.json");
 
     await connectToMongoDB(process.env.DB_CONNECTION);
   });

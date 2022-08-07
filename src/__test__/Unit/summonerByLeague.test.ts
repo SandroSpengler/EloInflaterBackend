@@ -1,10 +1,13 @@
 import axios, { AxiosError } from "axios";
+
 import { connectToMongoDB } from "../../app";
+
 import SummonerByLeague from "../../Models/Interfaces/SummonerByLeague";
+
 import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
 import { SummonerRepository } from "../../Repository/SummonerRepository";
-import { RiotGamesHttp } from "../../Services/Http";
 
+import { RiotGamesHttp } from "../../Services/Http";
 import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
 
 describe("Summoner by Leauge Functions", () => {
@@ -24,7 +27,7 @@ describe("Summoner by Leauge Functions", () => {
 
     SbLService = new SummonerByLeagueService(SbLRepo, SummonerRepo, RGHttpService);
 
-    summonerByLeagueMock = require("../TestSampleData/MockSummonerByLeague.json");
+    summonerByLeagueMock = require("../../__mock__/Data/SummonerByLeague.json");
 
     await connectToMongoDB(process.env.DB_CONNECTION);
   });

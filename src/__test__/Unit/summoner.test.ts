@@ -1,17 +1,20 @@
-import { connectToMongoDB } from "../../app";
 import Summoner from "../../Models/Interfaces/Summoner";
-import { SbLTier } from "../../Models/Types/SummonerByLeagueTypes";
-import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
 
-import { SummonerRepository } from "../../Repository/SummonerRepository";
 import { RiotGamesHttp } from "../../Services/Http";
 import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
 import { SummonerService } from "../../Services/SummonerService";
 
-// import SampleSummoner from "../../Test/TestSampleData/SampleSummoner.json";
+import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
+import { SummonerRepository } from "../../Repository/SummonerRepository";
+
+import { mockFindSummonerByLeague } from "../../__mock__/Logic/SbLRepo";
+import { mockFindSummonerByRank } from "../../__mock__/Logic/SummonerRepo";
 
 describe("Summoner", () => {
+  // SummonerByLeagueRepository.mockClear();
+
   let summonerMock: Summoner;
+  let summonerByRankMock: Summoner[];
 
   let summonerRepo: SummonerRepository;
   let summonerService: SummonerService;
@@ -21,8 +24,13 @@ describe("Summoner", () => {
 
   let RGHttp: RiotGamesHttp;
 
-  beforeAll(async () => {
-    summonerMock = require("../TestSampleData/MockSummoner.json");
+  let summonerRepoMock;
+  let SbLRepoMock;
+  // let mockedDependency: jest.Mocked<SummonerByLeagueRepository> = new SummonerByLeagueRepository() as any;
+
+  beforeAll(() => {
+    summonerMock = require("../../__mock__/Data/Summoner.json");
+    summonerByRankMock = require("../../__mock__/Data/SbRChallenger.json");
 
     RGHttp = new RiotGamesHttp();
 
@@ -32,83 +40,54 @@ describe("Summoner", () => {
     SbLRepo = new SummonerByLeagueRepository();
     SbLService = new SummonerByLeagueService(SbLRepo, summonerRepo, RGHttp);
 
-    await connectToMongoDB(process.env.DB_CONNECTION);
-
-    const summonerToCreate: Summoner = {
-      id: "idForTestSummoner",
-      summonerId: "summonerIdForTestSummoner",
-      accountId: "accountIdForTestSummoner",
-      puuid: "puuIdForTestSummoner",
-      name: "test summoner",
-      profileIconId: 10,
-      revisionDate: 20,
-      summonerLevel: 40,
-      uninflatedMatchList: [
-        "EUW1_5719815682",
-        "EUW1_5747055907",
-        "EUW1_5782762281",
-        "EUW1_5782658595",
-        "EUW1_5723924098",
-        "EUW1_5710227574",
-        "EUW1_5721290766",
-      ],
-      inflatedMatchList: [],
-      exhaustCount: 0,
-      exhaustCastCount: 0,
-      tabisCount: 0,
-      zhonaysCount: 0,
-      zhonaysCastCount: 0,
-    };
-
-    await summonerRepo.createSummoner(summonerToCreate);
+    // need to add typescript types
+    summonerRepoMock = jest.mock("../../Repository/SummonerRepository");
+    SbLRepoMock = jest.mock("../../Repository/SummonerByLeagueRepository");
   });
 
   describe("Summoner Function Tests", () => {
-    it("Function => checkIfSummonerCanBeUpdated", () => {
-      // sampleSummoner.updatedAt = 2022-06-08T17:58:00+00:00
+    beforeEach(() => {
+      // console.log("Update Summoner Collections");
+      // Replace due to Missing Database in Tests
+      // summonerRepo.findAllSummonerByRank
 
+      summonerRepoMock.findAllSummonersByRank = mockFindSummonerByRank;
+
+      // updateSummonerBySummonerID
+      // findSummonerByID
+      // createSummoner
+      // updateSummonerBySummonerID
+    });
+
+    it("Function => checkIfSummonerCanBeUpdated", () => {
       let currentDate = new Date().getTime();
 
-      expect(summonerMock.lastMatchUpdate).toEqual(1648473700836);
-
-      expect(summonerMock?.lastMatchUpdate!).toBeLessThan(currentDate);
+      expect(summonerMock?.updatedAt!).toBeLessThan(currentDate);
 
       expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
 
-      summonerMock.lastMatchUpdate = currentDate;
+      summonerMock.updatedAt = currentDate;
 
       expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(false);
 
       // now - 10 Hours
-      summonerMock.lastMatchUpdate = new Date().getTime() - 10 * 60 * 60 * 1000;
+      summonerMock.updatedAt = new Date().getTime() - 10 * 60 * 60 * 1000;
 
       expect(summonerService.checkIfSummonerCanBeUpdated(summonerMock)).toEqual(true);
     });
 
-    it.skip("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
-      const SbLInDB = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+    it("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
+      const SbLInDb = mockFindSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
 
-      if (await SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDB)) {
-        return;
-      }
+      if (SbLInDb === null) throw new Error("SummonerByLeague not found in MockData");
 
-      await summonerService.updateSumonersByLeague(SbLInDB);
+      console.log(SbLInDb.entries.length);
 
-      const summonersInDB = await summonerRepo.findAllSummonersByRank("CHALLENGER");
-
-      for (let summoner of summonersInDB) {
-        const summonerInSbL = SbLInDB.entries.find((entry) => entry.summonerId === summoner.id);
-
-        expect(summoner.id).toEqual(summonerInSbL?.summonerId);
-      }
+      await summonerService.updateSumonersByLeague(SbLInDb);
     });
 
     it.skip("Function => update Summoner by SbLCollection - GRANDMASTER", async () => {
       const SbLInDB = await SbLRepo.findSummonerByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
-
-      if (await SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLInDB)) {
-        return;
-      }
 
       await summonerService.updateSumonersByLeague(SbLInDB);
 
@@ -140,7 +119,7 @@ describe("Summoner", () => {
       }
     }, 45000);
 
-    it("Function => validate SummonerInformation by SummonerId", async () => {
+    it.skip("Function => validate SummonerInformation by SummonerId", async () => {
       try {
         await summonerService.validateSummonerById(undefined as any);
       } catch (error: any) {
