@@ -11,8 +11,6 @@ import { mockFindSummonerByLeague } from "../../__mock__/Logic/SbLRepo";
 import { mockFindSummonerByRank } from "../../__mock__/Logic/SummonerRepo";
 
 describe("Summoner", () => {
-  // SummonerByLeagueRepository.mockClear();
-
   let summonerMock: Summoner;
   let summonerByRankMock: Summoner[];
 
@@ -26,7 +24,8 @@ describe("Summoner", () => {
 
   let summonerRepoMock;
   let SbLRepoMock;
-  // let mockedDependency: jest.Mocked<SummonerByLeagueRepository> = new SummonerByLeagueRepository() as any;
+
+  let summonerServiceMock;
 
   beforeAll(() => {
     summonerMock = require("../../__mock__/Data/Summoner.json");
@@ -40,23 +39,25 @@ describe("Summoner", () => {
     SbLRepo = new SummonerByLeagueRepository();
     SbLService = new SummonerByLeagueService(SbLRepo, summonerRepo, RGHttp);
 
-    // need to add typescript types
+    // ToDo
+    // Add Typescript typings
     summonerRepoMock = jest.mock("../../Repository/SummonerRepository");
     SbLRepoMock = jest.mock("../../Repository/SummonerByLeagueRepository");
+
+    summonerServiceMock = jest.mock("../../Repository/SummonerByLeagueRepository");
   });
 
   describe("Summoner Function Tests", () => {
     beforeEach(() => {
-      // console.log("Update Summoner Collections");
-      // Replace due to Missing Database in Tests
-      // summonerRepo.findAllSummonerByRank
-
+      // 1. Mock Repository for Database Functions
+      // 1.1 updateSummonerBySummonerID
+      // 1.2 findSummonerByID
+      // 1.3 createSummoner
+      // 1.4 updateSummonerBySummonerID
       summonerRepoMock.findAllSummonersByRank = mockFindSummonerByRank;
 
-      // updateSummonerBySummonerID
-      // findSummonerByID
-      // createSummoner
-      // updateSummonerBySummonerID
+      // Inject SummonerRepoMock into SummonerService
+      summonerService = new SummonerService(summonerRepoMock, RGHttp);
     });
 
     it("Function => checkIfSummonerCanBeUpdated", () => {
@@ -77,13 +78,11 @@ describe("Summoner", () => {
     });
 
     it("Function => update Summoner by SbLCollection - CHALLENGER", async () => {
-      const SbLInDb = mockFindSummonerByLeague("MASTER", "RANKED_SOLO_5x5");
+      const SblDbMock = mockFindSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
-      if (SbLInDb === null) throw new Error("SummonerByLeague not found in MockData");
+      if (SblDbMock === null) throw new Error("SummonerByLeague not found in MockData");
 
-      console.log(SbLInDb.entries.length);
-
-      await summonerService.updateSumonersByLeague(SbLInDb);
+      await summonerService.updateSumonersByLeague(SblDbMock);
     });
 
     it.skip("Function => update Summoner by SbLCollection - GRANDMASTER", async () => {

@@ -1,7 +1,7 @@
 import Summoner from "../../Models/Interfaces/Summoner";
 import { SbLTier } from "../../Models/Types/SummonerByLeagueTypes";
 
-const mockFindSummonerByRank = jest.fn((rankSolo: SbLTier): Summoner[] | null => {
+const mockFindAllSummonerByRank = jest.fn((rankSolo: SbLTier): Summoner[] | null => {
   if (rankSolo === "CHALLENGER") {
     const SbR = require("../Data/SbRChallenger.json");
 
@@ -22,4 +22,4 @@ const mockFindSummonerByRank = jest.fn((rankSolo: SbLTier): Summoner[] | null =>
   return null;
 });
 
-export { mockFindSummonerByRank };
+export { mockFindAllSummonerByRank as mockFindSummonerByRank };

@@ -7,9 +7,9 @@ import { SummonerByLeagueService } from "./SummonerByLeagueService";
 import { RiotGamesHttp } from "./Http";
 
 export class SummonerService {
-  public summonerRepo: SummonerRepository;
+  private summonerRepo: SummonerRepository;
 
-  public RGHttp: RiotGamesHttp;
+  private RGHttp: RiotGamesHttp;
 
   constructor(summonerRepo: SummonerRepository, RGHttp: RiotGamesHttp) {
     this.summonerRepo = summonerRepo;
