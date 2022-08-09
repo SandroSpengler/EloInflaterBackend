@@ -107,12 +107,12 @@ const createLoggerWithLoggly = async (token: string | undefined) => {
       throw new Error("No Loggly token was provided");
     }
 
-    const LogglyLogger: Loggly = new Loggly({
-      token: token,
-      subdomain: "eloinflater",
-      tags: ["Node-JS", process.env.NODE_ENV],
-      json: true,
-    });
+    // const LogglyLogger: Loggly = new Loggly({
+    //   token: token,
+    //   subdomain: "eloinflater",
+    //   tags: ["Node-JS", process.env.NODE_ENV],
+    //   json: true,
+    // });
 
     const myFormat = printf(({ level, message, label, timestamp }) => {
       return `${timestamp} [${label}] ${level}: ${message}`;
@@ -130,7 +130,7 @@ const createLoggerWithLoggly = async (token: string | undefined) => {
       ),
     });
 
-    winston.add(LogglyLogger);
+    // winston.add(LogglyLogger);
     winston.add(FileLogger);
 
     await winston.log("info", "Loggly created");
