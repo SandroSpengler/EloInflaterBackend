@@ -3,33 +3,32 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+  - main
 
 resources:
-- repo: self
+  - repo: self
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: "ubuntu-latest"
 
 variables:
-  tag: '$(Build.BuildId)'
-
+  tag: "$(Build.BuildId)"
 
 stages:
-- stage: Build
+  - stage: Build
     displayName: Build and push stage
     jobs:
-    - job: Build
-    displayName: Build
-    pool:
-        vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-        displayName: Build and push an image to container registry
-        inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-            $(tag)
+      - job: Build
+        displayName: Build
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
