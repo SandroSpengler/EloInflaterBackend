@@ -1,4 +1,3 @@
-# Docker
 # Build a Docker image
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
@@ -32,3 +31,9 @@ stages:
               containerRegistry: $(dockerRegistryServiceConnection)
               tags: |
                 $(tag)
+          - task: Docker@2
+            inputs:
+              command: 'buildAndPush'
+              containerRegistry: 'Azure Container Registry to Pipelines'
+              repository: 'eloinflater'
+              Dockerfile: '**/Dockerfile'
