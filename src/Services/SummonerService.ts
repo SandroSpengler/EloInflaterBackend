@@ -1,15 +1,14 @@
-import { SummonerRepository } from "../Repository/SummonerRepository";
-import { MatchData, Participant } from "../Models/Interfaces/MatchData";
-import { IMatchSchema } from "../Models/Interfaces/MatchList";
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
-import { SummonerByLeagueService } from "./SummonerByLeagueService";
+
+import { SummonerRepository } from "../Repository/SummonerRepository";
+
 import { RiotGamesHttp } from "./Http";
 
 export class SummonerService {
-  public summonerRepo: SummonerRepository;
+  private summonerRepo: SummonerRepository;
 
-  public RGHttp: RiotGamesHttp;
+  private RGHttp: RiotGamesHttp;
 
   constructor(summonerRepo: SummonerRepository, RGHttp: RiotGamesHttp) {
     this.summonerRepo = summonerRepo;
@@ -112,6 +111,7 @@ export class SummonerService {
     });
 
     // Reset rank for outdated ones
+
     for (let summoner of outDatedSummoners) {
       summoner.rankSolo = "";
 
