@@ -10,4 +10,4 @@ RUN if [ "$NODE_ENV" = "development" ]; \
     fi
 RUN npm install -g typescript
 COPY . /usr/src/app
-EXPOSE 3000
+EXPOSE 5000
