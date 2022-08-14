@@ -30,3 +30,9 @@ stages:
               command: 'buildAndPush'
               Dockerfile: '**/Dockerfile'
               tags: '$(tag)'
+          - task: AzureWebAppContainer@1
+            displayName: "Deploy to WebInstance"
+            inputs:
+              azureSubscription: 'AzureRessource to AzureDevOps'
+              appName: 'EloInflaterInstance'
+              containers: 'eloinflater:latest'
