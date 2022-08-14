@@ -35,4 +35,4 @@ stages:
             inputs:
               azureSubscription: 'AzureRessource to AzureDevOps'
               appName: 'EloInflaterInstance'
-              containers: 'eloinflater:latest'
+              imageName: 'eloinflater.azurecr.io/eloinflater:latest'
