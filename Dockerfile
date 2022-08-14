@@ -11,3 +11,4 @@ RUN if [ "$NODE_ENV" = "development" ]; \
 RUN npm install -g typescript
 COPY . /usr/src/app
 EXPOSE 5000
+CMD ["npm","run","prod"]
