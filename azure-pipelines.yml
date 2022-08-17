@@ -34,5 +34,5 @@ stages:
             displayName: "Deploy to WebInstance"
             inputs:
               azureSubscription: 'AzureRessource to AzureDevOps'
-              appName: 'EloInflaterInstance'
-              imageName: 'eloinflater.azurecr.io/eloinflater:latest'
+              appName: 'eloinflaterinstance'
+              imageName: 'eloinflater.azurecr.io/eloinflater:$(tag)'
