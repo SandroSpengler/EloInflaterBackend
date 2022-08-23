@@ -76,7 +76,7 @@ APP.use("/api/refresh/match", jsonParser, matchRefreshController);
  */
 const connectToMongoDB = async (connection: string | undefined) => {
   try {
-    if (connection === undefined) {
+    if (connection === undefined || connection === "") {
       throw new Error("No Connection String was provided");
     }
 
@@ -94,7 +94,7 @@ const connectToMongoDB = async (connection: string | undefined) => {
   }
 };
 
-connectToMongoDB(process.env.DB_CONNECTION);
+connectToMongoDB(config.DB_CONNECTION);
 
 /**
  * Creates the logger instance
@@ -139,7 +139,7 @@ const createLoggerWithLoggly = async (token: string | undefined) => {
   }
 };
 
-createLoggerWithLoggly(process.env.LOGGLY_TOKEN);
+createLoggerWithLoggly(config.LOGGLY_TOKEN);
 
 if (process.env.NODE_ENV !== "test") {
   APP.listen(config.PORT, () => {
@@ -183,8 +183,7 @@ const updateSbLCollections = async () => {
   if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLChallenger)) {
     winston.log("info", `Updating SummonerByLeague ${SbLChallenger.tier} Collection`);
 
-    const newSbLChallenger = (await RGHttp.getSummonersByLeague("CHALLENGER", "RANKED_SOLO_5x5"))
-      .data;
+    const newSbLChallenger = (await RGHttp.getSummonersByLeague("CHALLENGER", "RANKED_SOLO_5x5")).data;
 
     await SbLRepo.updateSummonerByLeauge(newSbLChallenger);
     await summonerService.updateSumonersByLeague(newSbLChallenger);
@@ -195,8 +194,7 @@ const updateSbLCollections = async () => {
   if (SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLGrandMaster)) {
     winston.log("info", `Updating SummonerByLeague ${SbLGrandMaster.tier} Collection`);
 
-    const newSbLGrandMaster = (await RGHttp.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5"))
-      .data;
+    const newSbLGrandMaster = (await RGHttp.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5")).data;
 
     await SbLRepo.updateSummonerByLeauge(newSbLGrandMaster);
     await summonerService.updateSumonersByLeague(newSbLGrandMaster);
@@ -225,20 +223,14 @@ const validateSummonerInSbLCollection = async () => {
 
   const SummonerRankMaster = await summonerRepo.findAllSummonersByRank("MASTER");
 
-  const allSummoners = [
-    ...SummonerRankChallenger,
-    ...SummonerRankGrandMaster,
-    ...SummonerRankMaster,
-  ];
+  const allSummoners = [...SummonerRankChallenger, ...SummonerRankGrandMaster, ...SummonerRankMaster];
 
   try {
     for (let [index, summoner] of allSummoners.entries()) {
       if (summoner.puuid === "" || summoner._id === "" || summoner.accountId === "") {
         winston.log(
           "info",
-          `validating summonerId for Summoner ${summoner.name} at ${index + 1} of ${
-            allSummoners.length
-          }`,
+          `validating summonerId for Summoner ${summoner.name} at ${index + 1} of ${allSummoners.length}`,
         );
 
         await summonerService.validateSummonerById(summoner._id);
@@ -258,11 +250,7 @@ const addNewMatches = async () => {
 
   const SummonerRankMaster = await summonerRepo.findAllSummonersByRank("MASTER");
 
-  const allSummoners = [
-    ...SummonerRankChallenger,
-    ...SummonerRankGrandMaster,
-    ...SummonerRankMaster,
-  ];
+  const allSummoners = [...SummonerRankChallenger, ...SummonerRankGrandMaster, ...SummonerRankMaster];
 
   const updateAbleSummoners = allSummoners.filter((summoner) => {
     if (summonerService.checkIfSummonerMatchesCanBeUpdated(summoner)) {
@@ -274,9 +262,7 @@ const addNewMatches = async () => {
     for (let [index, summoner] of updateAbleSummoners.entries()) {
       winston.log(
         "info",
-        `Updating Summoner matches for ${summoner.name} at ${index + 1} of ${
-          updateAbleSummoners.length
-        }`,
+        `Updating Summoner matches for ${summoner.name} at ${index + 1} of ${updateAbleSummoners.length}`,
       );
 
       await dataMiningService.addNewMatchesToSummoner(summoner);
