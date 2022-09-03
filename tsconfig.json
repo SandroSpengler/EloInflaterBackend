@@ -2,7 +2,7 @@
   "exclude": ["node_modules", "build/**/*", "**/*.test.ts"],
   "compilerOptions": {
     "target": "es6",
-    "module": "commonjs",
+    "module": "CommonJS",
     "lib": ["es6"],
     "allowJs": true,
     "outDir": "build",

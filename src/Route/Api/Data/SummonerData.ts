@@ -63,6 +63,7 @@ export class SummonerData {
    *          application/json:
    *            schema:
    *              $ref: '#/components/schemas/Summoner'
+   *
    */
   public getSummonerByName = async (req: Request, res: Response) => {
     if (req.params.name === undefined || req.params.name === "") {

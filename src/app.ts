@@ -1,19 +1,9 @@
-import { Express, Application, Request, Response, NextFunction } from "express";
+import { Application, Request, Response } from "express";
 import express from "express";
-import { version } from "../package.json";
+
 import axios from "axios";
 
-import { connect } from "mongoose";
-import { ConnectionOptions } from "tls";
-
-import swaggerJSDoc, { Options } from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
-
 import * as winston from "winston";
-import { format } from "winston";
-import { Loggly } from "winston-loggly-bulk";
-
-const { combine, timestamp, label, printf } = format;
 
 const cors = require("cors");
 require("dotenv").config();
@@ -29,6 +19,9 @@ import { SummonerService } from "./Services/SummonerService";
 import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
 import { DataMiningService } from "./Services/DataMiningService";
 import { MatchService } from "./Services/MatchService";
+import { swaggerSetup } from "./Swagger/swagger";
+import { createWinstonLoggerWithLoggly } from "./Winston/winston";
+import { connectToMongoDB } from "./MongoDB/mongodb";
 
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
@@ -70,125 +63,33 @@ APP.use("/api/data/match", jsonParser, matchController);
 APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 APP.use("/api/refresh/match", jsonParser, matchRefreshController);
 
-/**
- * Options for the Swagger Documentation
- * @see https://github.com/Surnet/swagger-jsdoc
- */
-const swaggerOptions: Options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "EloInflater REST API Documentation",
-      version: version,
-    },
-  },
-  apis: ["src/app.ts", "src/Models/Interfaces/*.ts", "src/Route/Api/Data/*.ts"],
-};
-
-const swaggerDocs = swaggerJSDoc(swaggerOptions);
-
-/**
- * Generate the Swagger UI Interface
- *
- * @see https://www.npmjs.com/package/swagger-ui-express
- *
- * @param app The express App
- * @param port The Port of the Application
- */
-const swaggerSetup = (app: Application, port: number) => {
-  // Swagger Endpoint/Page
-  APP.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-  // Swagger Docs in JSON Format
-  app.get("swagger.json", (req: Request, res: Response) => {
-    res.setHeader("Content-Type", "application/json");
-
-    res.send(swaggerDocs);
-  });
-
-  winston.log("info", `Swagger Docs available on PORT: ${port}`);
-
-  console.log(`0. Swagger Docs available on PORT: ${port}`);
-};
-
-/**
- * Connects to the MongoDB
- *
- * @param connection String used to connect to MongoDB
- */
-const connectToMongoDB = async (connection: string | undefined) => {
-  try {
-    if (connection === undefined || connection === "") {
-      throw new Error("No Connection String was provided");
-    }
-
-    const connectionOption: ConnectionOptions = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectionOptions;
-
-    await connect(connection, connectionOption);
-
-    console.log("1. Connected to MongoDB");
-    await winston.log("info", `Connected to MongoDB`);
-  } catch (error) {
-    await winston.error("error", `Could not connect to MongoDB`);
-    console.log(error);
-  }
-};
-
-/**
- * Creates the logger instance
- *
- * @param token Loggly token for remote logs
- */
-const createWinstonLoggerWithLoggly = async (token: string | undefined) => {
-  try {
-    // if (token === undefined) {
-    //   throw new Error("No Loggly token was provided");
-    // }
-
-    // const LogglyLogger: Loggly = new Loggly({
-    //   token: token,
-    //   subdomain: "eloinflater",
-    //   tags: ["Node-JS", process.env.NODE_ENV],
-    //   json: true,
-    // });
-
-    const myFormat = printf(({ level, message, label, timestamp }) => {
-      return `${timestamp} [${label}] ${level}: ${message}`;
-    });
-
-    const FileLogger = winston.createLogger({
-      transports: [new winston.transports.File({ filename: "Logs/Global.log" })],
-      format: combine(
-        label({
-          label: "EloInflater",
-        }),
-        timestamp(),
-        myFormat,
-        format.json(),
-      ),
-    });
-
-    // winston.add(LogglyLogger);
-    winston.add(FileLogger);
-
-    await winston.log("info", "Loggly created");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 if (process.env.NODE_ENV !== "test") {
-  createWinstonLoggerWithLoggly(config.LOGGLY_TOKEN);
-  swaggerSetup(APP, config.PORT);
+  try {
+    createWinstonLoggerWithLoggly(config.LOGGLY_TOKEN);
+
+    console.log("info", `Setup Winston logger`);
+  } catch (error) {
+    console.error("error", `Could not Setup Winston logger`);
+  }
+  try {
+    swaggerSetup(APP, config.PORT);
+
+    winston.log("info", `Swagger has been setup`);
+  } catch (error) {
+    winston.error("error", `Could not Setup Swagger`);
+  }
 
   APP.listen(config.PORT, () => {
-    console.log("0. Server is running");
+    console.log(`0. Server is running on PORT:${config.PORT}`);
   });
 
-  connectToMongoDB(config.DB_CONNECTION);
+  try {
+    connectToMongoDB(config.DB_CONNECTION);
+
+    winston.log("info", `Connected to MongoDB`);
+  } catch (error) {
+    winston.error("error", `Could not connect to MongoDB`);
+  }
 }
 
 const schedule = async () => {
@@ -217,6 +118,8 @@ const schedule = async () => {
   }
 };
 
+// ToDo
+// Move this somewhere more pleasant
 const updateSbLCollections = async () => {
   const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
@@ -326,4 +229,4 @@ if (process.env.RUN_JOB === "stop") {
   winston.log("info", `Not running any background jobs`);
 }
 
-export { APP, connectToMongoDB };
+export { APP };
