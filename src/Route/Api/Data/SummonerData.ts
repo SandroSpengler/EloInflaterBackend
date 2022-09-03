@@ -27,7 +27,9 @@ export class SummonerData {
   /**
    * @openapi
    * /api/data/summoner:
-   *   get:
+   *  get:
+   *    produces:
+   *      - application/json
    *    tags:
    *      - Summoners
    *    description: Provides all Summoners in DB - disabled in Production
@@ -47,23 +49,24 @@ export class SummonerData {
   /**
    * @openapi
    * /api/data/summoner/{summonerName}:
-   *   get:
-   *     produces:
-   *       - application/json
-   *     parameters:
-   *       - in: path
-   *         name: summonerName
-   *         required: true
-   *         type: string
-   *     description: Provides a specific Summoner by Name
-   *     responses:
-   *       200:
-   *         description: The Requested Summoner
-   *         content:
+   *  get:
+   *    produces:
+   *      - application/json
+   *    tags:
+   *      - Summoners
+   *    parameters:
+   *      - in: path
+   *        name: summonerName
+   *        required: true
+   *        type: string
+   *    description: Provides a specific Summoner by Name
+   *    responses:
+   *      200:
+   *        description: The Requested Summoner
+   *        content:
    *          application/json:
    *            schema:
    *              $ref: '#/components/schemas/Summoner'
-   *
    */
   public getSummonerByName = async (req: Request, res: Response) => {
     if (req.params.name === undefined || req.params.name === "") {

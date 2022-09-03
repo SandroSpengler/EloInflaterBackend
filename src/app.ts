@@ -63,6 +63,9 @@ APP.use("/api/data/match", jsonParser, matchController);
 APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 APP.use("/api/refresh/match", jsonParser, matchRefreshController);
 
+/**
+ * start and setup of the Application
+ */
 if (process.env.NODE_ENV !== "test") {
   try {
     createWinstonLoggerWithLoggly(config.LOGGLY_TOKEN);
