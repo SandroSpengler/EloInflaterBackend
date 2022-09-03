@@ -43,10 +43,10 @@ export class MatchRoute {
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 404) {
-          res.status(404).json({ success: false, result: "Summoner Not Found" });
+          res.status(404).send();
         }
       } else {
-        res.status(500).json({ success: false, result: "An Error has occurred please try again later" });
+        res.status(500).send();
       }
     }
 
@@ -54,10 +54,10 @@ export class MatchRoute {
       let matches: MatchData[] | null = await this.matchRepo.findAllMatchesBySummonerPUUID(summoner!.puuid);
 
       if (matches && matches.length === 0) {
-        res.status(404).json({ success: false, result: "No matches found" });
+        res.status(404).send();
       }
 
-      res.status(200).json({ success: true, result: matches });
+      res.status(200).json(matches);
     } catch (error) {}
   };
 }

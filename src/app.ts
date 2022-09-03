@@ -60,9 +60,6 @@ APP.use(
   }),
 );
 
-/**
- * Default entry Point for the App
- */
 APP.get("/", (req: Request, res: Response) => {
   res.send("<h1>Main Page!!</h1>");
 });
@@ -84,26 +81,20 @@ const swaggerOptions: Options = {
       title: "EloInflater REST API Documentation",
       version: version,
     },
-    components: {
-      securitySchemas: {
-        bearerAuth: {
-          type: "http",
-          schema: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
-    },
-    security: [
-      {
-        bearerAuth: [],
-      },
-    ],
   },
-  apis: ["./app.ts", "./Route/Api/Data/SummonerData.ts"],
+  apis: ["src/app.ts", "src/Models/Interfaces/*.ts", "src/Route/Api/Data/*.ts"],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
 
+/**
+ * Generate the Swagger UI Interface
+ *
+ * @see https://www.npmjs.com/package/swagger-ui-express
+ *
+ * @param app The express App
+ * @param port The Port of the Application
+ */
 const swaggerSetup = (app: Application, port: number) => {
   // Swagger Endpoint/Page
   APP.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocs));

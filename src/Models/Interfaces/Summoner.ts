@@ -2,6 +2,16 @@ import { Document } from "mongoose";
 import { MatchData } from "./MatchData";
 import { IMatchSchema, MatchList } from "./MatchList";
 
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *    Summoner:
+ *      type: object
+ *      properties:
+ *        id:
+ *          type: string
+ */
 export default interface Summoner extends Partial<Document> {
   id: string;
   summonerId: string;

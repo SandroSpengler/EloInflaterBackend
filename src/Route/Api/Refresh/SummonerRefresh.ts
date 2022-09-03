@@ -3,14 +3,12 @@ const router = express.Router();
 
 import axios, { Axios, AxiosResponse, AxiosError } from "axios";
 import { Request, response, Response, Router } from "express";
-import Summoner from "../../../Models/Interfaces/Summoner";
-import { SbLQueue, SbLTier } from "../../../Models/Types/SummonerByLeagueTypes";
+
 import { MatchRepository } from "../../../Repository/MatchRepository";
 
 import { SummonerByLeagueRepository } from "../../../Repository/SummonerByLeagueRepository";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 
-import { formatSummonerByLeagueForSending, formatSummonerForSending } from "../../../Services/FormatDocument";
 import { RiotGamesHttp } from "../../../Services/Http";
 import { MatchService } from "../../../Services/MatchService";
 import { SummonerService } from "../../../Services/SummonerService";
@@ -43,11 +41,7 @@ export class SummonerRefreshRoute {
       const summonerId: string = req.params.summonerId;
 
       if (summonerId === undefined || summonerId === "") {
-        return res.status(400).json({
-          success: false,
-          result: null,
-          erorr: "No SummonerPUUID was provided",
-        });
+        return res.status(400).send();
       }
 
       const summonerInDB = await this.summonerRepo.findSummonerByID(summonerId);
@@ -61,11 +55,7 @@ export class SummonerRefreshRoute {
       }
 
       if (!this.summonerService.checkIfSummonerCanBeUpdated(summonerInDB)) {
-        return res.status(410).json({
-          success: false,
-          result: null,
-          erorr: "Summoner already updated within the last 2 Minutes",
-        });
+        return res.status(410).send();
       }
 
       const currentSummonerResponse = await this.RGHttp.getSummonerBySummonerId(summonerInDB.id);
@@ -74,33 +64,21 @@ export class SummonerRefreshRoute {
 
       const updatedSummoner = await this.summonerRepo.findSummonerByID(summonerId);
 
-      return res.status(200).json({
-        success: true,
-        result: updatedSummoner,
-        error: null,
-      });
+      return res.status(200).json(updatedSummoner);
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         let axiosError: AxiosError = error;
 
         if (axiosError.response?.status === 404) {
-          return res.status(404).json({
-            success: false,
-            result: null,
-            error: "Summoner not found",
-          });
+          return res.status(404).send();
         }
 
         if (axiosError.response?.status === 429) {
-          return res.status(429).json({
-            success: false,
-            result: null,
-            error: "Rate limit reached please try again later",
-          });
+          return res.status(429).send();
         }
       }
 
-      return res.status(500).json({ succes: false, result: "Internal Server Error" });
+      return res.status(500).send();
     }
   };
 }

@@ -15,11 +15,7 @@ export class SummonerByLeagueRoute {
     let rank: SbLTier = req.params.rankSolo.toUpperCase();
 
     if (!["CHALLENGER", "GRANDMASTER", "MASTER"].includes(rank)) {
-      return res.status(400).json({
-        success: false,
-        result: null,
-        error: "please provide a valid rank parameter",
-      });
+      return res.status(400).send();
     }
 
     try {
@@ -30,11 +26,7 @@ export class SummonerByLeagueRoute {
           return summonerA.leaguePoints! > summonerB.leaguePoints! ? -1 : 1;
         });
 
-        return res.status(200).json({
-          success: true,
-          result: summoners,
-          error: null,
-        });
+        return res.status(200).json(summoners);
       }
 
       return res.status(404).json({
@@ -43,11 +35,7 @@ export class SummonerByLeagueRoute {
         error: null,
       });
     } catch (error) {
-      return res.status(500).json({
-        success: false,
-        result: null,
-        error: "Internal Server Error",
-      });
+      return res.status(500).send();
     }
   };
 }
