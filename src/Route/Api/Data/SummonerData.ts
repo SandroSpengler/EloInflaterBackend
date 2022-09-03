@@ -1,12 +1,13 @@
 import axios, { AxiosError } from "axios";
 
 import { Request, Response } from "express";
-import Summoner from "../../../Models/Interfaces/Summoner";
-import { SummonerResponse } from "../../../Models/Types/ApiTypes";
+
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
-import { formatSummonerForSending } from "../../../Services/FormatDocument";
+
 import { RiotGamesHttp } from "../../../Services/Http";
 import { SummonerService } from "../../../Services/SummonerService";
+
+import { formatSummonerForSending } from "../../../Services/FormatDocument";
 
 const express = require("express");
 const router = express.Router();

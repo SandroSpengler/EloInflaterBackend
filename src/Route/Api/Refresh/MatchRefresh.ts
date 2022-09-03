@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { Request, Response } from "express";
 import { MatchRepository } from "../../../Repository/MatchRepository";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
@@ -19,7 +19,12 @@ export class MatchRefreshRoute {
   private matchRepo = new MatchRepository();
   private matchService = new MatchService(this.matchRepo, this.RGHttp);
 
-  private dataMinginService = new DataMiningService(this.summonerRepo, this.RGHttp, this.matchRepo, this.matchService);
+  private dataMinginService = new DataMiningService(
+    this.summonerRepo,
+    this.RGHttp,
+    this.matchRepo,
+    this.matchService,
+  );
 
   constructor() {
     router.put("/:summonerId", this.putMatchSummonerId);

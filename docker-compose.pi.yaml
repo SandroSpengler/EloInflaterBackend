@@ -1,11 +1,11 @@
 version: "3"
 
 services:
-  leagueabuserbackend:
-    container_name: "LeagueAbuserBackend"
-    # image: sandrospengler/leagueabuserbackend:latest
+  eloinflater:
+    container_name: "Eloinflater"
+    # image: sandrospengler/eloinflater:latest
     build:
-      context: ${LeagueAbuserBackend}
+      context: ${Eloinflater}
       args:
         NODE_ENV: production
     ports:
