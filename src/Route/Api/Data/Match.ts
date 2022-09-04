@@ -77,7 +77,9 @@ export class MatchRoute {
         res.status(404).send();
       }
 
-      res.status(200).json(matches);
+      const firstTenMatches = matches.slice(0, 10);
+
+      res.status(200).json(firstTenMatches);
     } catch (error) {}
   };
 }

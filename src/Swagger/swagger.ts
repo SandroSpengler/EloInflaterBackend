@@ -17,7 +17,12 @@ const swaggerOptions: Options = {
       version: version,
     },
   },
-  apis: ["src/Swagger/*.ts", "src/Models/Interfaces/*.ts", "src/Route/Api/Data/*.ts"],
+  apis: [
+    "src/Swagger/*.ts",
+    "src/Models/Interfaces/*.ts",
+    "src/Route/Api/Data/*.ts",
+    "src/Route/Api/Refresh/*.ts",
+  ],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
@@ -72,6 +77,8 @@ export { swaggerSetup };
  *            type: array
  *            items:
  *              $ref: '#/components/schemas/Match'
+ *    SuccesUpdateMatchBySummonerId:
+ *      description: Summoner Matches succesfully updated
  *    BadRequest:
  *      description: Request does not match specification
  *    NotFound:

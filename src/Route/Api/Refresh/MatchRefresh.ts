@@ -19,12 +19,41 @@ export class MatchRefreshRoute {
   private matchRepo = new MatchRepository();
   private matchService = new MatchService(this.matchRepo, this.RGHttp);
 
-  private dataMinginService = new DataMiningService(this.summonerRepo, this.RGHttp, this.matchRepo, this.matchService);
+  private dataMinginService = new DataMiningService(
+    this.summonerRepo,
+    this.RGHttp,
+    this.matchRepo,
+    this.matchService,
+  );
 
   constructor() {
     router.put("/:summonerId", this.putMatchSummonerId);
   }
 
+  /**
+   * @openapi
+   * /api/data/match/{summonerId}:
+   *  put:
+   *    tags:
+   *      - Match
+   *    parameters:
+   *      - in: path
+   *        name: summonerId
+   *        required: true
+   *        type: string
+   *    description: Provides all Matches for a specified Summoner
+   *    responses:
+   *      200:
+   *        $ref: '#/components/responses/SuccesUpdateMatchBySummonerId'
+   *      400:
+   *         $ref: '#/components/responses/BadRequest'
+   *      404:
+   *         $ref: '#/components/responses/NotFound'
+   *      429:
+   *         $ref: '#/components/responses/TooManyRequests'
+   *      500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   public putMatchSummonerId = async (req: Request, res: Response) => {
     const summonerId = req.params.summonerId;
 
