@@ -32,10 +32,10 @@ export class SummonerData {
    *      - application/json
    *    tags:
    *      - Summoners
-   *    description: Provides all Summoners in DB - disabled in Production
+   *    description: Provides a specific Summoner by Name
    *    responses:
    *      200:
-   *        description: Returns a mysterious string.
+   *        $ref: '#/components/responses/SuccesMultipleSummoner'
    */
   public getAllSummoner = async (req, res) => {
     if (process.env.NODE_ENV && process.env.NODE_ENV == "development") {
@@ -62,11 +62,7 @@ export class SummonerData {
    *    description: Provides a specific Summoner by Name
    *    responses:
    *      200:
-   *        description: The Requested Summoner
-   *        content:
-   *          application/json:
-   *            schema:
-   *              $ref: '#/components/schemas/Summoner'
+   *        $ref: '#/components/responses/SuccessSingleSummoner'
    */
   public getSummonerByName = async (req: Request, res: Response) => {
     if (req.params.name === undefined || req.params.name === "") {

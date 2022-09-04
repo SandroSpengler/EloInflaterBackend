@@ -70,20 +70,20 @@ if (process.env.NODE_ENV !== "test") {
   try {
     createWinstonLoggerWithLoggly(config.LOGGLY_TOKEN);
 
-    console.log("info", `Setup Winston logger`);
+    console.log(`0: Setup Winston logger`);
   } catch (error) {
-    console.error("error", `Could not Setup Winston logger`);
+    console.error(`Could not Setup Winston logger`);
   }
   try {
     swaggerSetup(APP, config.PORT);
 
     winston.log("info", `Swagger has been setup`);
   } catch (error) {
-    winston.error("error", `Could not Setup Swagger`);
+    winston.error(`Could not Setup Swagger`);
   }
 
   APP.listen(config.PORT, () => {
-    console.log(`0. Server is running on PORT:${config.PORT}`);
+    console.log(`0: Server is running on PORT:${config.PORT}`);
   });
 
   try {
@@ -228,7 +228,7 @@ if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {
   schedule();
 }
 if (process.env.RUN_JOB === "stop") {
-  console.log("0. Not running any background jobs");
+  console.log("0: Not running any background jobs");
   winston.log("info", `Not running any background jobs`);
 }
 

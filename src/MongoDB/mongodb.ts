@@ -19,7 +19,7 @@ const connectToMongoDB = async (connection: string | undefined) => {
 
     await connect(connection, connectionOption);
 
-    console.log("1. Connected to MongoDB");
+    console.log("1: Connected to MongoDB");
   } catch (error) {
     console.log(error);
   }

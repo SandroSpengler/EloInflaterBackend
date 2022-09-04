@@ -17,7 +17,7 @@ const swaggerOptions: Options = {
       version: version,
     },
   },
-  apis: ["src/app.ts", "src/Models/Interfaces/*.ts", "src/Route/Api/Data/*.ts"],
+  apis: ["src/Swagger/*.ts", "src/Models/Interfaces/*.ts", "src/Route/Api/Data/*.ts"],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
@@ -45,3 +45,35 @@ const swaggerSetup = (APP: Application, port: number) => {
 };
 
 export { swaggerSetup };
+
+/**
+ * @openapi
+ * components:
+ *  schemas:
+ *   Test:
+ *     type: object
+ *     properties:
+ *      id:
+ *        type: string
+ *
+ */
+
+/**
+ * @openapi
+ * components:
+ *  responses:
+ *    SuccessSingleSummoner:
+ *      description: The Requested Summoner
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/Summoner'
+ *    SuccesMultipleSummoner:
+ *      description: The Requested Summoner
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: array
+ *            items:
+ *              $ref: '#/components/schemas/Summoner'
+ */
