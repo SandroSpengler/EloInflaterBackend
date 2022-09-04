@@ -64,6 +64,14 @@ export { swaggerSetup };
  *            type: array
  *            items:
  *              $ref: '#/components/schemas/Summoner'
+ *    SuccesMultipleMatch:
+ *      description: The Requested Match
+ *      content:
+ *        application/json:
+ *          schema:
+ *            type: array
+ *            items:
+ *              $ref: '#/components/schemas/Match'
  *    BadRequest:
  *      description: Request does not match specification
  *    NotFound:
