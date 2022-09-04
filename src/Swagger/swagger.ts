@@ -49,18 +49,6 @@ export { swaggerSetup };
 /**
  * @openapi
  * components:
- *  schemas:
- *   Test:
- *     type: object
- *     properties:
- *      id:
- *        type: string
- *
- */
-
-/**
- * @openapi
- * components:
  *  responses:
  *    SuccessSingleSummoner:
  *      description: The Requested Summoner
@@ -76,4 +64,14 @@ export { swaggerSetup };
  *            type: array
  *            items:
  *              $ref: '#/components/schemas/Summoner'
+ *    BadRequest:
+ *      description: Request does not match specification
+ *    NotFound:
+ *      description: Requested ressource was not found
+ *    Conflict:
+ *      description: Request conflicts with the current state of the server
+ *    TooManyRequests:
+ *      description: Too many requests
+ *    InternalServerError:
+ *      description: Internal server error occurred
  */

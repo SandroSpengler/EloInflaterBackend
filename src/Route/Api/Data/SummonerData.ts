@@ -36,6 +36,8 @@ export class SummonerData {
    *    responses:
    *      200:
    *        $ref: '#/components/responses/SuccesMultipleSummoner'
+   *      409:
+   *         $ref: '#/components/responses/BadRequest'
    */
   public getAllSummoner = async (req, res) => {
     if (process.env.NODE_ENV && process.env.NODE_ENV == "development") {
@@ -63,6 +65,14 @@ export class SummonerData {
    *    responses:
    *      200:
    *        $ref: '#/components/responses/SuccessSingleSummoner'
+   *      400:
+   *         $ref: '#/components/responses/BadRequest'
+   *      404:
+   *         $ref: '#/components/responses/NotFound'
+   *      429:
+   *         $ref: '#/components/responses/TooManyRequests'
+   *      500:
+   *         $ref: '#/components/responses/InternalServerError'
    */
   public getSummonerByName = async (req: Request, res: Response) => {
     if (req.params.name === undefined || req.params.name === "") {

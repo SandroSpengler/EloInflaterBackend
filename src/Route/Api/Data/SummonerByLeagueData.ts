@@ -11,6 +11,37 @@ export class SummonerByLeagueRoute {
     router.get("/:rankSolo/:queueType", this.byRankSoloAndQueueType);
   }
 
+  /**
+   * @openapi
+   * /api/data/league/{queueType}/{rankSolo}:
+   *  get:
+   *    produces:
+   *      - application/json
+   *    tags:
+   *      - SummonerByLeague
+   *    parameters:
+   *      - in: path
+   *        name: queueType
+   *        required: true
+   *        type: string
+   *      - in: path
+   *        name: rankSolo
+   *        required: true
+   *        type: string
+   *        description: Values - CHALLENGER, GRANDMASTER, MASTER
+   *    description: Returns all Summoners matching queue and rank
+   *    responses:
+   *      200:
+   *        $ref: '#/components/responses/SuccesMultipleSummoner'
+   *      400:
+   *         $ref: '#/components/responses/BadRequest'
+   *      404:
+   *         $ref: '#/components/responses/NotFound'
+   *      429:
+   *         $ref: '#/components/responses/TooManyRequests'
+   *      500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   public byRankSoloAndQueueType = async (req, res) => {
     let rank: SbLTier = req.params.rankSolo.toUpperCase();
 
@@ -29,11 +60,7 @@ export class SummonerByLeagueRoute {
         return res.status(200).json(summoners);
       }
 
-      return res.status(404).json({
-        success: true,
-        result: `no summoners found for rank ${rank}`,
-        error: null,
-      });
+      return res.status(404).send();
     } catch (error) {
       return res.status(500).send();
     }
