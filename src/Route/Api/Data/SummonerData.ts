@@ -1,17 +1,19 @@
 import axios, { AxiosError } from "axios";
 
 import { Request, Response } from "express";
-import Summoner from "../../../Models/Interfaces/Summoner";
-import { SummonerResponse } from "../../../Models/Types/ApiTypes";
+
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
-import { formatSummonerForSending } from "../../../Services/FormatDocument";
+
 import { RiotGamesHttp } from "../../../Services/Http";
 import { SummonerService } from "../../../Services/SummonerService";
+
+import { formatSummonerForSending } from "../../../Services/FormatDocument";
 
 const express = require("express");
 const router = express.Router();
 
 export class SummonerData {
+  private route: string = "/api/data/summoner";
   private RGHttp: RiotGamesHttp = new RiotGamesHttp();
 
   private summonerRepo: SummonerRepository = new SummonerRepository();
@@ -22,34 +24,59 @@ export class SummonerData {
     router.get("/:name", this.getSummonerByName);
   }
 
+  /**
+   * @openapi
+   * /api/data/summoner:
+   *  get:
+   *    produces:
+   *      - application/json
+   *    tags:
+   *      - Summoners
+   *    description: Provides a specific Summoner by Name
+   *    responses:
+   *      200:
+   *        $ref: '#/components/responses/SuccesMultipleSummoner'
+   *      409:
+   *         $ref: '#/components/responses/BadRequest'
+   */
   public getAllSummoner = async (req, res) => {
     if (process.env.NODE_ENV && process.env.NODE_ENV == "development") {
       const allSummoners = await this.summonerRepo.findAllSummoners();
 
       return res.status(200).json({ allSummoners });
     }
-    return res.status(409).json({
-      success: false,
-      result: null,
-      error: "Endpoint no longer exists",
-    });
+    return res.status(409).send();
   };
 
   /**
-   * Finds the SummonerByName
-   *
-   * @param req HTTP-Request
-   * @param res HTTP-Response
-   *
-   * @returns HTTP-Response
+   * @openapi
+   * /api/data/summoner/{summonerName}:
+   *  get:
+   *    produces:
+   *      - application/json
+   *    tags:
+   *      - Summoners
+   *    parameters:
+   *      - in: path
+   *        name: summonerName
+   *        required: true
+   *        type: string
+   *    description: Provides a specific Summoner by Name
+   *    responses:
+   *      200:
+   *        $ref: '#/components/responses/SuccessSingleSummoner'
+   *      400:
+   *         $ref: '#/components/responses/BadRequest'
+   *      404:
+   *         $ref: '#/components/responses/NotFound'
+   *      429:
+   *         $ref: '#/components/responses/TooManyRequests'
+   *      500:
+   *         $ref: '#/components/responses/InternalServerError'
    */
   public getSummonerByName = async (req: Request, res: Response) => {
     if (req.params.name === undefined || req.params.name === "") {
-      return res.status(400).json({
-        success: false,
-        result: null,
-        erorr: "No SummonerName was provided",
-      });
+      return res.status(400).send();
     }
 
     try {
@@ -61,11 +88,7 @@ export class SummonerData {
 
       // if getSummonerByName/PUUID returns an entry add the summoner
       if (summonerInDB != null) {
-        return res.status(200).json({
-          success: true,
-          result: formatSummonerForSending(summonerInDB),
-          error: null,
-        });
+        return res.status(200).json(formatSummonerForSending(summonerInDB));
       } else {
         let getsummonerBynameResponse = await this.RGHttp.getSummonerByName(queryName);
 
@@ -76,41 +99,25 @@ export class SummonerData {
 
           if (summonerCreated === null) throw new Error("Summoner could ne be created");
 
-          return res.status(280).json({
-            success: true,
-            result: formatSummonerForSending(summonerCreated),
-            error: null,
-          });
+          return res.status(280).json(formatSummonerForSending(summonerCreated));
         }
       }
 
-      return res.status(404).json({
-        success: true,
-        result: "Summoner not found",
-        error: null,
-      });
+      return res.status(404).send();
     } catch (error: any) {
       if (axios.isAxiosError(error)) {
         let axiosError: AxiosError = error;
 
         if (axiosError.response?.status === 404) {
-          return res.status(404).json({
-            success: false,
-            result: null,
-            error: "Summoner not found",
-          });
+          return res.status(404).send();
         }
 
         if (axiosError.response?.status === 429) {
-          return res.status(429).json({
-            success: false,
-            result: null,
-            error: "Rate limit reached please try again later",
-          });
+          return res.status(429).send();
         }
       }
 
-      return res.status(500).json({ succes: false, result: "Internal Server Error" });
+      return res.status(500).send();
     }
   };
 }

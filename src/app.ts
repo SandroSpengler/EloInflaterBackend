@@ -1,16 +1,10 @@
-// const express = require("express");
-import { Application, Request, Response, NextFunction } from "express";
+import { Application, Request, Response } from "express";
 import express from "express";
 
-import { connect } from "mongoose";
-import { ConnectionOptions } from "tls";
+import axios from "axios";
 
 import * as winston from "winston";
-import { format } from "winston";
-import { Loggly } from "winston-loggly-bulk";
-const { combine, timestamp, label, printf } = format;
 
-import axios from "axios";
 const cors = require("cors");
 require("dotenv").config();
 
@@ -25,6 +19,9 @@ import { SummonerService } from "./Services/SummonerService";
 import { SummonerByLeagueService } from "./Services/SummonerByLeagueService";
 import { DataMiningService } from "./Services/DataMiningService";
 import { MatchService } from "./Services/MatchService";
+import { swaggerSetup } from "./Swagger/swagger";
+import { createWinstonLoggerWithLoggly } from "./Winston/winston";
+import { connectToMongoDB } from "./MongoDB/mongodb";
 
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
@@ -32,7 +29,7 @@ const jsonParser = bodyParser.json();
 const APP: Application = express();
 
 const summonerController = require("./Route/Api/Data/SummonerData");
-const leaugeController = require("./Route/Api/Data/SummonerByLeagueData");
+const leaugeController = require("./Route/Api/Data/SummonerByRank");
 const matchController = require("./Route/Api/Data/Match");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
 const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
@@ -56,9 +53,6 @@ APP.use(
   }),
 );
 
-/**
- * Default entry Point for the App
- */
 APP.get("/", (req: Request, res: Response) => {
   res.send("<h1>Main Page!!</h1>");
 });
@@ -70,81 +64,35 @@ APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
 APP.use("/api/refresh/match", jsonParser, matchRefreshController);
 
 /**
- * Connects to the MongoDB
- *
- * @param connection String used to connect to MongoDB
+ * start and setup of the Application
  */
-const connectToMongoDB = async (connection: string | undefined) => {
-  try {
-    if (connection === undefined) {
-      throw new Error("No Connection String was provided");
-    }
-
-    const connectionOption: ConnectionOptions = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectionOptions;
-
-    await connect(connection, connectionOption);
-
-    console.log("0. Connected to MongoDB");
-    await winston.log("info", `Connected to MongoDB`);
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-connectToMongoDB(process.env.DB_CONNECTION);
-
-/**
- * Creates the logger instance
- *
- * @param token Loggly token for remote logs
- */
-const createLoggerWithLoggly = async (token: string | undefined) => {
-  try {
-    // if (token === undefined) {
-    //   throw new Error("No Loggly token was provided");
-    // }
-
-    // const LogglyLogger: Loggly = new Loggly({
-    //   token: token,
-    //   subdomain: "eloinflater",
-    //   tags: ["Node-JS", process.env.NODE_ENV],
-    //   json: true,
-    // });
-
-    const myFormat = printf(({ level, message, label, timestamp }) => {
-      return `${timestamp} [${label}] ${level}: ${message}`;
-    });
-
-    const FileLogger = winston.createLogger({
-      transports: [new winston.transports.File({ filename: "Logs/Global.log" })],
-      format: combine(
-        label({
-          label: "EloInflater",
-        }),
-        timestamp(),
-        myFormat,
-        format.json(),
-      ),
-    });
-
-    // winston.add(LogglyLogger);
-    winston.add(FileLogger);
-
-    await winston.log("info", "Loggly created");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-createLoggerWithLoggly(process.env.LOGGLY_TOKEN);
-
 if (process.env.NODE_ENV !== "test") {
+  try {
+    createWinstonLoggerWithLoggly(config.LOGGLY_TOKEN);
+
+    console.log(`0: Setup Winston logger`);
+  } catch (error) {
+    console.error(`Could not Setup Winston logger`);
+  }
+  try {
+    swaggerSetup(APP, config.PORT);
+
+    winston.log("info", `Swagger has been setup`);
+  } catch (error) {
+    winston.error(`Could not Setup Swagger`);
+  }
+
   APP.listen(config.PORT, () => {
-    console.log("1. Server is running");
+    console.log(`0: Server is running on PORT:${config.PORT}`);
   });
+
+  try {
+    connectToMongoDB(config.DB_CONNECTION);
+
+    winston.log("info", `Connected to MongoDB`);
+  } catch (error) {
+    winston.error("error", `Could not connect to MongoDB`);
+  }
 }
 
 const schedule = async () => {
@@ -173,6 +121,8 @@ const schedule = async () => {
   }
 };
 
+// ToDo
+// Move this somewhere more pleasant
 const updateSbLCollections = async () => {
   const SbLChallenger = await SbLRepo.findSummonerByLeague("CHALLENGER", "RANKED_SOLO_5x5");
 
@@ -292,8 +242,8 @@ if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {
   schedule();
 }
 if (process.env.RUN_JOB === "stop") {
-  console.log("Not running any background jobs");
+  console.log("0: Not running any background jobs");
   winston.log("info", `Not running any background jobs`);
 }
 
-export { APP, connectToMongoDB };
+export { APP };

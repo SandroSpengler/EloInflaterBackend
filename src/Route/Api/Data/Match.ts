@@ -24,6 +24,32 @@ export class MatchRoute {
     router.get("/:name", this.matchByName);
   }
 
+  /**
+   * @openapi
+   * /api/data/match/{summonerName}:
+   *  get:
+   *    produces:
+   *      - application/json
+   *    tags:
+   *      - Match
+   *    parameters:
+   *      - in: path
+   *        name: summonerName
+   *        required: true
+   *        type: string
+   *    description: Provides all Matches for a specified Summoner
+   *    responses:
+   *      200:
+   *        $ref: '#/components/responses/SuccesMultipleMatch'
+   *      400:
+   *         $ref: '#/components/responses/BadRequest'
+   *      404:
+   *         $ref: '#/components/responses/NotFound'
+   *      429:
+   *         $ref: '#/components/responses/TooManyRequests'
+   *      500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   public matchByName = async (req: Request, res: Response) => {
     let summonerName: string = req.params.name;
     let summoner: Summoner | null;
@@ -35,29 +61,25 @@ export class MatchRoute {
     try {
       summoner = await this.summonerRepo.findSummonerByName(summonerName);
 
-      if (summoner === null || summoner.puuid === undefined || summoner.puuid === "") {
-        summoner = (await this.RGHttp.getSummonerByName(summonerName)).data;
-
-        await this.summonerRepo.createSummoner(summoner);
+      if (summoner === null) {
+        return res.status(404).send();
       }
     } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        if (error.response?.status === 404) {
-          res.status(404).json({ success: false, result: "Summoner Not Found" });
-        }
-      } else {
-        res.status(500).json({ success: false, result: "An Error has occurred please try again later" });
-      }
+      res.status(500).send();
     }
 
     try {
-      let matches: MatchData[] | null = await this.matchRepo.findAllMatchesBySummonerPUUID(summoner!.puuid);
+      let matches: MatchData[] | null = await this.matchRepo.findAllMatchesBySummonerPUUID(
+        summoner!.puuid,
+      );
 
       if (matches && matches.length === 0) {
-        res.status(404).json({ success: false, result: "No matches found" });
+        res.status(404).send();
       }
 
-      res.status(200).json({ success: true, result: matches });
+      const firstTenMatches = matches.slice(0, 10);
+
+      res.status(200).json(firstTenMatches);
     } catch (error) {}
   };
 }

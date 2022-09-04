@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { Request, Response } from "express";
 import { MatchRepository } from "../../../Repository/MatchRepository";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
@@ -19,76 +19,77 @@ export class MatchRefreshRoute {
   private matchRepo = new MatchRepository();
   private matchService = new MatchService(this.matchRepo, this.RGHttp);
 
-  private dataMinginService = new DataMiningService(this.summonerRepo, this.RGHttp, this.matchRepo, this.matchService);
+  private dataMinginService = new DataMiningService(
+    this.summonerRepo,
+    this.RGHttp,
+    this.matchRepo,
+    this.matchService,
+  );
 
   constructor() {
     router.put("/:summonerId", this.putMatchSummonerId);
   }
 
+  /**
+   * @openapi
+   * /api/data/match/{summonerId}:
+   *  put:
+   *    tags:
+   *      - Match
+   *    parameters:
+   *      - in: path
+   *        name: summonerId
+   *        required: true
+   *        type: string
+   *    description: Provides all Matches for a specified Summoner
+   *    responses:
+   *      200:
+   *        $ref: '#/components/responses/SuccesUpdateMatchBySummonerId'
+   *      400:
+   *         $ref: '#/components/responses/BadRequest'
+   *      404:
+   *         $ref: '#/components/responses/NotFound'
+   *      429:
+   *         $ref: '#/components/responses/TooManyRequests'
+   *      500:
+   *         $ref: '#/components/responses/InternalServerError'
+   */
   public putMatchSummonerId = async (req: Request, res: Response) => {
     const summonerId = req.params.summonerId;
 
     if (summonerId === undefined || summonerId === "") {
-      return res.status(400).json({
-        success: false,
-        result: null,
-        erorr: "No SummonerId provided",
-      });
+      return res.status(400).send();
     }
 
     const summonerInDB = await this.summonerRepo.findSummonerByID(summonerId);
 
     if (summonerInDB === null) {
-      return res.status(404).json({
-        success: false,
-        result: null,
-        erorr: "Summoner not found in DB",
-      });
+      return res.status(404).send();
     }
 
     try {
       if (!this.summonerService.checkIfSummonerMatchesCanBeUpdated(summonerInDB)) {
-        return res.status(409).json({
-          success: false,
-          result: null,
-          erorr: "Summoner Matches already updated within the last 10 Hours",
-        });
+        return res.status(409).send();
       }
 
       await this.dataMinginService.addNewMatchesToSummoner(summonerInDB);
 
       const updatedSummoner = await this.summonerRepo.findSummonerByID(summonerId);
 
-      return res.status(200).json({
-        success: true,
-        result: updatedSummoner,
-        error: null,
-      });
+      return res.status(200).json(updatedSummoner);
     } catch (error: any) {
       let axiosError: AxiosError = error;
 
       if (axiosError.response?.status === 404) {
-        return res.status(404).json({
-          success: false,
-          result: null,
-          error: "Summoner not found",
-        });
+        return res.status(404).send();
       }
 
       if (axiosError.response?.status === 429) {
-        return res.status(429).json({
-          success: false,
-          result: null,
-          error: "Rate limit reached please try again later",
-        });
+        return res.status(429).send();
       }
     }
 
-    return res.status(500).json({
-      success: false,
-      result: null,
-      error: "Internal Server Error",
-    });
+    return res.status(500).send();
   };
 }
 
