@@ -3,7 +3,7 @@ import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchRepository } from "../Repository/MatchRepository";
 import { SummonerRepository } from "../Repository/SummonerRepository";
-import { RiotGamesHttp } from "./Http";
+import { RiotGamesHttp } from "./HttpService";
 import { MatchService } from "./MatchService";
 import { SummonerService } from "./SummonerService";
 import * as winston from "winston";
@@ -48,9 +48,13 @@ export class DataMiningService {
       await this.addUnassignedMatchesToSummoner(summoner);
 
       const newMatchIdsForSummoner = matchesForSummoner.filter((matchId) => {
-        let checkUninflated = summoner.uninflatedMatchList.find((summonerMatchId) => summonerMatchId === matchId);
+        let checkUninflated = summoner.uninflatedMatchList.find(
+          (summonerMatchId) => summonerMatchId === matchId,
+        );
 
-        let checkinflated = summoner.inflatedMatchList.find((summonerMatchId) => summonerMatchId === matchId);
+        let checkinflated = summoner.inflatedMatchList.find(
+          (summonerMatchId) => summonerMatchId === matchId,
+        );
 
         // assinged matches can be returned here
         if (checkUninflated || checkinflated) return;
@@ -105,17 +109,24 @@ export class DataMiningService {
    */
   addUnassignedMatchesToSummoner = async (summoner: Summoner) => {
     if (summoner === undefined || summoner === null) throw new Error("No Summoner was provided");
-    if (summoner.puuid === undefined) throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
+    if (summoner.puuid === undefined)
+      throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
 
     try {
-      const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(summoner.puuid);
+      const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(
+        summoner.puuid,
+      );
 
       if (matchesBySummonerPUUID?.length === 0) return;
 
       const unassingedMatches = matchesBySummonerPUUID.filter((match) => {
-        let checkUninflated = summoner.uninflatedMatchList.find((summonerMatchId) => summonerMatchId === match._id);
+        let checkUninflated = summoner.uninflatedMatchList.find(
+          (summonerMatchId) => summonerMatchId === match._id,
+        );
 
-        let checkinflated = summoner.inflatedMatchList.find((summonerMatchId) => summonerMatchId === match._id);
+        let checkinflated = summoner.inflatedMatchList.find(
+          (summonerMatchId) => summonerMatchId === match._id,
+        );
 
         // assinged matches can be returned here
         if (checkUninflated || checkinflated) return;
@@ -128,7 +139,10 @@ export class DataMiningService {
       }
 
       for (let match of unassingedMatches) {
-        const matchEvaluation = this.matchService.checkSummonerInMatchForEloInflation(match, summoner.puuid);
+        const matchEvaluation = this.matchService.checkSummonerInMatchForEloInflation(
+          match,
+          summoner.puuid,
+        );
 
         if (matchEvaluation.inflated) {
           summoner.inflatedMatchList.push(match._id);

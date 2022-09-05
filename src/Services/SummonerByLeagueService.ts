@@ -2,7 +2,7 @@ import { SummonerByLeagueRepository } from "../Repository/SummonerByLeagueReposi
 import { SummonerRepository } from "../Repository/SummonerRepository";
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
-import { RiotGamesHttp } from "./Http";
+import { RiotGamesHttp } from "./HttpService";
 import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
 
 /**
@@ -18,7 +18,11 @@ export class SummonerByLeagueService {
   public summonerRepo: SummonerRepository;
   public RGHttp: RiotGamesHttp;
 
-  constructor(SbLRepo: SummonerByLeagueRepository, SummonerRepo: SummonerRepository, RGHttp: RiotGamesHttp) {
+  constructor(
+    SbLRepo: SummonerByLeagueRepository,
+    SummonerRepo: SummonerRepository,
+    RGHttp: RiotGamesHttp,
+  ) {
     this.sbLRepo = SbLRepo;
     this.summonerRepo = SummonerRepo;
     this.RGHttp = RGHttp;
@@ -55,7 +59,10 @@ export class SummonerByLeagueService {
   validateSummonerLeague = async (tier: SbLTier) => {
     console.log("2. validating summonersByLeague " + tier);
     // current rank of top summoners
-    let summonerByLeague: SummonerByLeague | null = await this.sbLRepo.findSummonerByLeague(tier, "RANKED_SOLO_5x5");
+    let summonerByLeague: SummonerByLeague | null = await this.sbLRepo.findSummonerByLeague(
+      tier,
+      "RANKED_SOLO_5x5",
+    );
 
     let summonerList: Summoner[] | null = await this.summonerRepo.findAllSummonersByRank(tier);
 
@@ -74,7 +81,12 @@ export class SummonerByLeagueService {
       return summoner.lastRankUpdate! < summonerByLeague?.updatedAt!;
     });
 
-    if (outDatedSummoners === undefined || outDatedSummoners === null || outDatedSummoners.length === 0) return;
+    if (
+      outDatedSummoners === undefined ||
+      outDatedSummoners === null ||
+      outDatedSummoners.length === 0
+    )
+      return;
 
     for (let [index, oldSummoner] of outDatedSummoners.entries()) {
       const currentSummonerInLeague = summonerByLeague.entries.find((currentSummoner) => {

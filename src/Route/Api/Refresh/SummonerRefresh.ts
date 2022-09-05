@@ -9,7 +9,7 @@ import { MatchRepository } from "../../../Repository/MatchRepository";
 import { SummonerByLeagueRepository } from "../../../Repository/SummonerByLeagueRepository";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 
-import { RiotGamesHttp } from "../../../Services/Http";
+import { RiotGamesHttp } from "../../../Services/HttpService";
 import { MatchService } from "../../../Services/MatchService";
 import { SummonerService } from "../../../Services/SummonerService";
 

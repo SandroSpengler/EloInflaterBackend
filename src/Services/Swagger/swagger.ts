@@ -3,7 +3,7 @@ import { Application, Request, Response } from "express";
 import swaggerJSDoc, { Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
-import { version } from "../../package.json";
+import { version } from "../../../package.json";
 
 /**
  * Options for the Swagger Documentation

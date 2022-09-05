@@ -2,7 +2,7 @@ import { MatchData, Participant } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { matchEvaluation } from "../Models/Types/MatchTypes";
 import { MatchRepository } from "../Repository/MatchRepository";
-import { RiotGamesHttp } from "./Http";
+import { RiotGamesHttp } from "./HttpService";
 
 export class MatchService {
   private matchRepo: MatchRepository;
@@ -29,8 +29,12 @@ export class MatchService {
    *
    * @returns The Evaluation that determines if the summoner is inflated
    */
-  public checkSummonerInMatchForEloInflation = (match: MatchData, summonerPUUID: string): matchEvaluation => {
-    if (match === undefined || summonerPUUID === undefined) throw new Error("Parameters not properly provided");
+  public checkSummonerInMatchForEloInflation = (
+    match: MatchData,
+    summonerPUUID: string,
+  ): matchEvaluation => {
+    if (match === undefined || summonerPUUID === undefined)
+      throw new Error("Parameters not properly provided");
 
     try {
       let exhaustCount: number = 0;
@@ -38,9 +42,11 @@ export class MatchService {
       let tabisCount: number = 0;
       let zhonaysCount: number = 0;
 
-      let participantByPUUID: Participant = match.info[0].participants.find((participantByPUUID) => {
-        return participantByPUUID.puuid === summonerPUUID;
-      });
+      let participantByPUUID: Participant = match.info[0].participants.find(
+        (participantByPUUID) => {
+          return participantByPUUID.puuid === summonerPUUID;
+        },
+      );
 
       if (participantByPUUID === undefined) throw new Error("Could not find summoner in MatchData");
 

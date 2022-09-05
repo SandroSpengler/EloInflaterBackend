@@ -4,16 +4,15 @@ import { Request, Response } from "express";
 
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 
-import { RiotGamesHttp } from "../../../Services/Http";
+import { RiotGamesHttp } from "../../../Services/HttpService";
 import { SummonerService } from "../../../Services/SummonerService";
 
-import { formatSummonerForSending } from "../../../Services/FormatDocument";
+import { formatSummonerForSending } from "../../../Services/FormatDocumentService";
 
 const express = require("express");
 const router = express.Router();
 
 export class SummonerData {
-  private route: string = "/api/data/summoner";
   private RGHttp: RiotGamesHttp = new RiotGamesHttp();
 
   private summonerRepo: SummonerRepository = new SummonerRepository();

@@ -3,7 +3,7 @@ import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 
 import { SummonerRepository } from "../Repository/SummonerRepository";
 
-import { RiotGamesHttp } from "./Http";
+import { RiotGamesHttp } from "./HttpService";
 
 export class SummonerService {
   private summonerRepo: SummonerRepository;

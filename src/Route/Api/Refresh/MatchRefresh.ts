@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { MatchRepository } from "../../../Repository/MatchRepository";
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 import { DataMiningService } from "../../../Services/DataMiningService";
-import { RiotGamesHttp } from "../../../Services/Http";
+import { RiotGamesHttp } from "../../../Services/HttpService";
 import { MatchService } from "../../../Services/MatchService";
 import { SummonerService } from "../../../Services/SummonerService";
 
