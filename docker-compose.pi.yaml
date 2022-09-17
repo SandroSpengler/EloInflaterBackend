@@ -6,6 +6,7 @@ services:
     # image: sandrospengler/eloinflater:latest
     build:
       context: ${Eloinflater}
+      dockerfile: Dockerfile.prod
       args:
         NODE_ENV: production
     ports:

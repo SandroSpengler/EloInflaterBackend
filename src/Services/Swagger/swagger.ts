@@ -18,7 +18,7 @@ const swaggerOptions: Options = {
     },
   },
   apis: [
-    "src/Swagger/*.ts",
+    "src/Services/Swagger/*.ts",
     "src/Models/Interfaces/*.ts",
     "src/Route/Api/Data/*.ts",
     "src/Route/Api/Refresh/*.ts",
