@@ -4,14 +4,15 @@
   "description": "",
   "main": "src/app.js",
   "scripts": {
+    "dev": "nodemon",
     "prod": "tsc --project ./ && node build/src/app.js ",
     "test": "jest --watchAll --verbose",
+    "build": "",
     "test:integration": "jest --watchAll --testPathPattern=src/__test__/Integration",
     "test:unit": "jest --watchAll  --testPathPattern=src/__test__/Unit",
-    "test:unit:summoner": "jest --watchAll  --testPathPattern=src/__test__/Unit/summoner.test.ts",
+    "test:unit:summoner": "jest --watchAll --testPathPattern=src/__test__/Unit/summoner.test.ts",
     "test:unit:match": "jest --watchAll  --testPathPattern=src/__test__/Unit/match.test.ts",
-    "dev": "nodemon",
-    "build": ""
+    "test:circleci:summoner": "jest --testPathPattern=src/__test__/Unit/summoner.test.ts"
   },
   "author": "",
   "license": "ISC",

@@ -14,7 +14,7 @@ jobs:
     - node/install-packages:
         pkg-manager: npm
     - run:
-        command: npm run test:unit:summoner
+        command: npm run test:circleci:summoner
         name: Run Jest Summoner Test
     - store_artifacts:
         path: /tmp/test-results
