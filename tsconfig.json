@@ -1,5 +1,5 @@
 {
-  "exclude": ["node_modules", "build/**/*", "**/*.test.ts"],
+  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__test__"],
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
@@ -10,6 +10,7 @@
     "outDir": "build",
     "strict": true,
     "target": "es6",
+    "types": ["jest"],
     "resolveJsonModule": true,
     "rootDir": "."
   }
