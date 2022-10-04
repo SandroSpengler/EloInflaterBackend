@@ -1,6 +1,6 @@
 import Summoner from "../../Models/Interfaces/Summoner";
 
-import { RiotGamesHttp } from "../../Services/Http";
+import { RiotGamesHttp } from "../../Services/HttpService";
 import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
 import { SummonerService } from "../../Services/SummonerService";
 

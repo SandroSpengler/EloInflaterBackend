@@ -1,5 +1,5 @@
 {
-  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__test__"],
+  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__test__", "src/__mock__"],
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
