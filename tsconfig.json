@@ -1,16 +1,16 @@
 {
   "exclude": ["node_modules", "build/**/*", "**/*.test.ts"],
   "compilerOptions": {
-    "target": "es6",
-    "module": "CommonJS",
-    "lib": ["es6"],
     "allowJs": true,
-    "outDir": "build",
-    "rootDir": ".",
-    "strict": true,
-    "noImplicitAny": false,
     "esModuleInterop": true,
+    "lib": ["es6", "DOM"],
+    "module": "CommonJS",
+    "noEmit": false,
+    "noImplicitAny": false,
+    "outDir": "build",
+    "strict": true,
+    "target": "es6",
     "resolveJsonModule": true,
-    "noEmit": false
+    "rootDir": "."
   }
 }
