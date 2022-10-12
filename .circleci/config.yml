@@ -25,7 +25,9 @@ workflows:
   node-tests:
     jobs:
     - test
-    # Envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_ECR_ACCOUNT_URL
+    # Envs: 
+    #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, 
+    #   AWS_REGION, AWS_ECR_ACCOUNT_URL, AWS_ECR_REGISTRY_ID
     - aws-ecr/build-and-push-image:
         repo: eloinflater
         tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
