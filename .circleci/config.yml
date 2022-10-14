@@ -37,5 +37,3 @@ workflows:
         tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
         dockerfile: Dockerfile.prod
         path: .
-        requires:
-          - node-jest-test
