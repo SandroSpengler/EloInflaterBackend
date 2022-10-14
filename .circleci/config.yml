@@ -4,8 +4,9 @@ orbs:
   node: circleci/node@4.1.0
   # https://circleci.com/developer/orbs/orb/circleci/aws-ecr
   aws-ecr: circleci/aws-ecr@8.1.0
+
 jobs:
-  test:
+  node-jest:
     executor:
       name: node/default
       tag: 16.14.0
@@ -21,17 +22,18 @@ jobs:
         destination: raw-test-output
     - store_test_results:
         path: /tmp/test-results
+
 workflows:
-  node-tests:
+  node-jest-test:
     jobs:
-    - test
-    # Envs: 
-    #   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, 
-    #   AWS_REGION, AWS_ECR_ACCOUNT_URL, AWS_ECR_REGISTRY_ID
+    - node-jest
     - aws-ecr/build-and-push-image:
+        # Envs: 
+        # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, 
+        # AWS_REGION, AWS_ECR_ACCOUNT_URL, AWS_ECR_REGISTRY_ID
         repo: eloinflater
         tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
         dockerfile: Dockerfile.prod
         path: .
         requires:
-          - test
+          - node-jest
