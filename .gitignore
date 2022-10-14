@@ -5,3 +5,5 @@ docker-compose.dev.yaml
 .dsstore
 .DS_Store
 /Logs
+terraform.tfvars
+variables.tf
