@@ -4,6 +4,8 @@ orbs:
   node: "circleci/node@4.1.0"
   # https://circleci.com/developer/orbs/orb/circleci/aws-ecr
   aws-ecr: "circleci/aws-ecr@8.1.0"
+  # https://circleci.com/developer/orbs/orb/circleci/aws-ecs
+  aws-ecs: "circleci/aws-ecs@3.2.0"
 
 jobs:
   node-jest:
