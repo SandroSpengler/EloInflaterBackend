@@ -27,6 +27,8 @@ workflows:
   node-jest-test:
     jobs:
     - node-jest
+  buildAndDeploy:
+    jobs:
     - aws-ecr/build-and-push-image:
         # Envs: 
         # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, 
@@ -36,4 +38,4 @@ workflows:
         dockerfile: Dockerfile.prod
         path: .
         requires:
-          - node-jest
+          - node-jest-test
