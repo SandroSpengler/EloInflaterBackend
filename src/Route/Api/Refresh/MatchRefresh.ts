@@ -1,11 +1,11 @@
-import { AxiosError } from "axios";
-import { Request, Response } from "express";
-import { MatchRepository } from "../../../Repository/MatchRepository";
-import { SummonerRepository } from "../../../Repository/SummonerRepository";
-import { DataMiningService } from "../../../Services/DataMiningService";
-import { RiotGamesHttp } from "../../../Services/HttpService";
-import { MatchService } from "../../../Services/MatchService";
-import { SummonerService } from "../../../Services/SummonerService";
+import {AxiosError} from "axios";
+import {Request, Response} from "express";
+import {MatchRepository} from "../../../Repository/MatchRepository";
+import {SummonerRepository} from "../../../Repository/SummonerRepository";
+import {DataMiningService} from "../../../Services/DataMiningService";
+import {RiotGamesHttp} from "../../../Services/HttpService";
+import {MatchService} from "../../../Services/MatchService";
+import {SummonerService} from "../../../Services/SummonerService";
 
 const express = require("express");
 const router = express.Router();
@@ -19,7 +19,7 @@ export class MatchRefreshRoute {
   private matchRepo = new MatchRepository();
   private matchService = new MatchService(this.matchRepo, this.RGHttp);
 
-  private dataMinginService = new DataMiningService(
+  private dataMiningService = new DataMiningService(
     this.summonerRepo,
     this.RGHttp,
     this.matchRepo,
@@ -72,7 +72,7 @@ export class MatchRefreshRoute {
         return res.status(409).send();
       }
 
-      await this.dataMinginService.addNewMatchesToSummoner(summonerInDB);
+      await this.dataMiningService.addNewMatchesToSummoner(summonerInDB);
 
       const updatedSummoner = await this.summonerRepo.findSummonerByID(summonerId);
 

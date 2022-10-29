@@ -4,8 +4,7 @@ Parameters:
   StackName:
     Type: String
     Default: production
-    Description: The name of the parent Fargate networking stack that you created. Necessary
-                 to locate and reference resources created by that stack.
+    Description: The name of the parent Fargate networking stack that you created. Necessary to locate and reference resources created by that stack.
   ServiceName:
     Type: String
     Default: nginx
@@ -13,8 +12,7 @@ Parameters:
   ImageUrl:
     Type: String
     Default: nginx
-    Description: The url of a docker image that contains the application process that
-                 will handle the traffic for this service
+    Description: The url of a docker image that contains the application process that will handle the traffic for this service
   ContainerPort:
     Type: Number
     Default: 80
@@ -46,14 +44,12 @@ Parameters:
   Role:
     Type: String
     Default: ""
-    Description: (Optional) An IAM role to give the service's containers if the code within needs to
-                 access other AWS resources like S3 buckets, DynamoDB tables, etc
+    Description: (Optional) An IAM role to give the service's containers if the code within needs to access other AWS resources like S3 buckets, DynamoDB tables, etc
 
 Conditions:
   HasCustomRole: !Not [ !Equals [!Ref 'Role', ''] ]
 
 Resources:
-
   # The task definition. This is a simple metadata description of what
   # container to run, and what resource requirements it has.
   TaskDefinition:

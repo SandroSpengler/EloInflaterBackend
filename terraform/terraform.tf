@@ -20,7 +20,7 @@ locals {
   aws_ecs_execution_role_name = "${var.aws_resource_prefix}-ecs-execution-role"
 }
 
-resource "aws_ecr_repository" "demo-app-repository" {
+resource "aws_ecr_repository" "eloinflater" {
   name = local.aws_ecr_repository_name
 }
 
@@ -38,7 +38,7 @@ resource "aws_cloudformation_stack" "vpc" {
 resource "aws_cloudformation_stack" "ecs_service" {
   name          = local.aws_ecs_service_stack_name
   template_body = file("cloudformation-templates/public-service.yml")
-  depends_on    = ["aws_cloudformation_stack.vpc", "aws_ecr_repository.demo-app-repository"]
+  depends_on    = ["aws_cloudformation_stack.vpc", "aws_ecr_repository.eloinflater"]
 
   parameters = {
     ContainerMemory = 1024
