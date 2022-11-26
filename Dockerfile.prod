@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 COPY ./package.json /usr/src/app
 # RUN rm -r /usr/src/app/build
 ARG NODE_ENV
-RUN npm install --only=production;
+RUN npm install npm install --omit=dev;
 COPY . /usr/src/app
 EXPOSE 5000
 CMD ["npm","run","prod"]

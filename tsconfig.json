@@ -1,9 +1,9 @@
 {
-  "exclude": ["node_modules", "build/**/*", "**/*.test.ts"],
+  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__mock__/**"],
   "compilerOptions": {
     "target": "es6",
     "module": "CommonJS",
-    "lib": ["es6"],
+    "lib": ["es6", "DOM"],
     "allowJs": true,
     "outDir": "build",
     "rootDir": ".",
