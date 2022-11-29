@@ -5,12 +5,16 @@
     "module": "CommonJS",
     "lib": ["es6", "DOM"],
     "allowJs": true,
-    "outDir": "build",
-    "rootDir": ".",
-    "strict": true,
-    "noImplicitAny": false,
     "esModuleInterop": true,
+    "lib": ["es6", "DOM"],
+    "module": "CommonJS",
+    "noEmit": false,
+    "noImplicitAny": false,
+    "outDir": "build",
+    "strict": true,
+    "target": "es6",
+    "types": ["jest"],
     "resolveJsonModule": true,
-    "noEmit": false
+    "rootDir": "."
   }
 }
