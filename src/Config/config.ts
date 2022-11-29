@@ -7,4 +7,4 @@ const config = {
   LOGGLY_TOKEN: process.env.LOGGLY_TOKEN || "",
 };
 
-export { config };
+export {config};
