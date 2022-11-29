@@ -8,7 +8,7 @@
       "name": "Test",
       "request": "launch",
       "runtimeArgs": ["run-script", "test"],
-      "runtimeExecutable": "~/.nvm/versions/node/v16.16.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v16.18.0/bin/node",
       "skipFiles": ["<node_internals>/**"],
       "type": "node"
     },
@@ -17,8 +17,8 @@
       "type": "node",
       "request": "launch",
       "runtimeArgs": ["-r", "ts-node/register"],
-      "args": ["${workspaceFolder}/src/app.ts"],
-      "runtimeExecutable": "~/.nvm/versions/node/v16.16.0/bin/node"
+      "args": ["${workspaceFolder}/src/app.ts"]
+      // "runtimeExecutable": "~/.nvm/versions/node/v16.18.0/bin/node"
     }
   ]
 }

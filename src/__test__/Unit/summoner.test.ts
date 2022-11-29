@@ -1,13 +1,13 @@
 import Summoner from "../../Models/Interfaces/Summoner";
 
-import { RiotGamesHttp } from "../../Services/HttpService";
-import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
-import { SummonerService } from "../../Services/SummonerService";
+import {RiotGamesHttp} from "../../Services/HttpService";
+import {SummonerByLeagueService} from "../../Services/SummonerByLeagueService";
+import {SummonerService} from "../../Services/SummonerService";
 
-import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
-import { SummonerRepository } from "../../Repository/SummonerRepository";
+import {SummonerByLeagueRepository} from "../../Repository/SummonerByLeagueRepository";
+import {SummonerRepository} from "../../Repository/SummonerRepository";
 
-import { mockFindSummonerByLeague } from "../../__mock__/Logic/SbLRepo";
+import {mockFindSummonerByLeague} from "../../__mock__/Logic/SbLRepo";
 import {
   mockCreateSummoner,
   mockFindAllSummonerByRank,

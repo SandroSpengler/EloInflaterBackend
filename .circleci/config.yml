@@ -1,0 +1,47 @@
+version: 2.1
+orbs:
+  # https://circleci.com/developer/orbs/orb/circleci/node
+  node: "circleci/node@4.1.0"
+  # https://circleci.com/developer/orbs/orb/circleci/aws-ecr
+  aws-ecr: "circleci/aws-ecr@8.1.0"
+  # https://circleci.com/developer/orbs/orb/circleci/aws-ecs
+  aws-ecs: "circleci/aws-ecs@3.2.0"
+
+jobs:
+  node-jest:
+    executor:
+      name: "node/default"
+      tag: 19.0.1
+    steps:
+    - "checkout"
+    - node/install-packages:
+        pkg-manager: "npm"
+    - run:
+        command: "npm run test:circleci:summoner"
+        name: "Run Jest Summoner Test"
+    - store_artifacts:
+        path: "/tmp/test-results"
+        destination: "raw-test-output"
+    - store_test_results:
+        path: "/tmp/test-results"
+
+workflows:
+  test_build_deploy:
+    jobs:
+    - node-jest
+    - aws-ecr/build-and-push-image:
+        # Envs: 
+        # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, 
+        # AWS_REGION, AWS_ECR_ACCOUNT_URL, AWS_ECR_REGISTRY_ID
+        repo: "eloinflater"
+        tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
+        dockerfile: "Dockerfile.prod"
+        path: .
+        requires:
+          - "node-jest"
+    # - aws-ecs/deploy-service-update:
+    #     family: "${AWS_RESOURCE_NAME_PREFIX}-service"
+    #     cluster: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
+    #     container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,tag=${CIRCLE_SHA1}"
+    #     requires:
+    #       - aws-ecr/build-and-push-image 

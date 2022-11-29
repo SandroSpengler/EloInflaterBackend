@@ -1,13 +1,13 @@
-import axios, { AxiosError } from "axios";
+import axios, {AxiosError} from "axios";
 
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 
-import { SummonerRepository } from "../../../Repository/SummonerRepository";
+import {SummonerRepository} from "../../../Repository/SummonerRepository";
 
-import { RiotGamesHttp } from "../../../Services/HttpService";
-import { SummonerService } from "../../../Services/SummonerService";
+import {RiotGamesHttp} from "../../../Services/HttpService";
+import {SummonerService} from "../../../Services/SummonerService";
 
-import { formatSummonerForSending } from "../../../Services/FormatDocumentService";
+import {formatSummonerForSending} from "../../../Services/FormatDocumentService";
 
 const express = require("express");
 const router = express.Router();
@@ -31,7 +31,7 @@ export class SummonerData {
    *      - application/json
    *    tags:
    *      - Summoners
-   *    description: Provides a specific Summoner by Name
+   *    description: DEV - Provides a specific Summoner by Name
    *    responses:
    *      200:
    *        $ref: '#/components/responses/SuccesMultipleSummoner'
@@ -42,7 +42,7 @@ export class SummonerData {
     if (process.env.NODE_ENV && process.env.NODE_ENV == "development") {
       const allSummoners = await this.summonerRepo.findAllSummoners();
 
-      return res.status(200).json({ allSummoners });
+      return res.status(200).json({allSummoners});
     }
     return res.status(409).send();
   };
@@ -94,7 +94,9 @@ export class SummonerData {
         if (getsummonerBynameResponse.status === 200) {
           await this.summonerRepo.createSummoner(getsummonerBynameResponse.data);
 
-          let summonerCreated = await this.summonerRepo.findSummonerByName(req.params.name);
+          let summonerCreated = await this.summonerRepo.findSummonerByName(
+            getsummonerBynameResponse.data.name,
+          );
 
           if (summonerCreated === null) throw new Error("Summoner could ne be created");
 
@@ -107,6 +109,10 @@ export class SummonerData {
       if (axios.isAxiosError(error)) {
         let axiosError: AxiosError = error;
 
+        if (axiosError.response?.status === 403) {
+          return res.status(403).send();
+        }
+
         if (axiosError.response?.status === 404) {
           return res.status(404).send();
         }
@@ -116,7 +122,7 @@ export class SummonerData {
         }
       }
 
-      return res.status(500).send();
+      return res.status(500).send({error: error.message});
     }
   };
 }

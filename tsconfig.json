@@ -1,6 +1,9 @@
 {
-  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__test__", "src/__mock__"],
+  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__mock__/**"],
   "compilerOptions": {
+    "target": "es6",
+    "module": "CommonJS",
+    "lib": ["es6", "DOM"],
     "allowJs": true,
     "esModuleInterop": true,
     "lib": ["es6", "DOM"],

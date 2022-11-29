@@ -1,14 +1,12 @@
-import axios, { AxiosError } from "axios";
-
-import { connectToMongoDB } from "../../app";
+import axios, {AxiosError} from "axios";
 
 import SummonerByLeague from "../../Models/Interfaces/SummonerByLeague";
 
-import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
-import { SummonerRepository } from "../../Repository/SummonerRepository";
+import {SummonerByLeagueRepository} from "../../Repository/SummonerByLeagueRepository";
+import {SummonerRepository} from "../../Repository/SummonerRepository";
 
-import { RiotGamesHttp } from "../../Services/Http";
-import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
+import {RiotGamesHttp} from "../../Services/HttpService";
+import {SummonerByLeagueService} from "../../Services/SummonerByLeagueService";
 
 describe("Summoner by Leauge Functions", () => {
   let SummonerRepo: SummonerRepository;
@@ -28,8 +26,6 @@ describe("Summoner by Leauge Functions", () => {
     SbLService = new SummonerByLeagueService(SbLRepo, SummonerRepo, RGHttpService);
 
     summonerByLeagueMock = require("../../__mock__/Data/SummonerByLeague.json");
-
-    await connectToMongoDB(process.env.DB_CONNECTION);
   });
 
   describe("Setup", () => {
@@ -47,7 +43,10 @@ describe("Summoner by Leauge Functions", () => {
       // Request SummonerByLeagueCollection from RIOT Games API
 
       try {
-        const reqChallenger = await RGHttpService.getSummonersByLeague("CHALLENGER", "RANKED_SOLO_5x5");
+        const reqChallenger = await RGHttpService.getSummonersByLeague(
+          "CHALLENGER",
+          "RANKED_SOLO_5x5",
+        );
 
         const resChallenger = await reqChallenger.data;
 
@@ -65,7 +64,10 @@ describe("Summoner by Leauge Functions", () => {
       // Request SummonerByLeagueCollection from RIOT Games API
 
       try {
-        const reqChallenger = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+        const reqChallenger = await RGHttpService.getSummonersByLeague(
+          "GRANDMASTER",
+          "RANKED_SOLO_5x5",
+        );
 
         const resChallenger = await reqChallenger.data;
 
@@ -101,7 +103,10 @@ describe("Summoner by Leauge Functions", () => {
       // Request SummonerByLeagueCollection from RIOT Games API
 
       try {
-        const reqChallenger = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+        const reqChallenger = await RGHttpService.getSummonersByLeague(
+          "GRANDMASTER",
+          "RANKED_SOLO_5x5",
+        );
 
         const resChallenger = await reqChallenger.data;
 
@@ -119,7 +124,10 @@ describe("Summoner by Leauge Functions", () => {
       // Request SummonerByLeagueCollection from RIOT Games API
 
       try {
-        const reqChallenger = await RGHttpService.getSummonersByLeague("GRANDMASTER", "RANKED_SOLO_5x5");
+        const reqChallenger = await RGHttpService.getSummonersByLeague(
+          "GRANDMASTER",
+          "RANKED_SOLO_5x5",
+        );
 
         const resChallenger = await reqChallenger.data;
 

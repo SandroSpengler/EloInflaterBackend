@@ -16,13 +16,13 @@ import { Scheduler } from "./Services/Schedule/schedule";
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 
-const APP: Application = express();
-
 const summonerController = require("./Route/Api/Data/SummonerData");
 const leaugeController = require("./Route/Api/Data/SummonerByRank");
 const matchController = require("./Route/Api/Data/Match");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
 const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
+
+const APP: Application = express();
 
 APP.use(
   cors({
