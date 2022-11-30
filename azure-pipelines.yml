@@ -13,7 +13,7 @@ variables:
   azureSubscription: $azureSubscription
   appName: $eloinflaterinstance
   containerRegistry: $containerRegistry
-  dockerRegistryServiceConnection: '4fa4efbc-59af-4c0b-8637-1d5bf7f268fc'
+  dockerRegistryServiceConnection: $containerRegistry
   imageRepository: eloinflater
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile.prod'
   tag: '$(Build.BuildId)'
