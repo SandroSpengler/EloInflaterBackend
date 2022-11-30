@@ -10,10 +10,10 @@ resources:
 
 variables: 
   ## Add this under variables section in the pipeline
-  azureSubscription: $azureSubscription
-  appName: $eloinflaterinstance
-  containerRegistry: $containerRegistry
-  dockerRegistryServiceConnection: EloinflaterRegistry
+  azureSubscription: $(azureSubscription)
+  appName: $(eloinflaterinstance)
+  containerRegistry: $(containerRegistry)
+  dockerRegistryServiceConnection: $(containerRegistry)
   imageRepository: eloinflater
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile.prod'
   tag: '$(Build.BuildId)'
