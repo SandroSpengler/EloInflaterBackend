@@ -8,11 +8,13 @@ trigger:
 resources:
 - repo: self
 
-variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'afdeb02c-4485-452f-b599-6724affa09d9'
-  imageRepository: 'eloinflater'
-  containerRegistry: 'eloinflaterregistry.azurecr.io'
+variables: 
+  ## Add this under variables section in the pipeline
+  azureSubscription: $azureSubscription
+  appName: $eloinflaterinstance
+  containerRegistry: $containerRegistry
+  dockerRegistryServiceConnection: '4fa4efbc-59af-4c0b-8637-1d5bf7f268fc'
+  imageRepository: eloinflater
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile.prod'
   tag: '$(Build.BuildId)'
 
