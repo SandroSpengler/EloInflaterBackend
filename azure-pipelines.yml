@@ -12,7 +12,7 @@ variables:
   ## Add this under variables section in the pipeline
   azureSubscription: Eloinflater_Subscription
   appName: eloinflaterinstance
-  containerRegistry: EloinflaterRegistry
+  containerRegistry: eloinflaterregistry
   dockerRegistryServiceConnection: EloinflaterRegistry
   imageRepository: eloinflater
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile.prod'
@@ -44,4 +44,4 @@ stages:
       inputs:
         azureSubscription: $(azureSubscription)
         appName: $(appName)
-        imageName: $(containerRegistry)/$(imageRepository):$(tag)
+        imageName: eloinflaterregistry/$(imageRepository):$(tag)
