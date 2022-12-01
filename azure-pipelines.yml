@@ -44,4 +44,4 @@ stages:
       inputs:
         azureSubscription: $(azureSubscription)
         appName: $(appName)
-        imageName: eloinflaterregistry/$(imageRepository):$(tag)
+        imageName: eloinflaterregistry.azurecr.io/$(imageRepository):$(tag)
