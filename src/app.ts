@@ -1,17 +1,20 @@
-import { Application, Request, Response } from "express";
+import {Application, Request, Response} from "express";
 import express from "express";
 
 import * as winston from "winston";
 
 const cors = require("cors");
-require("dotenv").config();
 
-import { config } from "./Config/config";
+if (process.env.NODE_ENV === "development") {
+  require("dotenv").config();
+}
 
-import { swaggerSetup } from "./Services/Swagger/swagger";
-import { createWinstonLoggerWithLoggly } from "./Services/Winston/winston";
-import { connectToMongoDB } from "./MongoDB/mongodb";
-import { Scheduler } from "./Services/Schedule/schedule";
+import {config} from "./Config/config";
+
+import {swaggerSetup} from "./Services/Swagger/swagger";
+import {createWinstonLoggerWithLoggly} from "./Services/Winston/winston";
+import {connectToMongoDB} from "./MongoDB/mongodb";
+import {Scheduler} from "./Services/Schedule/schedule";
 
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
@@ -84,4 +87,4 @@ if (process.env.RUN_JOB === "stop") {
   winston.log("info", `Not running any background jobs`);
 }
 
-export { APP };
+export {APP};
