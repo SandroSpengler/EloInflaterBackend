@@ -55,7 +55,7 @@ if (process.env.NODE_ENV !== "test") {
     console.error(`Could not Setup Winston logger`);
   }
   try {
-    swaggerSetup(APP, Number(process.env.PORT));
+    swaggerSetup(APP, 1337);
 
     winston.log("info", `Swagger has been setup`);
   } catch (error) {
@@ -63,7 +63,7 @@ if (process.env.NODE_ENV !== "test") {
   }
 
   APP.listen(process.env.PORT, () => {
-    console.log(`0: Server is running on PORT:${process.env.PORT}`);
+    console.log(`0: Server is running on PORT: 1337`);
   });
 
   connectToMongoDB(process.env.DB_CONNECTION).then(
