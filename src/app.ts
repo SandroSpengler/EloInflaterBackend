@@ -5,11 +5,7 @@ import * as winston from "winston";
 
 const cors = require("cors");
 
-if (process.env.NODE_ENV === "development") {
-  require("dotenv").config();
-}
-
-import {config} from "./Config/config";
+// import {config} from "./Config/config";
 
 import {swaggerSetup} from "./Services/Swagger/swagger";
 import {createWinstonLoggerWithLoggly} from "./Services/Winston/winston";
@@ -49,33 +45,33 @@ const schedule: Scheduler = new Scheduler();
  * start and setup of the Application
  */
 if (process.env.NODE_ENV !== "test") {
+  require("dotenv").config();
   try {
-    createWinstonLoggerWithLoggly(config.LOGGLY_TOKEN);
+    createWinstonLoggerWithLoggly(process.env.LOGGLY_TOKEN);
 
     console.log(`0: Setup Winston logger`);
   } catch (error) {
     console.error(`Could not Setup Winston logger`);
   }
   try {
-    swaggerSetup(APP, config.PORT);
+    swaggerSetup(APP, Number(process.env.PORT));
 
     winston.log("info", `Swagger has been setup`);
   } catch (error) {
     winston.error(`Could not Setup Swagger`);
   }
 
-  APP.listen(config.PORT, () => {
-    console.log(`0: Server is running on PORT:${config.PORT}`);
+  APP.listen(process.env.PORT, () => {
+    console.log(`0: Server is running on PORT:${process.env.PORT}`);
   });
 
-  try {
-    connectToMongoDB(config.DB_CONNECTION);
-
-    winston.log("info", `Connected to MongoDB`);
-    console.log("info", `Connected to MongoDB`);
-  } catch (error) {
-    winston.error("error", `Could not connect to MongoDB`);
-  }
+  connectToMongoDB(process.env.DB_CONNECTION).then(
+    () => {},
+    () => {
+      winston.error("error", `Could not connect to MongoDB`);
+      console.error("error", `Could not connect to MongoDB`);
+    },
+  );
 }
 
 if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {

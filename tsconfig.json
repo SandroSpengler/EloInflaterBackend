@@ -2,16 +2,15 @@
   "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__mock__/**"],
   "compilerOptions": {
     "target": "es6",
+    "types": [],
     "module": "CommonJS",
     "lib": ["es6", "DOM"],
     "allowJs": true,
     "esModuleInterop": true,
-    "lib": ["es6", "DOM"],
     "noEmit": false,
     "noImplicitAny": false,
     "outDir": "build",
     "strict": true,
-    "target": "es6",
     "resolveJsonModule": true,
     "rootDir": "."
   }

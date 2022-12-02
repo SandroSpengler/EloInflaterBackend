@@ -3,7 +3,7 @@ version: "3"
 services:
   eloinflater:
     container_name: "Eloinflater"
-    image: sandrospengler/eloinflater:latest
+    # image: sandrospengler/eloinflater:latest
     build:
       context: .
     environment:

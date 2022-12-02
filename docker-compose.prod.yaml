@@ -3,12 +3,12 @@ version: "3"
 services:
   eloinflater:
     container_name: "Eloinflater"
-    #image: sandrospengler/eloinflater:latest
-    build:
-      context: ${Eloinflater}
-      dockerfile: Dockerfile.prod
-      args:
-        NODE_ENV: production
+    image: eloinflaterregistry.azurecr.io/eloinflater:${ImageVersion}
+    # build:
+    #   context: ${Eloinflater}
+    #   dockerfile: Dockerfile.prod
+    # args:
+    #   NODE_ENV: production
     ports:
       - "5000"
     environment:
