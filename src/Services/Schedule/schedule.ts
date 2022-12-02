@@ -1,15 +1,15 @@
 import axios from "axios";
 import * as winston from "winston";
 
-import { SummonerRepository } from "../../Repository/SummonerRepository";
-import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
-import { MatchRepository } from "../../Repository/MatchRepository";
+import {SummonerRepository} from "../../Repository/SummonerRepository";
+import {SummonerByLeagueRepository} from "../../Repository/SummonerByLeagueRepository";
+import {MatchRepository} from "../../Repository/MatchRepository";
 
-import { RiotGamesHttp } from "../../Services/HttpService";
-import { SummonerService } from "../../Services/SummonerService";
-import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
-import { DataMiningService } from "../../Services/DataMiningService";
-import { MatchService } from "../../Services/MatchService";
+import {RiotGamesHttp} from "../../Services/HttpService";
+import {SummonerService} from "../../Services/SummonerService";
+import {SummonerByLeagueService} from "../../Services/SummonerByLeagueService";
+import {DataMiningService} from "../../Services/DataMiningService";
+import {MatchService} from "../../Services/MatchService";
 
 class Scheduler {
   private RGHttp = new RiotGamesHttp();
@@ -68,6 +68,7 @@ class Scheduler {
     } finally {
       await setTimeout(() => {
         winston.log("info", `Cycle done - Restarting`);
+        console.log("info", `Cycle done - Restarting`);
 
         this.schedule();
       }, 2 * 15 * 1000);
@@ -95,6 +96,7 @@ class Scheduler {
       await this.summonerService.updateSumonersByLeague(newSbLChallenger);
 
       winston.log("info", `SummonerByLeague ${SbLChallenger.tier} - Done`);
+      console.log("info", `SummonerByLeague ${SbLChallenger.tier} - Done`);
     }
 
     if (this.SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLGrandMaster)) {
@@ -108,6 +110,7 @@ class Scheduler {
       await this.summonerService.updateSumonersByLeague(newSbLGrandMaster);
 
       winston.log("info", `SummonerByLeague ${SbLGrandMaster.tier} - Done`);
+      console.log("info", `SummonerByLeague ${SbLGrandMaster.tier} - Done`);
     }
 
     if (this.SbLService.checkIfSummonersByLeagueCanBeUpdated(SbLMaster)) {
@@ -120,9 +123,11 @@ class Scheduler {
       await this.summonerService.updateSumonersByLeague(newSbLMaster);
 
       winston.log("info", `SummonerByLeague ${SbLMaster.tier} - Done`);
+      console.log("info", `SummonerByLeague ${SbLMaster.tier} - Done`);
     }
 
     winston.log("info", `updating SbLCollections finished`);
+    console.log("info", `updating SbLCollections finished`);
   };
 
   validateSummonerInSbLCollection = async () => {
@@ -147,6 +152,12 @@ class Scheduler {
               allSummoners.length
             }`,
           );
+          console.log(
+            "info",
+            `validating summonerId for Summoner ${summoner.name} at ${index + 1} of ${
+              allSummoners.length
+            }`,
+          );
 
           await this.summonerService.validateSummonerById(summoner._id);
         }
@@ -156,6 +167,7 @@ class Scheduler {
     }
 
     winston.log("info", `validating SbLCollection finished`);
+    console.log("info", `validating SbLCollection finished`);
   };
 
   addNewMatches = async () => {
@@ -185,6 +197,12 @@ class Scheduler {
             updateAbleSummoners.length
           }`,
         );
+        console.log(
+          "info",
+          `Updating Summoner matches for ${summoner.name} at ${index + 1} of ${
+            updateAbleSummoners.length
+          }`,
+        );
 
         await this.dataMiningService.addNewMatchesToSummoner(summoner);
       }
@@ -194,4 +212,4 @@ class Scheduler {
   };
 }
 
-export { Scheduler };
+export {Scheduler};

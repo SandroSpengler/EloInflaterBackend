@@ -72,6 +72,7 @@ if (process.env.NODE_ENV !== "test") {
     connectToMongoDB(config.DB_CONNECTION);
 
     winston.log("info", `Connected to MongoDB`);
+    console.log("info", `Connected to MongoDB`);
   } catch (error) {
     winston.error("error", `Could not connect to MongoDB`);
   }
