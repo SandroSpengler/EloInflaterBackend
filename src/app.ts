@@ -46,6 +46,7 @@ const schedule: Scheduler = new Scheduler();
  */
 if (process.env.NODE_ENV !== "test") {
   require("dotenv").config();
+
   try {
     createWinstonLoggerWithLoggly(process.env.LOGGLY_TOKEN);
 
