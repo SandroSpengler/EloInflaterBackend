@@ -62,7 +62,7 @@ if (process.env.NODE_ENV !== "test") {
     winston.error(`Could not Setup Swagger`);
   }
 
-  APP.listen(process.env.PORT, () => {
+  APP.listen(1337, () => {
     console.log(`0: Server is running on PORT: 1337`);
   });
 
