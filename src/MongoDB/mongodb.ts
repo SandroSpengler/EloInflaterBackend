@@ -1,5 +1,5 @@
-import { connect } from "mongoose";
-import { ConnectionOptions } from "tls";
+import {connect} from "mongoose";
+import {ConnectionOptions} from "tls";
 
 /**
  * Connects to the MongoDB
@@ -25,4 +25,4 @@ const connectToMongoDB = async (connection: string | undefined) => {
   }
 };
 
-export { connectToMongoDB };
+export {connectToMongoDB};
