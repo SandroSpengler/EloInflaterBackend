@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // const axios = require("axios");
 
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import SummonerByLeague, { EntriesByLeague } from "../Models/Interfaces/SummonerByLeague";
+import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
+import SummonerByLeague, {EntriesByLeague} from "../Models/Interfaces/SummonerByLeague";
 import Summoner from "../Models/Interfaces/Summoner";
-import { MatchData } from "../Models/Interfaces/MatchData";
-import { MatchList } from "../Models/Interfaces/MatchList";
-import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
-import { urlencoded } from "body-parser";
+import {MatchData} from "../Models/Interfaces/MatchData";
+import {MatchList} from "../Models/Interfaces/MatchList";
+import {SbLQueue, SbLTier} from "../Models/Types/SummonerByLeagueTypes";
+import {urlencoded} from "body-parser";
 
 export class RiotGamesHttp {
   // only change by Region
@@ -59,7 +59,10 @@ export class RiotGamesHttp {
    *
    * @returns HTTP-Response cotaining the SummonersByLeauge
    */
-  public getSummonersByLeague = async (tier: SbLTier, queue: SbLQueue): Promise<AxiosResponse<SummonerByLeague>> => {
+  public getSummonersByLeague = async (
+    tier: SbLTier,
+    queue: SbLQueue,
+  ): Promise<AxiosResponse<SummonerByLeague>> => {
     let tierRequestParam = "";
 
     if (tier === "CHALLENGER") tierRequestParam = "challengerleagues";
@@ -86,7 +89,10 @@ export class RiotGamesHttp {
       await this.sleep(200);
 
       const request = axios.get<string[]>(
-        `${this.buildBaseUrl(this.matchRegionUrl, "match/v5/matches/by-puuid/")}${puuid}/ids?start=0&count=100`,
+        `${this.buildBaseUrl(
+          this.matchRegionUrl,
+          "match/v5/matches/by-puuid/",
+        )}${puuid}/ids?start=0&count=100`,
         this.buildConfig(),
       );
 
@@ -121,10 +127,16 @@ export class RiotGamesHttp {
     return completeUrl;
   };
 
-  private buildConfig = (): any => {
-    let config = {
+  /**
+   * Builds the Axios-Config
+   *
+   * @returns Axios Config
+   */
+  private buildConfig = (): AxiosRequestConfig => {
+    const config: AxiosRequestConfig = {
       headers: {
         "X-Riot-Token": process.env.API_KEY,
+        "Accept-Encoding": "application/json",
       },
     };
 

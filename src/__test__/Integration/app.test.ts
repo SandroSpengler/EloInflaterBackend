@@ -1,11 +1,11 @@
 import request from "supertest";
 
-import { APP } from "../../app";
+import {startedApp} from "../../app";
 import Summoner from "../../Models/Interfaces/Summoner";
 
 describe("Server startup", () => {
   it("Default Endpoint should return an h1", async () => {
-    const response = await request(APP).get("/");
+    const response = await request(startedApp).get("/");
 
     expect(response.statusCode).toEqual(200);
     expect(response.text).toMatch(/(<h1>)/);
@@ -16,7 +16,9 @@ describe("Server startup", () => {
     it("Expect a single Summoner with name and matchlist", async () => {
       const summonerNames = ["agurin", "fasdhfsadfjhsdjf,,,,,..n", ""];
 
-      const responseWorking = await request(APP).get(`/api/data/summoner/${summonerNames[0]}`);
+      const responseWorking = await request(startedApp).get(
+        `/api/data/summoner/${summonerNames[0]}`,
+      );
 
       const summonerWorking: Summoner = responseWorking.body.result;
 
@@ -28,7 +30,9 @@ describe("Server startup", () => {
         // matchList: expect.arrayContaining([expect.any(String)]),
       });
 
-      const responseGibberish = await request(APP).get(`/api/data/summoner/${summonerNames[1]}`);
+      const responseGibberish = await request(startedApp).get(
+        `/api/data/summoner/${summonerNames[1]}`,
+      );
 
       expect(responseGibberish.statusCode).toEqual(404);
 
@@ -38,7 +42,9 @@ describe("Server startup", () => {
         error: "Summoner not found",
       });
 
-      const responseEmptyString = await request(APP).get(`/api/data/summoner/${summonerNames[2]}`);
+      const responseEmptyString = await request(startedApp).get(
+        `/api/data/summoner/${summonerNames[2]}`,
+      );
 
       expect(responseEmptyString.statusCode).toEqual(409);
 
@@ -50,7 +56,7 @@ describe("Server startup", () => {
     });
 
     it("Expect all Summoners with rankSolo - CHALLENGER", async () => {
-      const response = await request(APP).get("/api/data/league/challenger/rankedsolo");
+      const response = await request(startedApp).get("/api/data/league/challenger/rankedsolo");
 
       expect(response.statusCode === 200);
 
@@ -70,7 +76,7 @@ describe("Server startup", () => {
     });
 
     it("Expect all Summoners with rankSolo - GRANDMASTER", async () => {
-      const response = await request(APP).get("/api/data/league/grandmaster/rankedsolo");
+      const response = await request(startedApp).get("/api/data/league/grandmaster/rankedsolo");
 
       expect(response.statusCode === 200);
 
@@ -90,7 +96,7 @@ describe("Server startup", () => {
     });
 
     it("Expect all Summoners with rankSolo - MASTER", async () => {
-      const response = await request(APP).get("/api/data/league/master/rankedsolo");
+      const response = await request(startedApp).get("/api/data/league/master/rankedsolo");
 
       expect(response.statusCode === 200);
 
