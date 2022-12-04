@@ -26,17 +26,6 @@ const schedule: Scheduler = new Scheduler();
 const setupApp = async (): Promise<Application> => {
   const APP: Application = express();
 
-  if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {
-    console.log("starting");
-    winston.log("info", `starting`);
-    schedule.schedule();
-  }
-
-  if (process.env.RUN_JOB === "stop") {
-    console.log("0: Not running any background jobs");
-    winston.log("info", `Not running any background jobs`);
-  }
-
   APP.use(
     cors({
       origin: "*",
@@ -64,6 +53,7 @@ const setupApp = async (): Promise<Application> => {
     } catch (error) {
       console.error(`Could not Setup Winston logger`);
     }
+
     try {
       swaggerSetup(APP, 1337);
 
@@ -83,6 +73,16 @@ const setupApp = async (): Promise<Application> => {
         console.error("error", `Could not connect to MongoDB`);
       },
     );
+  }
+  if (process.env.RUN_JOB === "stop") {
+    console.log("0: Not running any background jobs");
+    winston.log("info", `Not running any background jobs`);
+  }
+
+  if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "start") {
+    console.log("starting");
+    winston.log("info", `starting`);
+    schedule.schedule();
   }
 
   return APP;
