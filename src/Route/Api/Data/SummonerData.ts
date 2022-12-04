@@ -31,7 +31,7 @@ export class SummonerData {
    *      - application/json
    *    tags:
    *      - Summoners
-   *    description: DEV - Provides a specific Summoner by Name
+   *    description: DEV - Provides all Summoners
    *    responses:
    *      200:
    *        $ref: '#/components/responses/SuccesMultipleSummoner'
