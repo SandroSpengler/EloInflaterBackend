@@ -32,7 +32,7 @@ export class MatchRefreshRoute {
 
   /**
    * @openapi
-   * /api/data/match/{summonerId}:
+   * /api/refresh/match/{summonerId}:
    *  put:
    *    tags:
    *      - Match
@@ -41,7 +41,7 @@ export class MatchRefreshRoute {
    *        name: summonerId
    *        required: true
    *        type: string
-   *    description: Provides all Matches for a specified Summoner
+   *    description: Provides all Matches for a specified {SummonerName}
    *    responses:
    *      200:
    *        $ref: '#/components/responses/SuccesUpdateMatchBySummonerId'
@@ -49,6 +49,8 @@ export class MatchRefreshRoute {
    *         $ref: '#/components/responses/BadRequest'
    *      404:
    *         $ref: '#/components/responses/NotFound'
+   *      409:
+   *         $ref: '#/components/responses/Conflict'
    *      429:
    *         $ref: '#/components/responses/TooManyRequests'
    *      500:

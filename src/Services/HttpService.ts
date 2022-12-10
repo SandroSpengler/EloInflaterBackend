@@ -2,12 +2,10 @@
 // const axios = require("axios");
 
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import SummonerByLeague, {EntriesByLeague} from "../Models/Interfaces/SummonerByLeague";
-import Summoner from "../Models/Interfaces/Summoner";
 import {MatchData} from "../Models/Interfaces/MatchData";
-import {MatchList} from "../Models/Interfaces/MatchList";
+import Summoner from "../Models/Interfaces/Summoner";
+import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 import {SbLQueue, SbLTier} from "../Models/Types/SummonerByLeagueTypes";
-import {urlencoded} from "body-parser";
 
 export class RiotGamesHttp {
   // only change by Region
