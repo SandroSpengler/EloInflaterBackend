@@ -64,6 +64,9 @@ class Scheduler {
 					winston.log("error", error.message);
 					console.log(error.message);
 				}
+			} else {
+				winston.log("error", error.message);
+				console.log(error.message);
 			}
 		} finally {
 			const timeout = 2 * 15 * 1000;
@@ -144,7 +147,7 @@ class Scheduler {
 
 		try {
 			for (let [index, summoner] of allSummoners.entries()) {
-				if (summoner.puuid !== "" || summoner._id !== "" || summoner.accountId !== "") {
+				if (summoner.puuid !== "" && summoner._id !== "" && summoner.accountId !== "") {
 					continue;
 				}
 
@@ -159,9 +162,9 @@ class Scheduler {
 			}
 		} catch (error) {
 			throw error;
+		} finally {
+			winston.log("info", `validating SbLCollection finished`);
 		}
-
-		winston.log("info", `validating SbLCollection finished`);
 	};
 
 	/**
@@ -182,6 +185,11 @@ class Scheduler {
 			.sort((summoner1, summoner2) => {
 				return summoner1.lastMatchUpdate! - summoner2.lastMatchUpdate!;
 			});
+
+		console.log(
+			"🚀 ~ Scheduler ~ addNewMatches= ~ updateAbleSummoners",
+			updateAbleSummoners.length,
+		);
 		try {
 			for (let [index, summoner] of updateAbleSummoners.entries()) {
 				winston.log(

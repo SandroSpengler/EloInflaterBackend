@@ -1,21 +1,21 @@
 {
-  "exclude": ["node_modules", "build/**/*", "src/__mock__/**/*", "src/__test__/**/*"],
-  "include": ["src/**/*"],
-  "compilerOptions": {
-    "allowJs": true,
-    "esModuleInterop": true,
-    "lib": ["es2022", "DOM"],
-    "module": "NodeNext",
-    "moduleResolution": "node",
-    "noEmit": false,
-    "noImplicitAny": false,
-    "outDir": "build",
-    "resolveJsonModule": true,
-    "rootDir": ".",
-    "strict": true,
-    "target": "esnext",
-    // "types": ["jest"],
-    "typeRoots": ["./types", "./node_modules/@types"],
-    "downlevelIteration": true
-  }
+	"exclude": ["node_modules", "build/**/*", "src/__mock__/**/*", "src/__test__/**/*"],
+	"include": ["src/**/*"],
+	"compilerOptions": {
+		"allowJs": true,
+		"esModuleInterop": true,
+		"lib": ["es2022", "DOM"],
+		"module": "NodeNext",
+		"moduleResolution": "node",
+		"noEmit": false,
+		"noImplicitAny": false,
+		"outDir": "build",
+		"resolveJsonModule": true,
+		"rootDir": ".",
+		"strict": true,
+		"target": "esnext",
+		// "types": ["jest"],
+		"typeRoots": ["./types", "./node_modules/@types"],
+		"downlevelIteration": true
+	}
 }
