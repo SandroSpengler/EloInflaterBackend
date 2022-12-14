@@ -9,156 +9,157 @@ import { SummonerService } from "./SummonerService";
 import * as winston from "winston";
 
 export class DataMiningService {
-  private summonerRepo: SummonerRepository;
-  // private summonerService: SummonerService;
+	private summonerRepo: SummonerRepository;
+	// private summonerService: SummonerService;
 
-  private matchRepo: MatchRepository;
-  private matchService: MatchService;
+	private matchRepo: MatchRepository;
+	private matchService: MatchService;
 
-  private RGHttp: RiotGamesHttp;
+	private RGHttp: RiotGamesHttp;
 
-  constructor(
-    summonerRepo: SummonerRepository,
-    // summonerService: SummonerService,
-    RGHttp: RiotGamesHttp,
-    matchRepo: MatchRepository,
-    matchService: MatchService,
-  ) {
-    this.RGHttp = RGHttp;
-    this.summonerRepo = summonerRepo;
-    // this.summonerService = summonerService;
+	constructor(
+		summonerRepo: SummonerRepository,
+		// summonerService: SummonerService,
+		RGHttp: RiotGamesHttp,
+		matchRepo: MatchRepository,
+		matchService: MatchService,
+	) {
+		this.RGHttp = RGHttp;
+		this.summonerRepo = summonerRepo;
+		// this.summonerService = summonerService;
 
-    this.matchRepo = matchRepo;
-    this.matchService = matchService;
-  }
+		this.matchRepo = matchRepo;
+		this.matchService = matchService;
+	}
 
-  /**
-   * Requests new Matches for Summoner and adds them
-   *
-   * @param summoner Summoner that new matches should be added for
-   *
-   * @void
-   */
-  addNewMatchesToSummoner = async (summoner: Summoner) => {
-    try {
-      const matchResponse = await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner.puuid);
+	/**
+	 * Requests new Matches for Summoner and adds them
+	 * @async
+	 *
+	 * @param { summoner } Summoner that new matches should be added for
+	 *
+	 * @void
+	 */
+	addNewMatchesToSummoner = async (summoner: Summoner): Promise<void> => {
+		try {
+			const matchResponse = await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner.puuid);
 
-      const matchesForSummoner = await matchResponse.data;
+			const matchesForSummoner = await matchResponse.data;
 
-      await this.addUnassignedMatchesToSummoner(summoner);
+			await this.addUnassignedMatchesToSummoner(summoner);
 
-      const newMatchIdsForSummoner = matchesForSummoner.filter((matchId) => {
-        let checkUninflated = summoner.uninflatedMatchList.find(
-          (summonerMatchId) => summonerMatchId === matchId,
-        );
+			const newMatchIdsForSummoner = matchesForSummoner.filter((matchId) => {
+				let checkUninflated = summoner.uninflatedMatchList.find(
+					(summonerMatchId) => summonerMatchId === matchId,
+				);
 
-        let checkinflated = summoner.inflatedMatchList.find(
-          (summonerMatchId) => summonerMatchId === matchId,
-        );
+				let checkinflated = summoner.inflatedMatchList.find(
+					(summonerMatchId) => summonerMatchId === matchId,
+				);
 
-        // assinged matches can be returned here
-        if (checkUninflated || checkinflated) return;
+				// assinged matches can be returned here
+				if (checkUninflated || checkinflated) return;
 
-        return matchId;
-      });
+				return matchId;
+			});
 
-      if (newMatchIdsForSummoner.length === 0) {
-        let currentTime = new Date().getTime();
-        summoner.lastMatchUpdate = currentTime;
+			if (newMatchIdsForSummoner.length === 0) {
+				let currentTime = new Date().getTime();
+				summoner.lastMatchUpdate = currentTime;
 
-        await this.summonerRepo.updateSummonerByPUUID(summoner);
+				await this.summonerRepo.updateSummonerByPUUID(summoner);
 
-        return;
-      }
+				return;
+			}
 
-      for (let [index, matchId] of newMatchIdsForSummoner.entries()) {
-        winston.log("info", `Adding Match ${index + 1} of ${newMatchIdsForSummoner.length}`);
+			for (let [index, matchId] of newMatchIdsForSummoner.entries()) {
+				winston.log("info", `Adding Match ${index + 1} of ${newMatchIdsForSummoner.length}`);
 
-        const matchInDB = await this.matchRepo.findMatchById(matchId);
+				const matchInDB = await this.matchRepo.findMatchById(matchId);
 
-        if (matchInDB === null) {
-          try {
-            const matchData = (await this.RGHttp.getMatchByMatchId(matchId)).data;
-            await this.matchRepo.createMatch(matchData);
-          } catch (error) {
-            if (axios.isAxiosError(error)) {
-              if (error.response?.status === 404) {
-                continue;
-              } else {
-                throw error;
-              }
-            }
-          }
-        }
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      let currentTime = new Date().getTime();
-      summoner.lastMatchUpdate = currentTime;
-      await this.addUnassignedMatchesToSummoner(summoner);
-    }
-  };
+				if (matchInDB === null) {
+					try {
+						const matchData = (await this.RGHttp.getMatchByMatchId(matchId)).data;
+						await this.matchRepo.createMatch(matchData);
+					} catch (error) {
+						if (axios.isAxiosError(error)) {
+							if (error.response?.status === 404) {
+								continue;
+							} else {
+								throw error;
+							}
+						}
+					}
+				}
+			}
+		} catch (error) {
+			throw error;
+		} finally {
+			let currentTime = new Date().getTime();
+			summoner.lastMatchUpdate = currentTime;
+			await this.addUnassignedMatchesToSummoner(summoner);
+		}
+	};
 
-  /**
-   * Finds all Matches in DB for a summoner and adds them to the Summoner.Matchlists
-   *
-   * @param summoner The Summoner that should be checked for
-   *
-   * @void
-   */
-  addUnassignedMatchesToSummoner = async (summoner: Summoner) => {
-    if (summoner === undefined || summoner === null) throw new Error("No Summoner was provided");
-    if (summoner.puuid === undefined)
-      throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
+	/**
+	 * Finds all Matches in DB for a summoner and adds them to the Summoner.Matchlists
+	 *
+	 * @param summoner The Summoner that should be checked for
+	 *
+	 * @void
+	 */
+	addUnassignedMatchesToSummoner = async (summoner: Summoner) => {
+		if (summoner === undefined || summoner === null) throw new Error("No Summoner was provided");
+		if (summoner.puuid === undefined)
+			throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
 
-    try {
-      const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(
-        summoner.puuid,
-      );
+		try {
+			const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(
+				summoner.puuid,
+			);
 
-      if (matchesBySummonerPUUID?.length === 0) return;
+			if (matchesBySummonerPUUID?.length === 0) return;
 
-      const unassingedMatches = matchesBySummonerPUUID.filter((match) => {
-        let checkUninflated = summoner.uninflatedMatchList.find(
-          (summonerMatchId) => summonerMatchId === match._id,
-        );
+			const unassingedMatches = matchesBySummonerPUUID.filter((match) => {
+				let checkUninflated = summoner.uninflatedMatchList.find(
+					(summonerMatchId) => summonerMatchId === match._id,
+				);
 
-        let checkinflated = summoner.inflatedMatchList.find(
-          (summonerMatchId) => summonerMatchId === match._id,
-        );
+				let checkinflated = summoner.inflatedMatchList.find(
+					(summonerMatchId) => summonerMatchId === match._id,
+				);
 
-        // assinged matches can be returned here
-        if (checkUninflated || checkinflated) return;
+				// assinged matches can be returned here
+				if (checkUninflated || checkinflated) return;
 
-        return match;
-      });
+				return match;
+			});
 
-      if (unassingedMatches.length === 0) {
-        return;
-      }
+			if (unassingedMatches.length === 0) {
+				return;
+			}
 
-      for (let match of unassingedMatches) {
-        const matchEvaluation = this.matchService.checkSummonerInMatchForEloInflation(
-          match,
-          summoner.puuid,
-        );
+			for (let match of unassingedMatches) {
+				const matchEvaluation = this.matchService.checkSummonerInMatchForEloInflation(
+					match,
+					summoner.puuid,
+				);
 
-        if (matchEvaluation.inflated) {
-          summoner.inflatedMatchList.push(match._id);
+				if (matchEvaluation.inflated) {
+					summoner.inflatedMatchList.push(match._id);
 
-          summoner.exhaustCount += matchEvaluation.exhaustCount;
-          summoner.exhaustCastCount += matchEvaluation.exhaustCastCount;
-          summoner.tabisCount += matchEvaluation.tabisCount;
-          summoner.zhonaysCount += matchEvaluation.zhonaysCount;
-        } else {
-          summoner.uninflatedMatchList.push(match._id);
-        }
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      await this.summonerRepo.updateSummonerByPUUID(summoner);
-    }
-  };
+					summoner.exhaustCount += matchEvaluation.exhaustCount;
+					summoner.exhaustCastCount += matchEvaluation.exhaustCastCount;
+					summoner.tabisCount += matchEvaluation.tabisCount;
+					summoner.zhonaysCount += matchEvaluation.zhonaysCount;
+				} else {
+					summoner.uninflatedMatchList.push(match._id);
+				}
+			}
+		} catch (error) {
+			throw error;
+		} finally {
+			await this.summonerRepo.updateSummonerByPUUID(summoner);
+		}
+	};
 }
