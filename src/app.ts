@@ -1,23 +1,23 @@
-import { Application, Request, Response } from "express";
-import express from "express";
+import express, { Application } from "express";
+import path from "path";
 
-import * as winston from "winston";
 import cors from "cors";
+import * as winston from "winston";
 
 // import {config} from "./Config/config";
 require("dotenv").config();
 
-import { swaggerSetup } from "./Services/Swagger/swagger";
-import { createWinstonLoggerWithLoggly } from "./Services/Winston/winston";
 import { connectToMongoDB } from "./MongoDB/mongodb";
 import { Scheduler } from "./Services/Schedule/schedule";
+import { swaggerSetup } from "./Services/Swagger/swagger";
+import { createWinstonLoggerWithLoggly } from "./Services/Winston/winston";
 
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 
-const summonerController = require("./Route/Api/Data/SummonerData");
-const leaugeController = require("./Route/Api/Data/SummonerByRank");
 const matchController = require("./Route/Api/Data/Match");
+const leaugeController = require("./Route/Api/Data/SummonerByRank");
+const summonerController = require("./Route/Api/Data/SummonerData");
 const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
 const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
 
@@ -32,9 +32,7 @@ const setupApp = async (): Promise<Application> => {
 		}),
 	);
 
-	APP.get("/", (req: Request, res: Response) => {
-		res.send("<h1>Main Page!!</h1>");
-	});
+	APP.use(express.static(path.join(__dirname, "public")));
 
 	APP.use("/api/data/summoner", jsonParser, summonerController);
 	APP.use("/api/data/league", jsonParser, leaugeController);

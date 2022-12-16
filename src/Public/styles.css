@@ -1,0 +1,38 @@
+* {
+	font-family: Arial, sans-serif;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+h1 {
+	font-size: 1.4em;
+}
+
+h2 {
+	font-size: 1.1em;
+}
+
+a,
+a:hover,
+a:visited,
+a:active {
+	color: inherit;
+	text-decoration: none;
+}
+
+.headerWrapper {
+	padding: 10px;
+	background-color: #88a6b8;
+	display: flex;
+	justify-content: space-between;
+}
+
+.leftHeaderContainer {
+	display: flex;
+	width: 100%;
+}
+
+.leftHeaderText {
+	margin: 3px 10px;
+}
