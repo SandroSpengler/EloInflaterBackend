@@ -1,15 +1,15 @@
 import axios from "axios";
 import * as winston from "winston";
 
+import { MatchRepository } from "../../Repository/MatchRepository";
 import { SummonerRepository } from "../../Repository/SummonerRepository";
 import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
-import { MatchRepository } from "../../Repository/MatchRepository";
 
 import { RiotGamesHttp } from "../../Services/HttpService";
-import { SummonerService } from "../../Services/SummonerService";
-import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
-import { DataMiningService } from "../../Services/DataMiningService";
 import { MatchService } from "../../Services/MatchService";
+import { SummonerService } from "../../Services/SummonerService";
+import { DataMiningService } from "../../Services/DataMiningService";
+import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
 
 class Scheduler {
 	private RGHttp = new RiotGamesHttp();
@@ -34,10 +34,9 @@ class Scheduler {
 		this.RGHttp = new RiotGamesHttp();
 
 		this.summonerRepo = new SummonerRepository();
+		this.SbLRepo = new SummonerByLeagueRepository();
 
 		this.summonerService = new SummonerService(this.summonerRepo, this.RGHttp);
-
-		this.SbLRepo = new SummonerByLeagueRepository();
 		this.SbLService = new SummonerByLeagueService(this.SbLRepo, this.summonerRepo, this.RGHttp);
 
 		this.dataMiningService = new DataMiningService(
@@ -186,10 +185,6 @@ class Scheduler {
 				return summoner1.lastMatchUpdate! - summoner2.lastMatchUpdate!;
 			});
 
-		console.log(
-			"🚀 ~ Scheduler ~ addNewMatches= ~ updateAbleSummoners",
-			updateAbleSummoners.length,
-		);
 		try {
 			for (let [index, summoner] of updateAbleSummoners.entries()) {
 				winston.log(
