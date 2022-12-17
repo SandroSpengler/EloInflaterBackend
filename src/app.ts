@@ -4,7 +4,6 @@ import path from "path";
 import cors from "cors";
 import * as winston from "winston";
 
-// import {config} from "./Config/config";
 require("dotenv").config();
 
 import { connectToMongoDB } from "./MongoDB/mongodb";
@@ -32,7 +31,8 @@ const setupApp = async (): Promise<Application> => {
 		}),
 	);
 
-	APP.use(express.static(path.join(__dirname, "public")));
+	// tsc does not compile static files into build directory
+	APP.use(express.static(path.join(__dirname, "Public")));
 
 	APP.use("/api/data/summoner", jsonParser, summonerController);
 	APP.use("/api/data/league", jsonParser, leaugeController);

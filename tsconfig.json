@@ -16,6 +16,8 @@
 		"target": "esnext",
 		// "types": ["jest"],
 		"typeRoots": ["./types", "./node_modules/@types"],
-		"downlevelIteration": true
+		"downlevelIteration": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
 	}
 }

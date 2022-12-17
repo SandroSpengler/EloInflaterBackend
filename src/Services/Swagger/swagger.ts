@@ -1,7 +1,8 @@
 import { Application, Request, Response } from "express";
 
-import swaggerJSDoc, { Options } from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+
+import swaggerJSDoc, { Options } from "swagger-jsdoc";
 
 import { version } from "../../../package.json";
 
@@ -10,19 +11,19 @@ import { version } from "../../../package.json";
  * @see https://github.com/Surnet/swagger-jsdoc
  */
 const swaggerOptions: Options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "EloInflater REST API Documentation",
-      version: version,
-    },
-  },
-  apis: [
-    "src/Services/Swagger/*.ts",
-    "src/Models/Interfaces/*.ts",
-    "src/Route/Api/Data/*.ts",
-    "src/Route/Api/Refresh/*.ts",
-  ],
+	definition: {
+		openapi: "3.0.0",
+		info: {
+			title: "EloInflater REST API Documentation",
+			version: version,
+		},
+	},
+	apis: [
+		"src/Services/Swagger/*.ts",
+		"src/Models/Interfaces/*.ts",
+		"src/Route/Api/Data/*.ts",
+		"src/Route/Api/Refresh/*.ts",
+	],
 };
 
 const swaggerDocs = swaggerJSDoc(swaggerOptions);
@@ -36,17 +37,16 @@ const swaggerDocs = swaggerJSDoc(swaggerOptions);
  * @param port The Port of the Application
  */
 const swaggerSetup = (APP: Application, port: number) => {
-  // Swagger Endpoint/Page
-  APP.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+	APP.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-  // Swagger Docs in JSON Format
-  APP.get("swagger.json", (req: Request, res: Response) => {
-    res.setHeader("Content-Type", "application/json");
+	// Swagger Docs in JSON Format
+	APP.use("/swagger.json", (req: Request, res: Response) => {
+		res.setHeader("Content-Type", "application/json");
 
-    res.send(swaggerDocs);
-  });
+		res.send(swaggerDocs);
+	});
 
-  console.log(`0. Swagger Docs available on PORT: ${port}`);
+	console.log(`0. Swagger Docs available on PORT: ${port}`);
 };
 
 export { swaggerSetup };
