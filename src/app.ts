@@ -32,7 +32,7 @@ const setupApp = async (): Promise<Application> => {
 		}),
 	);
 
-	APP.use(express.static(path.join(__dirname, "public")));
+	APP.use(express.static(path.join(__dirname, "Public")));
 
 	APP.use("/api/data/summoner", jsonParser, summonerController);
 	APP.use("/api/data/league", jsonParser, leaugeController);

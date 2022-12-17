@@ -7,4 +7,5 @@ ARG NODE_ENV
 RUN npm install npm install --omit=dev;
 COPY . /usr/src/app
 EXPOSE 1337
+COPY ./src/Public /usr/src/app/build/
 CMD ["npm","run","prod"]

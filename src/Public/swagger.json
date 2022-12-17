@@ -1,0 +1,28 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "leagueabuserbackend",
+		"version": "1.0.1",
+		"license": {
+			"name": "ISC"
+		},
+		"contact": {
+			"name": "sandrospengler"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {},
+	"servers": [
+		{
+			"url": "/"
+		}
+	]
+}

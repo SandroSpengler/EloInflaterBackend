@@ -8,10 +8,12 @@ import { RiotGamesHttp } from "../../../Services/HttpService";
 import { SummonerService } from "../../../Services/SummonerService";
 
 import { formatSummonerForSending } from "../../../Services/FormatDocumentService";
+import { Get, Route } from "tsoa";
 
 const express = require("express");
 const router = express.Router();
 
+@Route("summoner")
 export class SummonerData {
 	private RGHttp: RiotGamesHttp = new RiotGamesHttp();
 
@@ -38,6 +40,7 @@ export class SummonerData {
 	 *      409:
 	 *         $ref: '#/components/responses/BadRequest'
 	 */
+	@Get("/")
 	public getAllSummoner = async (req, res) => {
 		if (process.env.NODE_ENV && process.env.NODE_ENV == "development") {
 			const allSummoners = await this.summonerRepo.findAllSummoners();
@@ -73,6 +76,7 @@ export class SummonerData {
 	 *      500:
 	 *         $ref: '#/components/responses/InternalServerError'
 	 */
+	@Get("/")
 	public getSummonerByName = async (req: Request, res: Response) => {
 		if (req.params.name === undefined || req.params.name === "") {
 			return res.status(400).send();
