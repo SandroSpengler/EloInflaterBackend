@@ -1,17 +1,21 @@
 {
-  "exclude": ["node_modules", "build/**/*", "**/*.test.ts", "src/__mock__/**"],
-  "compilerOptions": {
-    "target": "es6",
-    "types": [],
-    "module": "CommonJS",
-    "lib": ["es6", "DOM"],
-    "allowJs": true,
-    "esModuleInterop": true,
-    "noEmit": false,
-    "noImplicitAny": false,
-    "outDir": "build",
-    "strict": true,
-    "resolveJsonModule": true,
-    "rootDir": "."
-  }
+	"exclude": ["node_modules", "build/**/*", "src/__mock__/**/*", "src/__test__/**/*"],
+	"include": ["src/**/*"],
+	"compilerOptions": {
+		"allowJs": true,
+		"esModuleInterop": true,
+		"lib": ["es2022", "DOM"],
+		"module": "NodeNext",
+		"moduleResolution": "node",
+		"noEmit": false,
+		"noImplicitAny": false,
+		"outDir": "build",
+		"resolveJsonModule": true,
+		"rootDir": ".",
+		"strict": true,
+		"target": "esnext",
+		// "types": ["jest"],
+		"typeRoots": ["./types", "./node_modules/@types"],
+		"downlevelIteration": true
+	}
 }

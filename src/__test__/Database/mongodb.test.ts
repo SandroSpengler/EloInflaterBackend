@@ -1,15 +1,15 @@
-import { connectToMongoDB } from "../../app";
-import { MatchData } from "../../Models/Interfaces/MatchData";
+import {connectToMongoDB} from "../../MongoDB/mongodb";
+import {MatchData} from "../../Models/Interfaces/MatchData";
 import Summoner from "../../Models/Interfaces/Summoner";
 import SummonerByLeague from "../../Models/Interfaces/SummonerByLeague";
-import { SbLTier } from "../../Models/Types/SummonerByLeagueTypes";
-import { MatchRepository } from "../../Repository/MatchRepository";
-import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
-import { SummonerRepository } from "../../Repository/SummonerRepository";
-import { DataMiningService } from "../../Services/DataMiningService";
-import { RiotGamesHttp } from "../../Services/Http";
-import { MatchService } from "../../Services/MatchService";
-import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
+import {SbLTier} from "../../Models/Types/SummonerByLeagueTypes";
+import {MatchRepository} from "../../Repository/MatchRepository";
+import {SummonerByLeagueRepository} from "../../Repository/SummonerByLeagueRepository";
+import {SummonerRepository} from "../../Repository/SummonerRepository";
+import {DataMiningService} from "../../Services/DataMiningService";
+import {RiotGamesHttp} from "../../Services/HttpService";
+import {MatchService} from "../../Services/MatchService";
+import {SummonerByLeagueService} from "../../Services/SummonerByLeagueService";
 
 describe("Match", () => {
   let summonerMock: Summoner;
@@ -45,9 +45,8 @@ describe("Match", () => {
   describe("MongoDB Queries ", () => {
     // 2022/10/04 - Check after indexes are built
     it("DB => Expect matches for a Summoner by SummonerPUUID", async () => {
-      const matchesForSummonerByPUUID: MatchData[] | null = await matchRepo.findAllMatchesBySummonerPUUID(
-        summonerMock.puuid,
-      );
+      const matchesForSummonerByPUUID: MatchData[] | null =
+        await matchRepo.findAllMatchesBySummonerPUUID(summonerMock.puuid);
 
       if (matchesForSummonerByPUUID === null) throw new Error();
 
@@ -234,7 +233,9 @@ describe("Match", () => {
   });
 
   it("DB => Expect Summoner to get deleted", async () => {
-    const summonerBeforeDelete: Summoner | null = await summonerRepo.findSummonerByID("idForTestSummoner");
+    const summonerBeforeDelete: Summoner | null = await summonerRepo.findSummonerByID(
+      "idForTestSummoner",
+    );
 
     expect(summonerBeforeDelete).toBeDefined();
 
