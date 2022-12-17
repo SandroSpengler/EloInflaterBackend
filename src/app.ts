@@ -32,6 +32,7 @@ const setupApp = async (): Promise<Application> => {
 		}),
 	);
 
+	// tsc does not compile static files into build directory
 	APP.use(express.static(path.join(__dirname, "Public")));
 
 	APP.use("/api/data/summoner", jsonParser, summonerController);
