@@ -4,7 +4,6 @@ import path from "path";
 import cors from "cors";
 import * as winston from "winston";
 
-// import {config} from "./Config/config";
 require("dotenv").config();
 
 import { connectToMongoDB } from "./MongoDB/mongodb";

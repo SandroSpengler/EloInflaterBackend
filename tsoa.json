@@ -1,8 +1,0 @@
-{
-	"entryFile": "src/app.ts",
-	"noImplicitAdditionalProperties": "throw-on-extras",
-	"spec": {
-		"outputDirectory": "src/Public",
-		"specVersion": 3
-	}
-}
