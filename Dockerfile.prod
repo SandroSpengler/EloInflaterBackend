@@ -2,10 +2,11 @@ FROM node:19.0.1-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./package.json /usr/src/app
+COPY ./yarn.lock /usr/src/app
 # RUN rm -r /usr/src/app/build
 ARG NODE_ENV
-RUN npm install npm install --omit=dev;
+RUN yarn install
 COPY . /usr/src/app
 EXPOSE 1337
 COPY ./src/Public /usr/src/app/build/src/Public
-CMD ["npm","run","prod"]
+CMD ["yarn","run","prod"]

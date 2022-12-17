@@ -1,11 +1,12 @@
-FROM node:16.14.0
+FROM node:19.0.1-alpine
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 COPY ./package.json /usr/src/app
+COPY ./yarn.lock /usr/src/app
 # RUN rm -r /usr/src/app/build
 ARG NODE_ENV
-RUN npm install
-RUN npm install -g typescript
+RUN yarn install
+RUN yarn install -g typescript
 COPY . /usr/src/app
 EXPOSE 5000
-CMD ["npm","run","dev"]
+CMD ["yarn","run","dev"]
