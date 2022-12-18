@@ -1,5 +1,9 @@
-import express, { Application } from "express";
+import express, { Application, json, urlencoded } from "express";
+import { Response as ExResponse, Request as ExRequest, NextFunction } from "express";
+
 import path from "path";
+
+import swaggerUi from "swagger-ui-express";
 
 import { RegisterRoutes } from "../build/routes";
 
@@ -10,19 +14,12 @@ require("dotenv").config();
 
 import { connectToMongoDB } from "./MongoDB/mongodb";
 import { Scheduler } from "./Services/Schedule/schedule";
-import { swaggerSetup } from "./Services/Swagger/swagger";
+
 import { createWinstonLoggerWithLoggly } from "./Services/Winston/winston";
-
-const bodyParser = require("body-parser");
-const jsonParser = bodyParser.json();
-
-// const matchController = require("./Route/Api/Data/Match");
-// const leaugeController = require("./Route/Api/Data/SummonerByRank");
-// const summonerController = require("./Route/Api/Data/SummonerData");
-// const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
-// const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
+import { ErrorService } from "./Services/ErrorService";
 
 const schedule: Scheduler = new Scheduler();
+const errorService: ErrorService = new ErrorService();
 
 const setupApp = async (): Promise<Application> => {
 	const APP: Application = express();
@@ -32,17 +29,21 @@ const setupApp = async (): Promise<Application> => {
 			origin: "*",
 		}),
 	);
+	APP.use(
+		urlencoded({
+			extended: true,
+		}),
+	);
 
-	// tsc does not compile static files into build directory
+	APP.use(json());
+
 	APP.use(express.static(path.join(__dirname, "Public")));
 
 	RegisterRoutes(APP);
 
-	// APP.use("/api/data/summoner", jsonParser, summonerController);
-	// APP.use("/api/data/league", jsonParser, leaugeController);
-	// APP.use("/api/data/match", jsonParser, matchController);
-	// APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
-	// APP.use("/api/refresh/match", jsonParser, matchRefreshController);
+	APP.use((err: unknown, req: ExRequest, res: ExResponse, next: NextFunction) => {
+		errorService.determineError(err, req, res, next);
+	});
 
 	/**
 	 * start and setup of the Application
@@ -57,7 +58,9 @@ const setupApp = async (): Promise<Application> => {
 		}
 
 		try {
-			swaggerSetup(APP, 1337);
+			APP.use("/swagger", swaggerUi.serve, async (_req: ExRequest, res: ExResponse) => {
+				return res.send(swaggerUi.generateHTML(await import("../build/swagger.json")));
+			});
 
 			winston.log("info", `Swagger has been setup`);
 		} catch (error) {
@@ -76,7 +79,7 @@ const setupApp = async (): Promise<Application> => {
 			},
 		);
 	}
-	if (process.env.RUN_JOB === "stop") {
+	if (process.env.NODE_ENV !== "test" && process.env.RUN_JOB === "stop") {
 		console.log("0: Not running any background jobs");
 		winston.log("info", `Not running any background jobs`);
 	}
@@ -91,6 +94,6 @@ const setupApp = async (): Promise<Application> => {
 	return APP;
 };
 
-const startedApp = setupApp();
+setupApp();
 
-export { startedApp };
+export default setupApp;

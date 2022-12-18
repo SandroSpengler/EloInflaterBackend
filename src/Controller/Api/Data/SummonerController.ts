@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 // import { Request, Response, Router } from "express";
 
@@ -7,10 +7,11 @@ import { SummonerRepository } from "../../../Repository/SummonerRepository";
 import { RiotGamesHttp } from "../../../Services/HttpService";
 import { SummonerService } from "../../../Services/SummonerService";
 
-import { formatSummonerForSending } from "../../../Services/FormatDocumentService";
-
-import { Controller, Get, Path, Query, Route, SuccessResponse, Response } from "tsoa";
+import { Controller, Get, Path, Query, Route, SuccessResponse, Response, Post } from "tsoa";
 import { ISummoner } from "../../../Models/Interfaces/Summoner";
+import { Conflict, NotFound } from "../../../Models/Interfaces/Error/Http4xx";
+import HttpError from "../../../Models/Interfaces/Error/HttpError";
+import { InternalServer } from "../../../Models/Interfaces/Error/Http5xx";
 
 // const express = require("express");
 // const router = express.Router();
@@ -94,10 +95,10 @@ import { ISummoner } from "../../../Models/Interfaces/Summoner";
 
 @Route("api/data/summoner")
 export class SummonerController extends Controller {
-	private summonerService: SummonerService;
-	private summonerRepo: SummonerRepository;
+	public summonerRepo: SummonerRepository;
+	public summonerService: SummonerService;
 
-	private RGHttpClient;
+	public RGHttpClient: RiotGamesHttp;
 
 	constructor() {
 		super();
@@ -109,13 +110,60 @@ export class SummonerController extends Controller {
 		this.summonerService = new SummonerService(this.summonerRepo, this.RGHttpClient);
 	}
 
+	@Get("")
+	@SuccessResponse("200")
+	@Response<HttpError>("409", "Not a development environment")
+	public async getAllSummoners(): Promise<ISummoner[]> {
+		if (process.env.NODE_ENV && process.env.NODE_ENV !== "development") {
+			throw new Conflict("Not a development environment", 409);
+		}
+
+		const summonersInDB: ISummoner[] | null = await this.summonerService.findAllSummoners();
+
+		if (summonersInDB === null) throw new NotFound("summoners not found", 404);
+
+		return summonersInDB;
+	}
+
 	@Get("{summonerName}")
 	@SuccessResponse("200")
+	@Response<HttpError>("404", "Send if the Summoner could not be found")
 	public async getSummonerByName(@Path() summonerName: string): Promise<ISummoner> {
-		const summonerInDB: ISummoner | null = await this.summonerRepo.findSummonerByName(summonerName);
+		const summonerInDB: ISummoner | null = await this.summonerService.findSummonerByName(
+			summonerName,
+		);
 
-		if (summonerInDB === null) throw new Error("Smmoner is NULL");
+		if (summonerInDB === null) {
+			throw new NotFound(`could not find summoner ${summonerName}`, 404);
+		}
 
 		return summonerInDB;
+	}
+
+	@Post("{summonerName}")
+	@SuccessResponse("200")
+	@Response<HttpError>("409", "Summoner already exsits")
+	public async postSummonerByName(@Path() summonerName: string): Promise<ISummoner> {
+		let summonerInDB = await this.summonerService.findSummonerByName(summonerName);
+		let summonerReponse: AxiosResponse<ISummoner, any>;
+		let summonerCreated: ISummoner | null;
+
+		if (summonerInDB != null) throw new Conflict("Summoner already exsits", 409);
+
+		try {
+			summonerReponse = await this.RGHttpClient.getSummonerByName(summonerName);
+
+			await this.summonerRepo.createSummoner(summonerReponse.data);
+
+			summonerCreated = await this.summonerRepo.findSummonerByName(summonerReponse.data.name);
+
+			// ToDo
+			// Error for 5xx
+			if (summonerCreated === null) throw new InternalServer("Internal server error", 500);
+		} catch (error) {
+			throw error;
+		}
+
+		return summonerCreated;
 	}
 }

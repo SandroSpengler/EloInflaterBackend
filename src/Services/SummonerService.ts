@@ -87,6 +87,37 @@ export class SummonerService {
 		}
 	};
 
+	public findAllSummoners = async (): Promise<Summoner[] | null> => {
+		try {
+			let foundSummoner: Summoner[] | null = await this.summonerRepo.findAllSummoners();
+
+			if (foundSummoner != null) return foundSummoner;
+
+			return null;
+		} catch (error) {
+			throw error;
+		}
+	};
+
+	/**
+	 * Finds Summoner by Name caseINsensitive
+	 *
+	 * @param name Name of the Summoner
+	 *
+	 * @returns Summoner
+	 */
+	public findSummonerByName = async (name: String): Promise<Summoner | null> => {
+		try {
+			let foundSummoner: Summoner | null = await this.summonerRepo.findSummonerByName(name);
+
+			if (foundSummoner != null) return foundSummoner;
+
+			return null;
+		} catch (error) {
+			throw error;
+		}
+	};
+
 	/**
 	 * Updates/Creates all Summoners in DB based SbLCollection
 	 *
