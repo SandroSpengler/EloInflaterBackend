@@ -1,85 +1,84 @@
-import { connectToMongoDB } from "../../app";
-
 import Summoner from "../../Models/Interfaces/Summoner";
 
 import { MatchRepository } from "../../Repository/MatchRepository";
 import { SummonerRepository } from "../../Repository/SummonerRepository";
 
 import { MatchService } from "../../Services/MatchService";
-import { RiotGamesHttp } from "../../Services/Http";
+import { RiotGamesHttp } from "../../Services/HttpService";
 import { DataMiningService } from "../../Services/DataMiningService";
 
 describe("Match", () => {
-  let summonerMock: Summoner;
+	let summonerMock: Summoner;
 
-  let RGHttp: RiotGamesHttp;
+	let RGHttp: RiotGamesHttp;
 
-  let matchRepo: MatchRepository;
-  let matchService: MatchService;
+	let matchRepo: MatchRepository;
+	let matchService: MatchService;
 
-  let summonerRepo: SummonerRepository;
-  let dataMiningService: DataMiningService;
+	let summonerRepo: SummonerRepository;
+	let dataMiningService: DataMiningService;
 
-  beforeAll(async () => {
-    RGHttp = new RiotGamesHttp();
+	beforeAll(async () => {
+		RGHttp = new RiotGamesHttp();
 
-    matchRepo = new MatchRepository();
-    matchService = new MatchService(matchRepo, RGHttp);
+		matchRepo = new MatchRepository();
+		matchService = new MatchService(matchRepo, RGHttp);
 
-    summonerRepo = new SummonerRepository();
+		summonerRepo = new SummonerRepository();
 
-    dataMiningService = new DataMiningService(summonerRepo, RGHttp, matchRepo, matchService);
+		dataMiningService = new DataMiningService(summonerRepo, RGHttp, matchRepo, matchService);
 
-    summonerMock = require("../../__mock__/Data/Summoner.json");
+		summonerMock = require("../../__mock__/Data/Summoner.json");
+	});
 
-    await connectToMongoDB(process.env.DB_CONNECTION);
-  });
+	describe("Functions", () => {
+		it.skip("Function => All Matches in DB in SummonerMatchList", async () => {
+			const summonerInDB = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
 
-  describe("Functions", () => {
-    it("Function => All Matches in DB in SummonerMatchList", async () => {
-      const summonerInDB = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+			if (summonerInDB === null) throw new Error("Function => Summoner does not exist in DB");
 
-      if (summonerInDB === null) throw new Error("Function => Summoner does not exist in DB");
+			try {
+				await dataMiningService.addUnassignedMatchesToSummoner(summonerInDB);
 
-      try {
-        await dataMiningService.addUnassignedMatchesToSummoner(summonerInDB);
+				const matchesInDBForSummoner = await matchRepo.findAllMatchesBySummonerPUUID(
+					summonerInDB.puuid,
+				);
 
-        const matchesInDBForSummoner = await matchRepo.findAllMatchesBySummonerPUUID(summonerInDB.puuid);
+				const summonerInDBUpdated = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
 
-        const summonerInDBUpdated = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+				if (summonerInDBUpdated === null) throw new Error();
 
-        if (summonerInDBUpdated === null) throw new Error();
+				expect(
+					summonerInDB.uninflatedMatchList.length + summonerInDB.inflatedMatchList.length,
+				).toEqual(matchesInDBForSummoner.length);
+			} catch (error) {
+				throw error;
+			}
+		});
 
-        expect(summonerInDB.uninflatedMatchList.length + summonerInDB.inflatedMatchList.length).toEqual(
-          matchesInDBForSummoner.length,
-        );
-      } catch (error) {
-        throw error;
-      }
-    });
+		it.skip("Function => Add/Update recent Matches for Summoner", async () => {
+			// Update Summoner Matches
+			/// GET Matches for User eg 73
+			// in DB are 73
+			// Call update MatchesForUser
 
-    it("Function => Add/Update recent Matches for Summoner", async () => {
-      // Update Summoner Matches
-      /// GET Matches for User eg 73
-      // in DB are 73
-      // Call update MatchesForUser
+			const summonerBeforeUpdate = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
 
-      const summonerBeforeUpdate = await summonerRepo.findSummonerByPUUID(summonerMock.puuid);
+			if (summonerBeforeUpdate === null) throw new Error("Mock Summoner not found in DB");
 
-      if (summonerBeforeUpdate === null) throw new Error("Mock Summoner not found in DB");
+			const summonerMatches = await matchRepo.findAllMatchesBySummonerPUUID(summonerMock.puuid);
 
-      const summonerMatches = await matchRepo.findAllMatchesBySummonerPUUID(summonerMock.puuid);
+			expect(
+				summonerBeforeUpdate.uninflatedMatchList.length +
+					summonerBeforeUpdate.inflatedMatchList.length,
+			).toEqual(summonerMatches.length);
 
-      expect(summonerBeforeUpdate.uninflatedMatchList.length + summonerBeforeUpdate.inflatedMatchList.length).toEqual(
-        summonerMatches.length,
-      );
-
-      try {
-        await dataMiningService.addNewMatchesToSummoner(summonerBeforeUpdate);
-      } catch (error) {
-        // console.log(error);
-        throw error;
-      }
-    });
-  });
+			try {
+				await dataMiningService.addNewMatchesToSummoner(summonerBeforeUpdate);
+			} catch (error) {
+				// console.log(error);
+				throw error;
+			}
+		});
+	});
 });

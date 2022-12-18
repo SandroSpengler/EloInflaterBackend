@@ -1,9 +1,3 @@
-import Summoner from "../Interfaces/Summoner";
+type rankSolo = "CHALLENGER" | "GRANDMASTER" | "MASTER";
 
-type SummonerResponse = {
-  success: boolean;
-  result: Summoner | Summoner[] | null;
-  error: string | null;
-};
-
-export { SummonerResponse };
+export { rankSolo };
