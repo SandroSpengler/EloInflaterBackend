@@ -1,6 +1,8 @@
 import express, { Application } from "express";
 import path from "path";
 
+import { RegisterRoutes } from "../build/routes";
+
 import cors from "cors";
 import * as winston from "winston";
 
@@ -14,11 +16,11 @@ import { createWinstonLoggerWithLoggly } from "./Services/Winston/winston";
 const bodyParser = require("body-parser");
 const jsonParser = bodyParser.json();
 
-const matchController = require("./Route/Api/Data/Match");
-const leaugeController = require("./Route/Api/Data/SummonerByRank");
-const summonerController = require("./Route/Api/Data/SummonerData");
-const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
-const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
+// const matchController = require("./Route/Api/Data/Match");
+// const leaugeController = require("./Route/Api/Data/SummonerByRank");
+// const summonerController = require("./Route/Api/Data/SummonerData");
+// const summonerRefreshController = require("./Route/Api/Refresh/SummonerRefresh");
+// const matchRefreshController = require("./Route/Api/Refresh/MatchRefresh");
 
 const schedule: Scheduler = new Scheduler();
 
@@ -34,11 +36,13 @@ const setupApp = async (): Promise<Application> => {
 	// tsc does not compile static files into build directory
 	APP.use(express.static(path.join(__dirname, "Public")));
 
-	APP.use("/api/data/summoner", jsonParser, summonerController);
-	APP.use("/api/data/league", jsonParser, leaugeController);
-	APP.use("/api/data/match", jsonParser, matchController);
-	APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
-	APP.use("/api/refresh/match", jsonParser, matchRefreshController);
+	RegisterRoutes(APP);
+
+	// APP.use("/api/data/summoner", jsonParser, summonerController);
+	// APP.use("/api/data/league", jsonParser, leaugeController);
+	// APP.use("/api/data/match", jsonParser, matchController);
+	// APP.use("/api/refresh/summoner", jsonParser, summonerRefreshController);
+	// APP.use("/api/refresh/match", jsonParser, matchRefreshController);
 
 	/**
 	 * start and setup of the Application
