@@ -1,10 +1,8 @@
 import { Document } from "mongoose";
 
-export default interface ISummonerSchema extends Partial<Document>, ISummoner {}
+export default interface ISummonerSchema extends Partial<Document>, Summoner {}
 
-export { ISummoner };
-
-interface ISummoner {
+export interface Summoner {
 	summonerId: string;
 	accountId: string;
 	puuid: string;
