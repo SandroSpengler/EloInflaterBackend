@@ -49,9 +49,9 @@ class Scheduler {
 
 	schedule = async (): Promise<void> => {
 		try {
-			await this.updateSbLCollections();
+			// await this.updateSbLCollections();
 
-			await this.validateSummonerInSbLCollection();
+			// await this.validateSummonerInSbLCollection();
 
 			await this.addNewMatches();
 		} catch (error: any) {
@@ -199,7 +199,7 @@ class Scheduler {
 						updateAbleSummoners.length
 					}`,
 				);
-				await this.dataMiningService.addNewMatchesToSummoner(summoner);
+				await this.dataMiningService.addNewMatchesToSummoner(summoner.puuid);
 			}
 		} catch (error) {
 			throw error;

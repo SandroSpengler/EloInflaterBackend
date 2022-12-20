@@ -126,6 +126,7 @@ const SummonerSchema: Schema = new Schema(
 	},
 );
 
+SummonerSchema.index({ puuid: 1 });
 SummonerSchema.index({ rankSolo: 1 });
 
 //#endregion
