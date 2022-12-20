@@ -87,7 +87,7 @@ export class MatchController extends Controller {
 		}
 
 		try {
-			await this.dataMiningService.addNewMatchesToSummoner(summonerInDB);
+			await this.dataMiningService.addNewMatchesToSummoner(summonerInDB.puuid);
 
 			await this.summonerRepo.findSummonerByID(summonerId);
 		} catch (error) {

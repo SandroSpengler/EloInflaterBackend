@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchRepository } from "../Repository/MatchRepository";
@@ -40,15 +40,28 @@ export class DataMiningService {
 	 *
 	 * @void
 	 */
-	addNewMatchesToSummoner = async (summoner: Summoner): Promise<void> => {
+	addNewMatchesToSummoner = async (summonerPUUID: string): Promise<void> => {
+		let matchRetryCount: number = 3;
+
+		// 1. Get latest 100 matches for the summoner
+		// 2. Add all matches unassigned matches to the summoner
+		// 3. Get the summoner after is has been updated
+		// 4. Check what matches are new to the summoner
+		// 	4.1 Match is new if summoner.inflated and uninflated do not contain the matchid
+		// 5. Request all matches and write them to the DB
+
 		try {
-			const matchResponse = await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner.puuid);
+			const recentMatches = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summonerPUUID)).data;
 
-			const matchesForSummoner = await matchResponse.data;
+			await this.addUnassignedMatchesToSummoner(summonerPUUID);
 
-			await this.addUnassignedMatchesToSummoner(summoner);
+			const summoner = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
 
-			const newMatchIdsForSummoner = matchesForSummoner.filter((matchId) => {
+			if (summoner == null) {
+				throw new Error(`Summoner with PUUID: ${summonerPUUID} could not be found`);
+			}
+
+			let newMatchIdsForSummoner = recentMatches.filter((matchId) => {
 				let checkUninflated = summoner.uninflatedMatchList.find(
 					(summonerMatchId) => summonerMatchId === matchId,
 				);
@@ -72,32 +85,17 @@ export class DataMiningService {
 				return;
 			}
 
-			for (let [index, matchId] of newMatchIdsForSummoner.entries()) {
-				winston.log("info", `Adding Match ${index + 1} of ${newMatchIdsForSummoner.length}`);
+			for (let i = 0; i < matchRetryCount; i++) {
+				winston.log("info", `Retry ${i}`);
 
-				const matchInDB = await this.matchRepo.findMatchById(matchId);
-
-				if (matchInDB === null) {
-					try {
-						const matchData = (await this.RGHttp.getMatchByMatchId(matchId)).data;
-						await this.matchRepo.createMatch(matchData);
-					} catch (error) {
-						if (axios.isAxiosError(error)) {
-							if (error.response?.status === 404) {
-								continue;
-							} else {
-								throw error;
-							}
-						}
-					}
-				}
+				newMatchIdsForSummoner = await this.requestAndAddNewMatchInformation(
+					newMatchIdsForSummoner,
+				);
 			}
 		} catch (error) {
 			throw error;
 		} finally {
-			let currentTime = new Date().getTime();
-			summoner.lastMatchUpdate = currentTime;
-			await this.addUnassignedMatchesToSummoner(summoner);
+			await this.addUnassignedMatchesToSummoner(summonerPUUID);
 		}
 	};
 
@@ -108,10 +106,13 @@ export class DataMiningService {
 	 *
 	 * @void
 	 */
-	addUnassignedMatchesToSummoner = async (summoner: Summoner) => {
-		if (summoner === undefined || summoner === null) throw new Error("No Summoner was provided");
-		if (summoner.puuid === undefined)
-			throw new Error(`Summoner ${summoner.name} does not have a PUUID`);
+	addUnassignedMatchesToSummoner = async (summonerPUUID: string) => {
+		if (summonerPUUID === undefined)
+			throw new Error(`Summoner ${summonerPUUID} does not have a PUUID`);
+
+		const summoner = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+
+		if (summoner === null) throw new Error("No Summoner was provided");
 
 		try {
 			const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(
@@ -159,7 +160,61 @@ export class DataMiningService {
 		} catch (error) {
 			throw error;
 		} finally {
+			let currentTime = new Date().getTime();
+
+			summoner.lastMatchUpdate = currentTime;
+
 			await this.summonerRepo.updateSummonerByPUUID(summoner);
 		}
+	};
+
+	/**
+	 * Requests all matches for a given matchId List and adds them to the DB
+	 * @async
+	 * @void
+	 *
+	 * @param matchIds List of all matches that need should be written into the DB
+	 *
+	 * @throws AxiosError 429 or 403 if they occured
+	 */
+	private requestAndAddNewMatchInformation = async (matchIds: string[]): Promise<string[]> => {
+		const matchRequests: Promise<AxiosResponse<MatchData, any>>[] = matchIds.map((matchId) => {
+			return this.RGHttp.getMatchByMatchId(matchId);
+		});
+
+		const settledMatches = await Promise.allSettled(matchRequests);
+
+		const matchDataFulfilled = settledMatches
+			.filter((match) => {
+				return match.status === "fulfilled";
+			})
+			.map((promise) => {
+				const p = promise as PromiseFulfilledResult<AxiosResponse<MatchData, any>>;
+
+				return p.value.data;
+			});
+
+		if (matchDataFulfilled.length === 0) {
+			return [];
+		}
+
+		for (let [index, match] of matchDataFulfilled.entries()) {
+			await this.matchRepo.createMatch(match);
+
+			winston.log(
+				"info",
+				`Added Match ${index + 1} of ${matchDataFulfilled.length}. Fulfilled/AllMatches ${
+					matchDataFulfilled.length
+				}/${matchIds.length}`,
+			);
+		}
+
+		const rejectedMatchIds = matchIds.filter((matchId) => {
+			return !matchDataFulfilled.find((matchData) => {
+				return matchData.metadata.matchId === matchId;
+			});
+		});
+
+		return rejectedMatchIds;
 	};
 }
