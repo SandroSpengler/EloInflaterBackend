@@ -2,14 +2,14 @@ import axios from "axios";
 import * as winston from "winston";
 
 import { MatchRepository } from "../../Repository/MatchRepository";
-import { SummonerRepository } from "../../Repository/SummonerRepository";
 import { SummonerByLeagueRepository } from "../../Repository/SummonerByLeagueRepository";
+import { SummonerRepository } from "../../Repository/SummonerRepository";
 
+import { DataMiningService } from "../../Services/DataMiningService";
 import { RiotGamesHttp } from "../../Services/HttpService";
 import { MatchService } from "../../Services/MatchService";
-import { SummonerService } from "../../Services/SummonerService";
-import { DataMiningService } from "../../Services/DataMiningService";
 import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
+import { SummonerService } from "../../Services/SummonerService";
 
 class Scheduler {
 	private RGHttp = new RiotGamesHttp();
@@ -49,10 +49,8 @@ class Scheduler {
 
 	schedule = async (): Promise<void> => {
 		try {
-			// await this.updateSbLCollections();
-
-			// await this.validateSummonerInSbLCollection();
-
+			await this.updateSbLCollections();
+			await this.validateSummonerInSbLCollection();
 			await this.addNewMatches();
 		} catch (error: any) {
 			if (axios.isAxiosError(error)) {

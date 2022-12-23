@@ -80,6 +80,28 @@ export class MatchRepository {
 		return null;
 	};
 
+	createMultipleMatches = async (matchList: MatchData[]): Promise<MatchData | null> => {
+		try {
+			const mappedMatches: MatchData[] = [];
+
+			matchList.forEach((match) => {
+				let tmpMatch = new MatchSchema();
+
+				(tmpMatch._id as any) = match.metadata.matchId as any;
+				tmpMatch.metadata = match.metadata;
+				tmpMatch.info = match.info;
+
+				mappedMatches.push(tmpMatch);
+			});
+
+			await MatchSchema.insertMany(mappedMatches);
+		} catch (error) {
+			throw error;
+		}
+
+		return null;
+	};
+
 	updateMatch = async (match: MatchData): Promise<MatchData | null> => {
 		let matchById: MatchData | null;
 		try {

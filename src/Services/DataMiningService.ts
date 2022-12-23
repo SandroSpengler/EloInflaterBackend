@@ -86,7 +86,13 @@ export class DataMiningService {
 			}
 
 			for (let i = 0; i < matchRetryCount; i++) {
-				winston.log("info", `Retry ${i}`);
+				if (newMatchIdsForSummoner.length === 0) {
+					break;
+				}
+
+				if (i > 0) {
+					winston.log("info", `Retry ${i}`);
+				}
 
 				newMatchIdsForSummoner = await this.requestAndAddNewMatchInformation(
 					newMatchIdsForSummoner,
@@ -198,15 +204,19 @@ export class DataMiningService {
 			return [];
 		}
 
-		for (let [index, match] of matchDataFulfilled.entries()) {
-			await this.matchRepo.createMatch(match);
+		const matchWritePromise = matchDataFulfilled.map((matchDataFulfilled) => {
+			return this.matchRepo.createMatch(matchDataFulfilled);
+		});
+
+		try {
+			await Promise.all(matchWritePromise);
 
 			winston.log(
 				"info",
-				`Added Match ${index + 1} of ${matchDataFulfilled.length}. Fulfilled/AllMatches ${
-					matchDataFulfilled.length
-				}/${matchIds.length}`,
+				`Added ${matchDataFulfilled.length} Match(s). Fulfilled/AllMatches ${matchDataFulfilled.length}/${matchIds.length}`,
 			);
+		} catch (error) {
+			winston.error("info", `Could not write Matches into DB ${error}`);
 		}
 
 		const rejectedMatchIds = matchIds.filter((matchId) => {
