@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import * as winston from "winston";
 
 import { MatchRepository } from "../../Repository/MatchRepository";
@@ -10,8 +10,10 @@ import { RiotGamesHttp } from "../../Services/HttpService";
 import { MatchService } from "../../Services/MatchService";
 import { SummonerByLeagueService } from "../../Services/SummonerByLeagueService";
 import { SummonerService } from "../../Services/SummonerService";
+import MailService from "../MailService";
 
 class Scheduler {
+	private mailService: MailService;
 	private RGHttp = new RiotGamesHttp();
 
 	private summonerRepo = new SummonerRepository();
@@ -31,6 +33,7 @@ class Scheduler {
 	);
 
 	constructor() {
+		this.mailService = new MailService();
 		this.RGHttp = new RiotGamesHttp();
 
 		this.summonerRepo = new SummonerRepository();
@@ -53,18 +56,33 @@ class Scheduler {
 			await this.validateSummonerInSbLCollection();
 			await this.addNewMatches();
 		} catch (error: any) {
-			if (axios.isAxiosError(error)) {
-				if (error.response?.status === 429) {
-					winston.log("warn", `Rate Limit:  ${error.message}`);
-					console.error(error.message);
-				} else {
-					winston.log("error", error.message);
-					console.log(error.message);
-				}
-			} else {
+			if (!axios.isAxiosError(error)) {
 				winston.log("error", error.message);
 				console.log(error.message);
+
+				return;
 			}
+
+			const axiosError = error as AxiosError;
+
+			if (axiosError.response?.status === 403) {
+				winston.log("error", `Unauthorized ${error.message}`);
+				console.error(error.message);
+
+				await this.mailService.sendMail();
+
+				return;
+			}
+
+			if (axiosError.response?.status === 429) {
+				winston.log("error", `Rate Limit: ${error.message}`);
+				console.error(error.message);
+
+				return;
+			}
+
+			winston.log("error", error.message);
+			console.log(error.message);
 		} finally {
 			const timeout = 2 * 15 * 1000;
 
