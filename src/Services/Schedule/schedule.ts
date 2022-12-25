@@ -52,8 +52,8 @@ class Scheduler {
 
 	schedule = async (): Promise<void> => {
 		try {
-			await this.updateSbLCollections();
-			await this.validateSummonerInSbLCollection();
+			// await this.updateSbLCollections();
+			// await this.validateSummonerInSbLCollection();
 			await this.addNewMatches();
 		} catch (error: any) {
 			if (!axios.isAxiosError(error)) {
@@ -191,6 +191,14 @@ class Scheduler {
 	addNewMatches = async (): Promise<void> => {
 		const allSummoners = await this.summonerRepo.findAllRankedSummonersAboveMaster();
 
+		const summonersOutstandingMatches = allSummoners.filter((summoner) => {
+			if (summoner.outstandingMatches === undefined) {
+				return;
+			}
+
+			return summoner.outstandingMatches! > 0;
+		});
+
 		const updateAbleSummoners = allSummoners
 			.filter((summoner) => {
 				if (this.summonerService.checkIfSummonerMatchesCanBeUpdated(summoner)) {
@@ -202,6 +210,25 @@ class Scheduler {
 			});
 
 		try {
+			// Do summoners first that have unadded matches
+			if (summonersOutstandingMatches.length > 0) {
+				for (let [index, summoner] of summonersOutstandingMatches.entries()) {
+					winston.log(
+						"info",
+						`Updating Summoner matches for ${summoner.name} at ${index + 1} of ${
+							updateAbleSummoners.length
+						}`,
+					);
+					console.log(
+						"info",
+						`Updating Summoner matches for ${summoner.name} at ${index + 1} of ${
+							updateAbleSummoners.length
+						}`,
+					);
+					await this.dataMiningService.addNewMatchesToSummoner(summoner.puuid);
+				}
+			}
+
 			for (let [index, summoner] of updateAbleSummoners.entries()) {
 				winston.log(
 					"info",

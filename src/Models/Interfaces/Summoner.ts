@@ -30,6 +30,7 @@ export interface Summoner {
 	zhonaysCastCount: number;
 	lastRankUpdate?: number;
 	lastMatchUpdate?: number;
+	outstandingMatches?: number;
 	createdAt?: number;
 	updatedAt?: number;
 }

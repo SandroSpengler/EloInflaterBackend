@@ -18,6 +18,7 @@ services:
       - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
       - LOGGLY_TOKEN=${LOGGLY_TOKEN}
       - NODE_OPTIONS=--max_old_space_size=6144
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     command: npm run prod
     volumes:
       - ~/Logs/Eloinflater:/usr/src/app/Logs

@@ -6,7 +6,6 @@ COPY ./yarn.lock /usr/src/app
 # RUN rm -r /usr/src/app/build
 ARG NODE_ENV
 RUN yarn install
-RUN yarn install -g typescript
 COPY . /usr/src/app
-EXPOSE 5000
+EXPOSE 1337
 CMD ["yarn","run","dev"]

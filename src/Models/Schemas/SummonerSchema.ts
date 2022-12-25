@@ -114,6 +114,10 @@ const SummonerSchema: Schema = new Schema(
 		lastMatchUpdate: {
 			type: Number,
 		},
+		outstandingMatches: {
+			type: Number,
+			default: 0,
+		},
 		createdAt: {
 			type: Number,
 		},

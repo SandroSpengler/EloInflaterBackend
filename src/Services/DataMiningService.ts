@@ -43,13 +43,6 @@ export class DataMiningService {
 	addNewMatchesToSummoner = async (summonerPUUID: string): Promise<void> => {
 		let matchRetryCount: number = 3;
 
-		// 1. Get latest 100 matches for the summoner
-		// 2. Add all matches unassigned matches to the summoner
-		// 3. Get the summoner after is has been updated
-		// 4. Check what matches are new to the summoner
-		// 	4.1 Match is new if summoner.inflated and uninflated do not contain the matchid
-		// 5. Request all matches and write them to the DB
-
 		try {
 			const recentMatches = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summonerPUUID)).data;
 
@@ -87,6 +80,12 @@ export class DataMiningService {
 
 			for (let i = 0; i < matchRetryCount; i++) {
 				if (newMatchIdsForSummoner.length === 0) {
+					const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+
+					summonerInDB!.outstandingMatches = 0;
+
+					await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
+
 					break;
 				}
 
@@ -97,6 +96,11 @@ export class DataMiningService {
 				newMatchIdsForSummoner = await this.requestAndAddNewMatchInformation(
 					newMatchIdsForSummoner,
 				);
+				const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+
+				summonerInDB!.outstandingMatches = newMatchIdsForSummoner.length;
+
+				await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
 			}
 		} catch (error) {
 			throw error;

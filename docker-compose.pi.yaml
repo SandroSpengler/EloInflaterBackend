@@ -19,6 +19,7 @@ services:
       - LOGGLY_TOKEN=${LOGGLY_TOKEN}
       - VIRTUAL_HOST=eloinflater.axfert.com
       - LETSENCRYPT_HOST=eloinflater.axfert.com
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     command: npm run prod
     volumes:
       - ~/Logs/Eloinflater:/usr/src/app/Logs
