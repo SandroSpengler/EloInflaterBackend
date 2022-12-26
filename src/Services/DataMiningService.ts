@@ -36,48 +36,28 @@ export class DataMiningService {
 	 * Requests new Matches for Summoner and adds them
 	 * @async
 	 *
-	 * @param { summoner } Summoner that new matches should be added for
+	 * @param SummonerPUUID that new matches should be added for
 	 *
 	 * @void
 	 */
 	addNewMatchesToSummoner = async (summonerPUUID: string): Promise<void> => {
 		let matchRetryCount: number = 3;
+		const summoner = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+
+		if (summoner === null) throw new Error("No Summoner was provided");
+
+		let newMatchIdsForSummoner = await this.queryOustandingMatchesBySummonerPUUID(summoner);
+
+		if (newMatchIdsForSummoner.length === 0) {
+			summoner.lastMatchUpdate = new Date().getTime();
+			summoner.outstandingMatches = 0;
+
+			await this.summonerRepo.updateSummonerByPUUID(summoner);
+
+			return;
+		}
 
 		try {
-			const recentMatches = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summonerPUUID)).data;
-
-			await this.addUnassignedMatchesToSummoner(summonerPUUID);
-
-			const summoner = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
-
-			if (summoner == null) {
-				throw new Error(`Summoner with PUUID: ${summonerPUUID} could not be found`);
-			}
-
-			let newMatchIdsForSummoner = recentMatches.filter((matchId) => {
-				let checkUninflated = summoner.uninflatedMatchList.find(
-					(summonerMatchId) => summonerMatchId === matchId,
-				);
-
-				let checkinflated = summoner.inflatedMatchList.find(
-					(summonerMatchId) => summonerMatchId === matchId,
-				);
-
-				// assinged matches can be returned here
-				if (checkUninflated || checkinflated) return;
-
-				return matchId;
-			});
-
-			if (newMatchIdsForSummoner.length === 0) {
-				let currentTime = new Date().getTime();
-				summoner.lastMatchUpdate = currentTime;
-
-				await this.summonerRepo.updateSummonerByPUUID(summoner);
-
-				return;
-			}
-
 			for (let i = 0; i < matchRetryCount; i++) {
 				if (newMatchIdsForSummoner.length === 0) {
 					const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
@@ -96,8 +76,8 @@ export class DataMiningService {
 				newMatchIdsForSummoner = await this.requestAndAddNewMatchInformation(
 					newMatchIdsForSummoner,
 				);
-				const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
 
+				const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
 				summonerInDB!.outstandingMatches = newMatchIdsForSummoner.length;
 
 				await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
@@ -121,6 +101,37 @@ export class DataMiningService {
 		}
 	};
 
+	public queryOustandingMatchesBySummonerPUUID = async (summoner: Summoner): Promise<string[]> => {
+		try {
+			const recentMatches = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner?.puuid)).data;
+
+			await this.addUnassignedMatchesToSummoner(summoner?.puuid);
+
+			if (summoner == null) {
+				throw new Error(`Summoner could not be found`);
+			}
+
+			let newMatchIdsForSummoner = recentMatches.filter((matchId) => {
+				let checkUninflated = summoner.uninflatedMatchList.find(
+					(summonerMatchId) => summonerMatchId === matchId,
+				);
+
+				let checkinflated = summoner.inflatedMatchList.find(
+					(summonerMatchId) => summonerMatchId === matchId,
+				);
+
+				// assinged matches can be returned here
+				if (checkUninflated || checkinflated) return;
+
+				return matchId;
+			});
+
+			return newMatchIdsForSummoner;
+		} catch (error) {
+			throw error;
+		}
+	};
+
 	/**
 	 * Finds all Matches in DB for a summoner and adds them to the Summoner.Matchlists
 	 *
@@ -134,21 +145,19 @@ export class DataMiningService {
 
 		const summoner = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
 
-		if (summoner === null) throw new Error("No Summoner was provided");
-
 		try {
 			const matchesBySummonerPUUID = await this.matchRepo.findAllMatchesBySummonerPUUID(
-				summoner.puuid,
+				summoner!.puuid,
 			);
 
 			if (matchesBySummonerPUUID?.length === 0) return;
 
 			const unassingedMatches = matchesBySummonerPUUID.filter((match) => {
-				let checkUninflated = summoner.uninflatedMatchList.find(
+				let checkUninflated = summoner!.uninflatedMatchList.find(
 					(summonerMatchId) => summonerMatchId === match._id,
 				);
 
-				let checkinflated = summoner.inflatedMatchList.find(
+				let checkinflated = summoner!.inflatedMatchList.find(
 					(summonerMatchId) => summonerMatchId === match._id,
 				);
 
@@ -165,18 +174,18 @@ export class DataMiningService {
 			for (let match of unassingedMatches) {
 				const matchEvaluation = this.matchService.checkSummonerInMatchForEloInflation(
 					match,
-					summoner.puuid,
+					summoner!.puuid,
 				);
 
 				if (matchEvaluation.inflated) {
-					summoner.inflatedMatchList.push(match._id);
+					summoner!.inflatedMatchList.push(match._id);
 
-					summoner.exhaustCount += matchEvaluation.exhaustCount;
-					summoner.exhaustCastCount += matchEvaluation.exhaustCastCount;
-					summoner.tabisCount += matchEvaluation.tabisCount;
-					summoner.zhonaysCount += matchEvaluation.zhonaysCount;
+					summoner!.exhaustCount += matchEvaluation.exhaustCount;
+					summoner!.exhaustCastCount += matchEvaluation.exhaustCastCount;
+					summoner!.tabisCount += matchEvaluation.tabisCount;
+					summoner!.zhonaysCount += matchEvaluation.zhonaysCount;
 				} else {
-					summoner.uninflatedMatchList.push(match._id);
+					summoner!.uninflatedMatchList.push(match._id);
 				}
 			}
 		} catch (error) {
@@ -184,9 +193,9 @@ export class DataMiningService {
 		} finally {
 			let currentTime = new Date().getTime();
 
-			summoner.lastMatchUpdate = currentTime;
+			summoner!.lastMatchUpdate = currentTime;
 
-			await this.summonerRepo.updateSummonerByPUUID(summoner);
+			await this.summonerRepo.updateSummonerByPUUID(summoner!);
 		}
 	};
 
