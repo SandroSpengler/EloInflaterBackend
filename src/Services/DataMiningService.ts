@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, isAxiosError } from "axios";
 import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import { MatchRepository } from "../Repository/MatchRepository";
@@ -103,6 +103,18 @@ export class DataMiningService {
 				await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
 			}
 		} catch (error) {
+			if (isAxiosError(error)) {
+				if (error.response?.status !== 429) {
+					return;
+				}
+
+				const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+
+				summonerInDB!.outstandingMatches = 100;
+
+				await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
+			}
+
 			throw error;
 		} finally {
 			await this.addUnassignedMatchesToSummoner(summonerPUUID);
