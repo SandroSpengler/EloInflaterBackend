@@ -41,7 +41,8 @@ export class DataMiningService {
 	 * @void
 	 */
 	addNewMatchesToSummoner = async (summonerPUUID: string): Promise<void> => {
-		let matchRetryCount: number = 3;
+		await this.addUnassignedMatchesToSummoner(summonerPUUID);
+
 		const summoner = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
 
 		if (summoner === null) throw new Error("No Summoner was provided");
@@ -58,30 +59,12 @@ export class DataMiningService {
 		}
 
 		try {
-			for (let i = 0; i < matchRetryCount; i++) {
-				if (newMatchIdsForSummoner.length === 0) {
-					const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+			newMatchIdsForSummoner = await this.requestAndAddNewMatchInformation(newMatchIdsForSummoner);
 
-					summonerInDB!.outstandingMatches = 0;
+			const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
+			summonerInDB!.outstandingMatches = newMatchIdsForSummoner.length;
 
-					await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
-
-					break;
-				}
-
-				if (i > 0) {
-					winston.log("info", `Retry ${i}`);
-				}
-
-				newMatchIdsForSummoner = await this.requestAndAddNewMatchInformation(
-					newMatchIdsForSummoner,
-				);
-
-				const summonerInDB = await this.summonerRepo.findSummonerByPUUID(summonerPUUID);
-				summonerInDB!.outstandingMatches = newMatchIdsForSummoner.length;
-
-				await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
-			}
+			await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
 		} catch (error) {
 			if (isAxiosError(error)) {
 				if (error.response?.status !== 429) {
@@ -93,9 +76,10 @@ export class DataMiningService {
 				summonerInDB!.outstandingMatches = 100;
 
 				await this.summonerRepo.updateSummonerByPUUID(summonerInDB!);
+				winston.log("error", `Unknown Error ${error.message}`);
 			}
 
-			throw error;
+			winston.log("error", `Rate Limit`);
 		} finally {
 			await this.addUnassignedMatchesToSummoner(summonerPUUID);
 		}
@@ -104,8 +88,6 @@ export class DataMiningService {
 	public queryOustandingMatchesBySummonerPUUID = async (summoner: Summoner): Promise<string[]> => {
 		try {
 			const recentMatches = (await this.RGHttp.getMatchesIdsBySummonerpuuid(summoner?.puuid)).data;
-
-			await this.addUnassignedMatchesToSummoner(summoner?.puuid);
 
 			if (summoner == null) {
 				throw new Error(`Summoner could not be found`);
@@ -241,7 +223,7 @@ export class DataMiningService {
 				`Added ${matchDataFulfilled.length} Match(s). Fulfilled/AllMatches ${matchDataFulfilled.length}/${matchIds.length}`,
 			);
 		} catch (error) {
-			winston.error("info", `Could not write Matches into DB ${error}`);
+			winston.error("error", `Could not write Matches into DB ${error}`);
 		}
 
 		const rejectedMatchIds = matchIds.filter((matchId) => {

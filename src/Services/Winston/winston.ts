@@ -11,41 +11,42 @@ const { combine, timestamp, label, printf } = format;
  * @param token Loggly token for remote logs
  */
 const createWinstonLoggerWithLoggly = async (token: string | undefined) => {
-  try {
-    // if (token === undefined) {
-    //   throw new Error("No Loggly token was provided");
-    // }
+	try {
+		// if (token === undefined) {
+		//   throw new Error("No Loggly token was provided");
+		// }
 
-    // const LogglyLogger: Loggly = new Loggly({
-    //   token: token,
-    //   subdomain: "eloinflater",
-    //   tags: ["Node-JS", process.env.NODE_ENV],
-    //   json: true,
-    // });
+		// const LogglyLogger: Loggly = new Loggly({
+		//   token: token,
+		//   subdomain: "eloinflater",
+		//   tags: ["Node-JS", process.env.NODE_ENV],
+		//   json: true,
+		// });
 
-    const myFormat = printf(({ level, message, label, timestamp }) => {
-      return `${timestamp} [${label}] ${level}: ${message}`;
-    });
+		const myFormat = printf(({ level, message, label, timestamp }) => {
+			return `${timestamp} [${label}] ${level}: ${message}`;
+		});
 
-    const FileLogger = winston.createLogger({
-      transports: [new winston.transports.File({ filename: "Logs/Global.log" })],
-      format: combine(
-        label({
-          label: "EloInflater",
-        }),
-        timestamp(),
-        myFormat,
-        format.json(),
-      ),
-    });
+		const FileLogger = winston.createLogger({
+			transports: [new winston.transports.File({ filename: "Logs/Global.log" })],
+			format: combine(
+				label({
+					label: "EloInflater",
+				}),
+				timestamp(),
+				myFormat,
+				format.json(),
+				format.errors({ stack: true }),
+			),
+		});
 
-    // winston.add(LogglyLogger);
-    winston.add(FileLogger);
+		// winston.add(LogglyLogger);
+		winston.add(FileLogger);
 
-    await winston.log("info", "Loggly created");
-  } catch (error) {
-    console.log(error);
-  }
+		await winston.log("info", "Loggly created");
+	} catch (error) {
+		console.log(error);
+	}
 };
 
 export { createWinstonLoggerWithLoggly };
