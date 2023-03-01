@@ -74,6 +74,7 @@ export class SummonerController extends Controller {
 			summonerName,
 		);
 
+		// What an exciting comment!
 		if (summonerInDB === null) {
 			throw new NotFound(`Could not find summoner ${summonerName}`, 404);
 		}
