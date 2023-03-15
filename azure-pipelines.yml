@@ -45,7 +45,7 @@ stages:
             displayName: Build and push an image to container registry
             inputs:
               containerRegistry: 'Dockerhub_SandroSpengler'
-              repository: 'eloinflater'
+              repository: 'sandrospengler/eloinflater'
               command: 'buildAndPush'
               dockerfile: $(dockerfilePath)
               tags: |
