@@ -26,18 +26,18 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - task: Docker@2
-            displayName: Build and push an image to container registry
-            inputs:
-              command: buildAndPush
-              repository: $(imageRepository)
-              dockerfile: $(dockerfilePath)
-              containerRegistry: $(dockerRegistryServiceConnection)
-              tags: |
-                $(tag)
-          - task: AzureWebAppContainer@1
-            displayName: "Azure Web App on Container Deploy"
-            inputs:
-              azureSubscription: $(azureSubscription)
-              appName: $(appName)
-              imageName: eloinflaterregistry.azurecr.io/$(imageRepository):$(tag)
+          # - task: Docker@2
+          #   displayName: Build and push an image to container registry
+          #   inputs:
+          #     command: buildAndPush
+          #     repository: $(imageRepository)
+          #     dockerfile: $(dockerfilePath)
+          #     containerRegistry: $(dockerRegistryServiceConnection)
+          #     tags: |
+          #       $(tag)
+          # - task: AzureWebAppContainer@1
+          #   displayName: "Azure Web App on Container Deploy"
+          #   inputs:
+          #     azureSubscription: $(azureSubscription)
+          #     appName: $(appName)
+          #     imageName: eloinflaterregistry.azurecr.io/$(imageRepository):$(tag)
