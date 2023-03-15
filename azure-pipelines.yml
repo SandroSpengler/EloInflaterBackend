@@ -47,7 +47,7 @@ stages:
               containerRegistry: 'Dockerhub_SandroSpengler'
               repository: 'eloinflater'
               command: 'buildAndPush'
-              Dockerfile: '**/Dockerfile'
+              dockerfile: $(dockerfilePath)
               tags: |
                 $(tag)
 
