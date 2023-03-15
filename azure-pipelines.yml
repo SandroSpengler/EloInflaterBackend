@@ -41,3 +41,13 @@ stages:
           #     azureSubscription: $(azureSubscription)
           #     appName: $(appName)
           #     imageName: eloinflaterregistry.azurecr.io/$(imageRepository):$(tag)
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              containerRegistry: 'Dockerhub_SandroSpengler'
+              repository: 'eloinflater'
+              command: 'buildAndPush'
+              Dockerfile: '**/Dockerfile'
+              tags: |
+                $(tag)
+
