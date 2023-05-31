@@ -19,7 +19,7 @@ This project is a NodeJS Backend RESTful. The main purpose of this backend is to
 ## Overview
 
 This project is one of 3 parts needed to accumulate and curate summoner data. The following diagram shows the full architecture on a higher level:
-<img src="">
+![Alt text](pictures/EloinflaterOverview.png)
 
 ## Getting started
 
@@ -53,11 +53,9 @@ In order to run the Backend a few environment variables are required:
 - **API_Key**
   The Riot Games API-Key for requesting data
 - **NODE_ENV**
-  The environment that the backend is deployed on
-  Can be _development_, _test_ or _production_
+  The environment that the backend is deployed on can be **_development_**, _test_ or **_production_**
 - **RUN_JOB**
-  Tells the server to automatically refresh summoner data
-  Can be _start_ or _stop_
+  Tells the server to automatically refresh summoner data can be **_start_** or **_stop_**
 
 If the backend will **run locally**, then you will need to create a .env file inside the backend directory and set the environment variables.
 
