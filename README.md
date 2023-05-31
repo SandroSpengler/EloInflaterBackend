@@ -21,6 +21,7 @@ This project is a NodeJS Backend RESTful. The main purpose of this backend is to
     - [Required](#Required-Environment-Variables)
     - [Optional](#Optional-Environment-Variables)
   - [Running the Backend](#Running-the-Backend)
+    - [MongoDB](#MongoDB)
     - [Local](#Local)
     - [Docker](#Docker)
     - [Docker-Compose](#Docker-Compose)
@@ -35,11 +36,13 @@ This project is one of 3 parts needed to accumulate and curate summoner data. Th
 
 ### Installation
 
-In order to run the Eloinflater Backed locally on your machine you need to clone the repository locally. To accomplish this use the command:
+In order to run the Eloinflater Backend locally on your machine you need to clone the repository. To accomplish this use the following command:
 
 `git clone https://github.com/SandroSpengler/EloInflaterBackend.git`
 
 After cloning the repository you'll need to **install all required npm** packages. This project was created with [**Yarn**](https://classic.yarnpkg.com/lang/en/docs/install/#windows-stable) but [npm](https://docs.npmjs.com/cli/v6/commands/npm-install) and [pnpm](https://pnpm.io/installation) should work too.
+
+`yarn install`
 
 ### Docker-Image
 
@@ -67,13 +70,21 @@ In order to run the Backend a few environment variables are required:
 - **RUN_JOB**
   Tells the server to automatically refresh summoner data can be **_start_** or **_stop_**
 
-If the backend will **run locally**, then you will need to create a .env file inside the backend directory and set the environment variables.
+If the backend will **run locally**, then you will need to create a **.env** file inside the backend directory and set the environment variables.
 
 Should you choose to **run the Docker-Image** then you will need to pass the environment variables inside the **docker run** statement.
 
 ### Running the Backend
 
+### MongoDB
+
+The backend requires a MongoDB database in order to read and write data. You'll to run a MongoDB instance and enter the provide the connection string via the environment variables.
+
+The backend uses npm package [Mongoose](https://www.npmjs.com/package/mongoose) and will create all required collections by itself after a database connetion has been established.
+
 #### Local
+
+Now that all required environment variables have been set and
 
 #### Docker
 
