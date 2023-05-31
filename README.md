@@ -37,7 +37,7 @@ An up to date and publicly available Docker-Image is stored on [Dockerhub](https
 
 `docker pull sandrospengler/eloinflater:<VersionTag>`
 
-### Environment variables#
+### Environment variables
 
 In order to run the Backend a few environment variables are required:
 
