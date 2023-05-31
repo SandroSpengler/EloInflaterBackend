@@ -1,3 +1,12 @@
+<div align='center'>
+  <a href='https://eloinflaterinstance.azurewebsites.net/'>
+    <img src='https://tinyurl.com/AzureShield'>
+  </a>
+  <a href='https://eloinflaterinstance.azurewebsites.net/swagger/'>
+    <img src='https://img.shields.io/badge/Docs-Swagger-green?logo=swagger'>
+  </a>
+</div>
+
 # **Eloinflater - Backend**
 
 This project is a NodeJS Backend RESTful. The main purpose of this backend is to provide and curate Data from the Riot Games API for the game League of Legends. This Backend mainly tracks Summoners, their current rank and LP as well their played matches.
@@ -10,7 +19,7 @@ This project is a NodeJS Backend RESTful. The main purpose of this backend is to
   - [Docker](#Docker-Image)
   - [Environment variables](#Environment-variables)
     - [Required](#Required-Environment-Variables)
-      - [Optional](#Optional-Environment-Variables)
+    - [Optional](#Optional-Environment-Variables)
   - [Running the Backend](#Running-the-Backend)
     - [Local](#Local)
     - [Docker](#Docker)
@@ -19,6 +28,7 @@ This project is a NodeJS Backend RESTful. The main purpose of this backend is to
 ## Overview
 
 This project is one of 3 parts needed to accumulate and curate summoner data. The following diagram shows the full architecture on a higher level:
+
 ![Alt text](pictures/EloinflaterOverview.png)
 
 ## Getting started
