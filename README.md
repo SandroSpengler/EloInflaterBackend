@@ -2,6 +2,9 @@
   <a href='https://eloinflaterinstance.azurewebsites.net/'>
     <img src='https://tinyurl.com/AzureShield'>
   </a>
+  <a href='https://eloinflater.axfert.com'>
+    <img src='https://tinyurl.com/BackendLogo'>
+  </a>
   <a href='https://eloinflaterinstance.azurewebsites.net/swagger/'>
     <img src='https://img.shields.io/badge/Docs-Swagger-green?logo=swagger'>
   </a>
@@ -25,6 +28,8 @@ This project is a NodeJS Backend RESTful. The main purpose of this backend is to
     - [Local](#Local)
     - [Docker](#Docker)
     - [Docker-Compose](#Docker-Compose)
+- [Documentation](#Documentation)
+- [Swagger](#Swagger)
 
 ## Overview
 
@@ -49,6 +54,8 @@ After cloning the repository you'll need to **install all required npm** package
 An up to date and publicly available Docker-Image is stored on [Dockerhub](https://hub.docker.com/r/sandrospengler/eloinflater/tags). Images are build for the Linux operating system and will require [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) on Windows to run properly. To pull the image use the following command:
 
 `docker pull sandrospengler/eloinflater:<VersionTag>`
+
+**Don't forget to replace \<VersionTag> with the latest version!**
 
 ### Environment variables
 
@@ -76,16 +83,54 @@ Should you choose to **run the Docker-Image** then you will need to pass the env
 
 ### Running the Backend
 
-### MongoDB
+#### MongoDB
 
 The backend requires a MongoDB database in order to read and write data. You'll to run a MongoDB instance and enter the provide the connection string via the environment variables.
 
-The backend uses npm package [Mongoose](https://www.npmjs.com/package/mongoose) and will create all required collections by itself after a database connetion has been established.
+The backend uses the npm package [Mongoose](https://www.npmjs.com/package/mongoose) and will create all required collections by itself after a database connetion has been established.
 
 #### Local
 
-Now that all required environment variables have been set and
+In order to run the backend locally you'll need need to enter the following command into the cli:
+
+`yarn dev`
+
+This will run the **dev** script inside the package.json build the [tsoa](https://tsoa-community.github.io/docs/introduction.html) routes and allow hotreloading via [nodemon](https://www.npmjs.com/package/nodemon)
 
 #### Docker
 
+After you pulled the Docker-Image as described [here](#Docker-Image) you can run the backend using the default docker run command:
+
+`docker run --name EloinflaterBackend -e DB_CONNECTION=<mongodb://> -e PORT=5000 -d sandrospengler/eloinflater:<VersionTag>`
+
+**Don't forget to replace the variables \<VersionTag> and \<mongodb://>**
+
 #### Docker-Compose
+
+To improve the deployment experience you can also use docker-compose to run the backend:
+
+```yaml
+version: "3"
+
+  eloinflater:
+    container_name: "Eloinflater"
+    image: sandrospengler/eloinflater:${tagId}
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - RUN_JOB=${RUN_JOB}
+      - API_KEY=${API_KEY}
+      - DB_CONNECTION=${DB_CONNECTION_LEAGUE}
+      - VIRTUAL_HOST=<yourexamplehost.com>
+      - LETSENCRYPT_HOST=<yourexamplehost.com>
+    command: npm run prod
+    volumes:
+      - ./:/usr/src/app/Logs
+```
+
+## Documentation
+
+### Swagger
+
+The Backend provides an automatically generated swagger file, which includes all possible endpoints. You can view the [swagger file here](https://eloinflater.axfert.com/swagger/).
