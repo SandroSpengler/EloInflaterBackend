@@ -1,12 +1,12 @@
 <div align='center'>
-  <a href='https://eloinflaterinstance.azurewebsites.net/'>
-    <img src='https://tinyurl.com/AzureShield'>
-  </a>
   <a href='https://eloinflater.axfert.com'>
     <img src='https://tinyurl.com/BackendLogo'>
   </a>
-  <a href='https://eloinflaterinstance.azurewebsites.net/swagger/'>
+  <a href='https://eloinflater.axfert.com/swagger/'>
     <img src='https://img.shields.io/badge/Docs-Swagger-green?logo=swagger'>
+  </a>
+  <a href='https://eloinflaterinstance.azurewebsites.net/'>
+    <img src='https://tinyurl.com/AzureShield'>
   </a>
 </div>
 
@@ -29,7 +29,9 @@ This project is a NodeJS Backend RESTful. The main purpose of this backend is to
     - [Docker](#Docker)
     - [Docker-Compose](#Docker-Compose)
 - [Documentation](#Documentation)
-- [Swagger](#Swagger)
+  - [Swagger](#Swagger)
+  - [Riot Games](#Riot-Games)
+    - [League of Legends API](#League-of-Legends-API)
 
 ## Overview
 
@@ -134,3 +136,13 @@ version: "3"
 ### Swagger
 
 The Backend provides an automatically generated swagger file, which includes all possible endpoints. You can view the [swagger file here](https://eloinflater.axfert.com/swagger/).
+
+You can find more information about Swagger and Open-API on their [website](https://swagger.io/docs/specification/2-0/what-is-swagger/).
+
+### Riot Games
+
+#### League of Legends API
+
+The Eloinflater Backend requests and receives all data directly from Riot Games. Riot Games provides a public API, you can view the documentation and all endpoints [here](https://developer.riotgames.com/docs/lol).
+
+If you wish to request data from the API you will need to create an account for and generate a custom key please refer the [signup process](https://developer.riotgames.com/docs/lol#developer-api-policy_registration).
