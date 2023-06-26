@@ -87,7 +87,7 @@ Should you choose to **run the Docker-Image** then you will need to pass the env
 
 #### MongoDB
 
-The backend requires a MongoDB database in order to read and write data. You'll to run a MongoDB instance and enter the provide the connection string via the environment variables.
+The backend requires a MongoDB database in order to read and write data. You'll will need to run a MongoDB instance and enter the provide the connection string via the environment variables.
 
 The backend uses the npm package [Mongoose](https://www.npmjs.com/package/mongoose) and will create all required collections by itself after a database connetion has been established.
 
