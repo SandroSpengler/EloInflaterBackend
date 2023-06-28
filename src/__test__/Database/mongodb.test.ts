@@ -80,7 +80,7 @@ describe("Match", () => {
 
 				if (foundMatch === null) throw new Error();
 
-				expect(foundMatch._id).toBe(matchIdsToFind[index]);
+				expect(foundMatch.summonerId).toBe(matchIdsToFind[index]);
 			}
 		});
 
