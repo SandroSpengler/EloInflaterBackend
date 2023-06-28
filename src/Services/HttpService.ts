@@ -82,6 +82,22 @@ export class RiotGamesHttp {
 		}
 	};
 
+	public getSummonerRankByLeague = async (matchId: String): Promise<AxiosResponse<MatchData>> => {
+		try {
+			const request = await axios.get<MatchData>(
+				`${this.buildBaseUrl(this.matchRegionUrl, "match/v5/matches/")}${matchId}`,
+				this.buildConfig(),
+			);
+
+			const response = await request;
+
+			return await response;
+		} catch (error) {
+			// console.log(error);
+			throw error;
+		}
+	};
+
 	public getMatchesIdsBySummonerpuuid = async (puuid: string): Promise<AxiosResponse<string[]>> => {
 		try {
 			await this.sleep(200);

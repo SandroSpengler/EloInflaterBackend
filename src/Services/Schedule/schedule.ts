@@ -84,7 +84,7 @@ class Scheduler {
 			winston.log("error", JSON.stringify(error));
 			console.log(error.message);
 		} finally {
-			const timeout = 2 * 15 * 1000;
+			const timeout = process.env.TIMEOUT === undefined ? 20 : parseInt(process.env.TIMEOUT);
 
 			winston.log("info", `Cycle done - Restarting in: ${timeout}ms`);
 			console.log("info", `Cycle done - Restarting in: ${timeout}ms`);
