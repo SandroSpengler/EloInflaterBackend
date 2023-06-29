@@ -64,6 +64,26 @@ export class MatchRepository {
 		}
 	};
 
+	findMatchesBySummonerPUUIDPaginated = async (
+		summonerPUUID: string,
+		skip: number = 0,
+		take: number = 30,
+	): Promise<MatchData[]> => {
+		let matchesById: MatchData[];
+
+		try {
+			matchesById = await MatchSchema.find({ "info.participants.puuid": summonerPUUID })
+				.skip(skip === 0 ? 0 : skip * take)
+				.limit(take === 0 ? 30 : take)
+				.lean()
+				.sort({ "info.gameCreation": -1 });
+
+			return matchesById;
+		} catch (error) {
+			throw error;
+		}
+	};
+
 	createMatch = async (match: MatchData): Promise<MatchData | null> => {
 		try {
 			let tmpMatch = new MatchSchema();

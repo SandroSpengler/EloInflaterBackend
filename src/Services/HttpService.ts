@@ -6,6 +6,7 @@ import { MatchData } from "../Models/Interfaces/MatchData";
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
 import { SbLQueue, SbLTier } from "../Models/Types/SummonerByLeagueTypes";
+import SummonerRankInfo from "../Models/Interfaces/SummonerRank";
 
 export class RiotGamesHttp {
 	// only change by Region
@@ -82,10 +83,14 @@ export class RiotGamesHttp {
 		}
 	};
 
-	public getSummonerRankByLeague = async (matchId: String): Promise<AxiosResponse<MatchData>> => {
+	public getSummonerRankLeagueInfo = async (
+		summonerId: string,
+	): Promise<AxiosResponse<SummonerRankInfo[]>> => {
 		try {
-			const request = await axios.get<MatchData>(
-				`${this.buildBaseUrl(this.matchRegionUrl, "match/v5/matches/")}${matchId}`,
+			const request = axios.get<SummonerRankInfo[]>(
+				`${this.buildBaseUrl(this.regionUrl, "league/v4/entries/by-summoner/")}${encodeURI(
+					summonerId,
+				)}`,
 				this.buildConfig(),
 			);
 

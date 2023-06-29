@@ -1,5 +1,6 @@
 import Summoner from "../Models/Interfaces/Summoner";
 import SummonerByLeague from "../Models/Interfaces/SummonerByLeague";
+import SummonerRankInfo from "../Models/Interfaces/SummonerRank";
 
 import { SummonerRepository } from "../Repository/SummonerRepository";
 
@@ -115,6 +116,37 @@ export class SummonerService {
 			return null;
 		} catch (error) {
 			throw error;
+		}
+	};
+
+	public updateSummonerWithRankInformation = async (
+		summoner: Summoner,
+		summonerRankInfo: SummonerRankInfo[],
+	): Promise<void> => {
+		// currently the most important information is the SoloQueue-Rank
+		for (const rankInfo of summonerRankInfo) {
+			if (rankInfo.queueType === "RANKED_SOLO_5x5") {
+				summoner.rankSolo = rankInfo.tier;
+				summoner.rank = rankInfo.rank;
+				summoner.name = rankInfo.summonerName;
+				summoner.leaguePoints = rankInfo.leaguePoints;
+				summoner.wins = rankInfo.wins;
+				summoner.losses = rankInfo.losses;
+				summoner.veteran = rankInfo.veteran;
+				summoner.inactive = rankInfo.inactive;
+				summoner.freshBlood = rankInfo.freshBlood;
+				summoner.hotStreak = rankInfo.hotStreak;
+			}
+
+			if (rankInfo.queueType === "RANKED_FLEX_SR") {
+				summoner.flexSolo = rankInfo.tier;
+			}
+
+			if (rankInfo.queueType === "RANKED_FLEX_TT") {
+				summoner.flextt = rankInfo.tier;
+			}
+
+			await this.summonerRepo.updateSummonerByPUUID(summoner);
 		}
 	};
 
