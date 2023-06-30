@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import { AxiosResponse, HttpStatusCode } from "axios";
 
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 
@@ -24,6 +24,7 @@ import { InternalServer } from "../../../Models/Interfaces/Error/Http5xx";
 
 import { Summoner } from "../../../Models/Interfaces/Summoner";
 import { rankSolo } from "../../../Models/Types/ApiTypes";
+import { response } from "express";
 
 @Tags("Summoner")
 @Route("api/data/summoner")
@@ -145,7 +146,7 @@ export class SummonerController extends Controller {
 	 * @param summonerId Id of the summoner.
 	 */
 	@Put("{summonerId}")
-	@SuccessResponse("200", "Summoner has been updated")
+	@SuccessResponse("204", "Summoner has been updated")
 	@Response<HttpError>("404", "Send if the Summoners could not be found")
 	@Response<HttpError>("409", "Summoner already was updated recently")
 	@Response<HttpError>("429", "Too many requests please try again later")
@@ -165,7 +166,14 @@ export class SummonerController extends Controller {
 				summonerInDB.id,
 			);
 
-			await this.summonerRepo.updateSummonerByPUUID(currentSummonerResponse.data);
+			const summonerRank = await this.RGHttpClient.getSummonerRankLeagueInfo(
+				currentSummonerResponse.data.id,
+			);
+
+			await this.summonerService.updateSummonerWithRankInformation(
+				currentSummonerResponse.data,
+				summonerRank.data,
+			);
 		} catch (error) {
 			throw error;
 		}

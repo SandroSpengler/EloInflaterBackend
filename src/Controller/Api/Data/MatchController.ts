@@ -4,7 +4,7 @@ import { SummonerService } from "../../../Services/SummonerService";
 import { RiotGamesHttp } from "../../../Services/HttpService";
 import { MatchRepository } from "../../../Repository/MatchRepository";
 import { MatchService } from "../../../Services/MatchService";
-import { NotFound, Conflict } from "../../../Models/Interfaces/Error/Http4xx";
+import { NotFound, Conflict, BadRequest } from "../../../Models/Interfaces/Error/Http4xx";
 import HttpError from "../../../Models/Interfaces/Error/HttpError";
 import { DataMiningService } from "../../../Services/DataMiningService";
 import { MatchData } from "../../../Models/Interfaces/MatchData";
@@ -53,10 +53,18 @@ export class MatchController extends Controller {
 	@Response<HttpError>("404", "Send if the Summoners could not be found")
 	public async getMatchesBySummonerPUUID(
 		@Path() sumonerPUUID: string,
-		@Query() page?: number,
-		@Query() size?: number,
+		@Query() page: number = 0,
+		@Query() size: number = 30,
 	): Promise<MatchData[]> {
-		const matchesForSummoner = await this.matchRepo.findAllMatchesBySummonerPUUID(sumonerPUUID);
+		if (size > 50) {
+			throw new BadRequest("Size may not be larger than 50", 400);
+		}
+
+		const matchesForSummoner = await this.matchRepo.findMatchesBySummonerPUUIDPaginated(
+			sumonerPUUID,
+			page,
+			size,
+		);
 
 		if (matchesForSummoner === null) {
 			throw new NotFound(`Could not find matches for summonerPUUID ${sumonerPUUID}`, 404);
@@ -71,7 +79,7 @@ export class MatchController extends Controller {
 	 * @param summonerId Id of the summoner.
 	 */
 	@Put("{summonerId}")
-	@SuccessResponse("200", "Summoner has been updated")
+	@SuccessResponse("204", "Summoner has been updated")
 	@Response<HttpError>("404", "Send if the Summoners could not be found")
 	@Response<HttpError>("409", "Summoner matches already updated recently")
 	@Response<HttpError>("429", "Too many requests please try again later")
