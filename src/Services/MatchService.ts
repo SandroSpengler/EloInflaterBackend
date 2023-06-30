@@ -42,7 +42,7 @@ export class MatchService {
 			let tabisCount: number = 0;
 			let zhonaysCount: number = 0;
 
-			let participantByPUUID: Participant = match.info[0].participants.find(
+			let participantByPUUID: Participant | undefined = match.info[0].participants.find(
 				(participantByPUUID) => {
 					return participantByPUUID.puuid === summonerPUUID;
 				},
