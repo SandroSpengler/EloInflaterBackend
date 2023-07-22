@@ -331,5 +331,5 @@ export interface MatchData {
 	summonerId: string;
 	summonerPUUID: string;
 	metadata: Metadata;
-	info: Info;
+	info: Info[];
 }
