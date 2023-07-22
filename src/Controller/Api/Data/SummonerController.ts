@@ -1,4 +1,4 @@
-import { AxiosResponse, HttpStatusCode } from "axios";
+import { AxiosResponse } from "axios";
 
 import { SummonerRepository } from "../../../Repository/SummonerRepository";
 
@@ -18,13 +18,12 @@ import {
 	Tags,
 } from "tsoa";
 
-import HttpError from "../../../Models/Interfaces/Error/HttpError";
 import { Conflict, NotFound } from "../../../Models/Interfaces/Error/Http4xx";
 import { InternalServer } from "../../../Models/Interfaces/Error/Http5xx";
+import HttpError from "../../../Models/Interfaces/Error/HttpError";
 
 import { Summoner } from "../../../Models/Interfaces/Summoner";
 import { rankSolo } from "../../../Models/Types/ApiTypes";
-import { response } from "express";
 
 @Tags("Summoner")
 @Route("api/data/summoner")
@@ -75,7 +74,6 @@ export class SummonerController extends Controller {
 			summonerName,
 		);
 
-		// What an exciting comment!
 		if (summonerInDB === null) {
 			throw new NotFound(`Could not find summoner ${summonerName}`, 404);
 		}
